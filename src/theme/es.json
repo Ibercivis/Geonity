@@ -1,0 +1,182 @@
+{
+  "strings": {
+    "global": [
+      {
+        "next_button": "Siguiente",
+        "back_button": "Volver",
+        "close_button": "Cerrar",
+        "save_button": "Guardar",
+        "cancel_button": "Cancelar"
+      }
+    ],
+    "login_screen": [
+      {
+        "title": "Inicio de sesión",
+        "mail_input": "Nombre de usuario",
+        "password_input": "Contraseña",
+        "recovery_password": "¿Has olvidado la ",
+        "or_login": "O logear con...",
+        "new_in_app": "¿Nuevo en la App?",
+        "register": "Crear cuenta",
+        "login_button": "Continuar",
+        "loggin_google": "Continuar con Google",
+        "loggin_apple": "Continuar con Apple",
+        "loggin_microsoft": "Continuar con Microsoft",
+        "subtitle": "¡Bienvenid@!",
+        "subtitle_register": "¡Vamos a empezar!",
+        "subtitle_problems": ""
+      }
+    ],
+    "register_screen": [
+      {
+        "title": "Registrar",
+        "subtitle": "¡Vamos a empezar!",
+        "user_name_input": "Nombre de usuario",
+        "email_input": "Correo electrónico",
+        "password1_input": "Contraseña",
+        "password2_input": "Confirmar contraseña",
+        "have_account": "¿Ya tienes una cuenta?",
+        "enter": " Entrar",
+        "register_button": "Crear cuenta",
+        "register_google": "Continuar con Google",
+        "register_apple": "Continuar con Apple",
+        "register_microsoft": "Continuar con Microsoft"
+      }
+    ],
+    "recovery_screen": [
+      {
+        "title": "Registrar",
+        "subtitle": "¡Vamos a empezar!",
+        "title_info": "¿Problemas para iniciar sesión?",
+        "content_info": "Introduzca su correo electrónico y le enviaremos un enlace para que pueda volver a entrar en su cuenta.",
+        "email_input": "Correo electrónico",
+        "email_input_err": "Correo electrónico incorrecto",
+        "session": " al inicio de sesión",
+        "back": "Volver",
+        "send_email": "Enviar enlace",
+        "send_email_try_again": "Intentar de nuevo",
+        "create_account": "Crear cuenta"
+      }
+    ],
+    "home_screen": [],
+    "new_project_screen": [
+      {
+        "title": "NUEVO PROYECTO",
+        "title_edit": "EDICIÓN",
+        "title_section": "Datos principales",
+        "project_name_input": "Nombre",
+        "project_name_helper": "Nombre del proyecto",
+        "description_input": "Descripción",
+        "description_helper": "Descripción de qué va a tratar el proyecto",
+        "image_title": "Imagen del proyecto",
+        "dialog": [
+          {
+            "title": "Error de creación",
+            "body": "Es necesario establecer un nombre y una descripción válidos."
+          }
+        ]
+      }
+    ],
+    "new_project_mark_screen": [
+      {
+        "title": "MARCADOR",
+        "none_mark": "Seleccione el tipo de respuesta del usuario",
+        "new_mark": [
+          {
+            "ask_input": "Pregunta",
+            "description_input": "Descripción de la pregunta",
+            "ask_input_err": "Debes indicar una pregunta",
+            "description_input_err": "Debes incluir una descripción",
+            "title": "Marca",
+            "save_button": "Guardar",
+            "close_button": "Cancelar"
+          }
+        ],
+        "modal_error": [
+          {
+            "title": "Error de creación",
+            "body": "Se requiere añadir al menos una pregunta.",
+            "close_button": "Cerrar"
+          }
+        ]
+      }
+    ],
+    "new_project_mark_example_screen": [
+      {
+        "title": "PRUEBA TU MARCADOR",
+        "response_input": "Respuesta",
+        "save_project": [
+          {
+            "title": "Finalizar",
+            "body": "¿ Desea guardar el proyecto ?",
+            "save_button": "Guardar",
+            "close_button": "Cancelar"
+          }
+        ],
+        "more_information": [
+          {
+            "title": "Más información",
+            "close_button": "Cerrar"
+          }
+        ]
+      }
+    ],
+    "new_organisation_screen": [
+      {
+        "title": "NUEVA ORGANIZACIÓN",
+        "title_edit": "EDICIÓN",
+        "principal_information": [
+          {
+            "principal_title": "Información principal",
+            "principal_name_input": "Nombre",
+            "principal_enlace_input": "Enlace",
+            "principal_description_input": "Descripción",
+            "principal_type_input": "Tipo",
+            "principal_name_placeholder": "Por favor, escribe el nombre de la organización.",
+            "principal_enlace_placeholder": "Por favor, añade el enlace a la página web de la organización.",
+            "principal_description_placeholder": "Por favor, describe brevemente a la organización (máximo 300 caracteres).",
+            "principal_type_placeholder": "Por favor, seleccione uno."
+          }
+        ],
+        "contact_information": [
+          {
+            "contact_title": "Información de contacto",
+            "contact_name_input": "Nombre de la persona",
+            "contact_mail_input": "Email de contacto",
+            "contact_name_placeholder": "Por favor, indica la persona o punto de contacto de la organización.",
+            "contact_mail_placeholder": "Por favor, indica la dirección de correo electrónico del contacto de la organización. Ten en cuenta que deberá tener permiso para ello."
+          }
+        ],
+        "logo": [
+          {
+            "logo_title": "Logotipo de la organización",
+            "logo_placeholder": "Por favor, añade el logotipo de su organización (en .jpg o .png)",
+            "logo_credit_input": "Créditos del logotipo, si procede"
+          }
+        ],
+        "dialog": [
+          {
+            "title": "Error de creación",
+            "body": "Es oblicatorio rellenar todos los campos con *"
+          }
+        ]
+      }
+    ],
+    "map_box_screen": [],
+    "settings_screen": [
+      {
+        "title": "Ajustes",
+        "change_password_screen":[
+          {
+            "title": "Cambio de contraseña",
+            "new_pass_1": "Nueva contraseña",
+            "new_pass_1_helper": "Introduzca la nueva contraseña",
+            "new_pass_2": "Repetir contraseña",
+            "new_pass_2_helper": "Repita la misma contraseña",
+            "modal_message": "Contraseña cambiada"
+          }
+        ]
+      }
+    ]
+  }
+}
