@@ -52,7 +52,7 @@ export const HeaderComponent = ({
   return (
     <Header
       barStyle={'dark-content'}
-      containerStyle={{backgroundColor: backgroundColor, marginVertical: '1%', width:'100%',marginTop: '4%'}}
+      containerStyle={{backgroundColor: backgroundColor, marginVertical: '0%', width:'100%',}}
       statusBarProps={{backgroundColor: backgroundColor}}
       leftContainerStyle={{width:'5%', marginRight: '4%'}}
       centerContainerStyle={{flex:7}}
@@ -84,7 +84,7 @@ export const HeaderComponent = ({
             alignSelf: 'flex-start',
             // fontWeight: 'bold',
             color: Colors.textColorPrimary,
-            // top: RFPercentage(0.3),
+            paddingTop: RFPercentage(0.2),
             width:'100%',
             fontSize: FontSize.fontSizeText18,
             fontFamily: FontFamily.NotoSansDisplaySemiBold,

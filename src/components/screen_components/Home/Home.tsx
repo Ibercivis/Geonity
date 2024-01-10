@@ -60,6 +60,9 @@ interface Props extends StackScreenProps<any, any> {}
 
 export const Home = ({navigation}: Props) => {
   //#region Variables/const
+
+  const {isGuest} = useContext(AuthContext)
+
   let notchHeight = 0;
   const insets = useSafeAreaInsets();
 
@@ -292,21 +295,23 @@ export const Home = ({navigation}: Props) => {
   };
 
   const categoryListApi = async () => {
-    let token;
+    // let token;
 
-    while (!token) {
-      token = await AsyncStorage.getItem('token');
-    }
+    // while (!token) {
+    //   token = await AsyncStorage.getItem('token');
+    // }
 
     let retries = 0;
     let success = false;
 
     try {
-      const resp = await citmapApi.get<Topic[]>('/project/topics/', {
-        headers: {
-          Authorization: token,
-        },
-      });
+      const resp = await citmapApi.get<Topic[]>('/project/topics/'
+      // , {
+      //   headers: {
+      //     Authorization: token,
+      //   },
+      // }
+      );
       //TODO ORDENAR
       setCategoryList(resp.data);
 
@@ -331,17 +336,19 @@ export const Home = ({navigation}: Props) => {
   };
 
   const projectListApi = async () => {
-    let token;
+    // let token;
 
-    while (!token) {
-      token = await AsyncStorage.getItem('token');
-    }
+    // while (!token) {
+    //   token = await AsyncStorage.getItem('token');
+    // }
     try {
-      const resp = await citmapApi.get<ShowProject[]>('/project/', {
-        headers: {
-          Authorization: token,
-        },
-      });
+      const resp = await citmapApi.get<ShowProject[]>('/project/'
+      // , {
+      //   headers: {
+      //     Authorization: token,
+      //   },
+      // }
+      );
 
       setNewProjectList(resp.data);
       chunkArray(resp.data, NUM_SLICE_NEW_PROJECT_LIST);
@@ -355,17 +362,19 @@ export const Home = ({navigation}: Props) => {
   };
 
   const organizationListApi = async () => {
-    let token;
+    // let token;
 
-    while (!token) {
-      token = await AsyncStorage.getItem('token');
-    }
+    // while (!token) {
+    //   token = await AsyncStorage.getItem('token');
+    // }
     try {
-      const resp = await citmapApi.get<Organization[]>('/organization/', {
-        headers: {
-          Authorization: token,
-        },
-      });
+      const resp = await citmapApi.get<Organization[]>('/organization/'
+      // , {
+      //   headers: {
+      //     Authorization: token,
+      //   },
+      // }
+      );
       setOrganizationList(resp.data);
       setLoading(false);
     } catch {

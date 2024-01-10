@@ -24,7 +24,7 @@ export function MultipleNavigator() {
       screenOptions={{
         headerShown: false,
         headerStyle: {
-          zIndex: -999,
+          // zIndex: -999,
         },
       }}>
       <Stack.Screen

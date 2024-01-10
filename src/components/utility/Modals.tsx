@@ -22,6 +22,7 @@ import {FontSize, FontWeight, FontFamily} from '../../theme/fonts';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 import {Colors} from '../../theme/colors';
 import {InputText} from './InputText';
+import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen';
 
 interface Props {
   label?: string;
@@ -665,8 +666,8 @@ export const InfoModalMap = ({
                 style={{
                   ...styles.modalContent,
                   alignItems: 'center',
-                  height: '50%',
-                  width: '75%',
+                  height: heightPercentageToDP(50),
+                  width: widthPercentageToDP(75),
                   // justifyContent: 'center',
                   // paddingHorizontal: '11%',
                 }}>

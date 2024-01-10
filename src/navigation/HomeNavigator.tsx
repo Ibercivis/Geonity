@@ -85,8 +85,8 @@ export function HomeNavigator() {
       screenOptions={{
         headerShown: false,
         headerStyle: {
-          // backgroundColor: 'transparent',
-          zIndex: -9,
+          backgroundColor: 'transparent',
+          // zIndex: -9,
         },
       }}>
       <Stack.Screen

@@ -45,6 +45,7 @@ import {CustomButton} from '../../utility/CustomButton';
 import {FontSize} from '../../../theme/fonts';
 import {useDateTime} from '../../../hooks/useDateTime';
 import Toast from 'react-native-toast-message';
+import {project} from '../../../../react-native.config';
 import {useNavigation} from '@react-navigation/native';
 
 Mapbox.setWellKnownTileServer('mapbox');
@@ -77,6 +78,30 @@ export const ParticipateMap = ({navigation, route}: Props) => {
 
   const {currentISODateTime} = useDateTime();
   const nav = useNavigation();
+
+  // useLayoutEffect(() => {
+  //   navigation.getParent()?.setOptions({
+  //     tabBarStyle: {
+  //       display: "none",
+  //     }
+  //   });
+  //   return () => navigation.getParent()?.setOptions({
+  //     tabBarStyle: undefined
+  //   });
+  // }, [navigation]);
+
+  useEffect(() => {
+    nav.getParent()?.setOptions({
+      tabBarStyle: {
+        // display: "none",
+        opacity: 0,
+      },
+    });
+    return () =>
+      nav.getParent()?.setOptions({
+        tabBarStyle: undefined,
+      });
+  }, [nav]);
 
   //#region VARIABLES
   // map refs
@@ -137,6 +162,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
    * lista de observations que van filtradas por el fieldform asociado
    */
   const [observationList, setObservationList] = useState<Observation[]>([]);
+  const [observationListcopy, setObservationListcopy] = useState<Observation[]>([]);
 
   /**
    * esta lista estará compuesta de los marcadores que crea el usuario
@@ -280,6 +306,10 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     if (!waitingData) {
       setChargedData(true);
     }
+    if(observationList.length > 0){
+      console.log('------------------------------------*************************-------------------------------')
+      console.log(JSON.stringify(observationList, null, 2))
+    }
   }, [observationList]);
 
   //#endregion
@@ -353,6 +383,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
         await setWaitingData(false);
       }
       setObservationList(newDataParse);
+      setObservationListcopy(newDataParse)
     } catch {}
   };
 
@@ -401,6 +432,11 @@ export const ParticipateMap = ({navigation, route}: Props) => {
   };
 
   const clearSelectedObservation = () => {
+    //si no hay seleccionada ninguna, no hace update del mapa
+    //si hay una pre-seleccionada, hace la update
+    // if(selectedObservation.id > 0){
+    //   updateMap()
+    // }
     return {
       id: 0,
       creator: 0,
@@ -667,7 +703,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
         }
 
         setWaitingData(false);
-      } catch (error:any) {
+      } catch (error: any) {
         Toast.show({
           type: 'error',
           text1: 'Error',
@@ -766,7 +802,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
       await getObservation();
       setShowMap(true);
       setWaitingData(false);
-    } catch (error:any) {
+    } catch (error: any) {
       Toast.show({
         type: 'error',
         text1: 'Error',
@@ -839,7 +875,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
       await getObservation();
       setShowMap(true);
       setWaitingData(false);
-    } catch (error:any) {
+    } catch (error: any) {
       Toast.show({
         type: 'error',
         text1: 'Error',
@@ -952,6 +988,16 @@ export const ParticipateMap = ({navigation, route}: Props) => {
   };
   //#endregion
 
+  //#region UPDATE MAP
+  const [mapUpdateFlag, setMapUpdateFlag] = useState(false);
+  // Ejemplo de cómo actualizar el estado cuando ocurra algún evento
+  const updateMap = () => {
+    // Realiza las operaciones necesarias...
+    setMapUpdateFlag(prevFlag => !prevFlag); // Cambia el estado para forzar la actualización
+  };
+
+  //#endregion
+
   if (!hasLocation) {
     // return <LoadingScreen />;
     return (
@@ -996,21 +1042,23 @@ export const ParticipateMap = ({navigation, route}: Props) => {
             <View style={{flex: 1}}>
               <MapView
                 ref={element => (mapViewRef.current = element!)}
+                key={mapUpdateFlag ? 'mapUpdate' : 'mapNoUpdate'}
                 style={{flex: 1}}
                 logoEnabled={false}
                 scaleBarEnabled={false}
                 compassEnabled={false}
                 collapsable={true}
-                onTouchStart={() =>
+                onTouchStart={() => (
                   setSelectedObservation(clearSelectedObservation())
-                }
+                )}
                 onLongPress={data => {
                   addMarkLongPress(data);
-                }}>
+                }}
+                >
                 <Camera
                   ref={reference => (cameraRef.current = reference!)}
                   zoomLevel={15}
-                  maxZoomLevel={200}
+                  maxZoomLevel={500}
                   centerCoordinate={initialPositionArray}
                   followUserLocation={followView.current}
                   followUserMode={UserTrackingMode.FollowWithHeading}
@@ -1026,24 +1074,21 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                       if (selectedObservation.id !== x.id) {
                         return (
                           <View key={index}>
-                            <TouchableOpacity
-                              disabled={isCreatingObservation}
-                              onPress={() => {
-                                setSelectedObservation(x);
-                                setShowSelectedObservation(x);
-                                // console.log('aprieta la marca')
-                              }}>
-                              <MarkerView
-                                // coordinate={[-6.300905, 36.53777]}
-                                onTouchStart={() =>
-                                  console.log('aprieta la marca')
-                                }
-                                coordinate={[
-                                  x.geoposition.point.latitude,
-                                  x.geoposition.point.longitude,
-                                ]}>
-                                {/* sustituir esto por una imagen */}
-
+                            <MarkerView
+                              coordinate={[
+                                x.geoposition.point.latitude,
+                                x.geoposition.point.longitude,
+                              ]}>
+                              {/* sustituir esto por una imagen */}
+                              <TouchableOpacity
+                                // style={{backgroundColor: 'cyan'}}
+                                disabled={isCreatingObservation}
+                                onPress={() => {
+                                  setSelectedObservation(x);
+                                  setShowSelectedObservation(x);
+                                  setObservationListcopy(observationList)
+                                  // console.log('aprieta la marca')
+                                }}>
                                 <View
                                   style={{
                                     alignItems: 'center',
@@ -1057,8 +1102,8 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                                     fill={colorMark}
                                   />
                                 </View>
-                              </MarkerView>
-                            </TouchableOpacity>
+                              </TouchableOpacity>
+                            </MarkerView>
                           </View>
                         );
                       } else {
@@ -1070,7 +1115,6 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                   })}
                 {observationListCreator.length > 0 &&
                   observationListCreator.map((x, index) => {
-                    console.log(x.geoposition);
                     if (x.geoposition) {
                       return (
                         <View key={index}>
@@ -1104,7 +1148,6 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                 {/* CREAR OTRA MARCA CON EL CUADRITO QUE HA PASADO GERMAN PARA QUE ASÍ, ESTE SE MUESTRE EN LA COORDENADA PASADA Y LISTO */}
                 {selectedObservation && (
                   <MarkerView
-                    // coordinate={[-6.300905, 36.53777]}
                     coordinate={[
                       selectedObservation.geoposition.point.latitude,
                       selectedObservation.geoposition.point.longitude,
@@ -1116,11 +1159,11 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                       <View
                         style={{
                           alignItems: 'center',
-                          width: RFPercentage(25),
-                          height: RFPercentage(25),
+                          width: RFPercentage(15),
+                          height: RFPercentage(15),
                           backgroundColor: 'transparent',
                           right: RFPercentage(-3),
-                          top: RFPercentage(0),
+                          top: RFPercentage(-5.2),
                         }}>
                         <CardMap
                           height={RFPercentage(15)}
@@ -1129,12 +1172,12 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                         />
                         <View
                           style={{
-                            width: '30%',
+                            width: '50%',
                             marginHorizontal: RFPercentage(1),
-                            marginBottom: RFPercentage(-5),
+                            marginBottom: RFPercentage(1),
                             zIndex: 999,
                             position: 'absolute',
-                            top: RFPercentage(2),
+                            marginTop: RFPercentage(2),
                           }}>
                           <Text
                             style={{
@@ -1146,10 +1189,10 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                         </View>
                         <View
                           style={{
-                            width: '30%',
+                            width: '50%',
                             marginHorizontal: RFPercentage(1),
                             marginBottom: RFPercentage(-5),
-                            zIndex: 999,
+                            zIndex: 1,
                             position: 'absolute',
                             top: RFPercentage(7.4),
                           }}>

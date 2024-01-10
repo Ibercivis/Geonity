@@ -5,12 +5,14 @@ import {
   View,
   StyleSheet,
   useWindowDimensions,
+  StyleProp,
+  ViewStyle,
 } from 'react-native';
 import {Colors} from '../../theme/colors';
 import {FontFamily, FontSize} from '../../theme/fonts';
 import {Size} from '../../theme/size';
 import {IconTemp} from '../IconTemp';
-import { RFPercentage } from 'react-native-responsive-fontsize';
+import {RFPercentage} from 'react-native-responsive-fontsize';
 
 interface Props {
   label?: string;
@@ -27,6 +29,7 @@ interface Props {
   outlineColor?: string;
   disabled?: boolean;
   borderRadius?: number;
+  outStyle?: StyleProp<ViewStyle>;
 }
 
 export const CustomButton = ({
@@ -37,13 +40,14 @@ export const CustomButton = ({
   iconLeft = '',
   iconRight = '',
   width,
-  height= RFPercentage(4.3),
+  height = RFPercentage(4.3),
   iconColor = 'black',
-  fontSize = FontSize.fontSizeText14 ,
+  fontSize = FontSize.fontSizeText14,
   fontFamily = FontFamily.NotoSansDisplayMedium,
   outlineColor,
   disabled = false,
   borderRadius = 12,
+  outStyle,
 }: Props) => {
   const {fontScale} = useWindowDimensions();
   return (
@@ -51,14 +55,17 @@ export const CustomButton = ({
       disabled={disabled}
       activeOpacity={0.6}
       onPress={onPress}
-      style={{
-        ...styles.touchable,
-        height: height,
-        backgroundColor: backgroundColor,
-        borderRadius: borderRadius,
-        borderColor: outlineColor,
-        borderWidth: outlineColor ? 1 : 0,
-      }}>
+      style={[
+        outStyle,
+        styles.touchable,
+        {
+          height: height,
+          backgroundColor: backgroundColor,
+          borderRadius: borderRadius,
+          borderColor: outlineColor,
+          borderWidth: outlineColor ? 1 : 0,
+        },
+      ]}>
       <View
         style={{
           justifyContent: 'center',
@@ -106,8 +113,7 @@ const styles = StyleSheet.create({
     // paddingVertical: '2%',
     width: '100%',
     justifyContent: 'center',
-    
-    
+
     // marginBottom: '4%',
     // marginHorizontal: '2%',
     marginTop: '2.5%',

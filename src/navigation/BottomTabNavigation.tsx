@@ -21,8 +21,10 @@ import {RFPercentage} from 'react-native-responsive-fontsize';
 // import Plus from '../assets/icons/general/plus-lg1.svg';
 import {FontSize} from '../theme/fonts';
 import PlusSquare from '../assets/icons/general/plus-square.svg';
+import {createStackNavigator} from '@react-navigation/stack';
 
 const Tab = createBottomTabNavigator<StackParams>();
+const GuestStack = createStackNavigator<StackParams>();
 
 export type StackParams = {
   // NavigatorMap: undefined;
@@ -82,7 +84,12 @@ const CenterButtonTab = () => {
           <View style={styles.modalViewContainer}>
             <View style={styles.modalHeader}>
               <View style={{flexDirection: 'row'}}>
-                <View style={{justifyContent:'center', marginRight:'3%', top: RFPercentage(0.2)}}>
+                <View
+                  style={{
+                    justifyContent: 'center',
+                    marginRight: '3%',
+                    top: RFPercentage(0.2),
+                  }}>
                   <PlusSquare
                     width={RFPercentage(2.2)}
                     height={RFPercentage(2.2)}
@@ -95,8 +102,8 @@ const CenterButtonTab = () => {
                     color: 'black',
                     fontSize: FontSize.fontSizeText20,
                     fontWeight: 'bold',
-                    textAlignVertical:'center',
-                    marginLeft: '2%'
+                    textAlignVertical: 'center',
+                    marginLeft: '2%',
                   }}>
                   ¿Qué desea hacer?
                 </Text>
@@ -107,12 +114,11 @@ const CenterButtonTab = () => {
             </View>
             <View
               style={{
-                marginTop:'4%',
+                marginTop: '4%',
                 flexDirection: 'row',
                 height: '85%',
                 justifyContent: 'space-between',
-                width:'95%'
-                
+                width: '95%',
               }}>
               <TouchableOpacity
                 style={styles.cards}
@@ -124,7 +130,12 @@ const CenterButtonTab = () => {
                     source={require('../assets/backgrounds/nuevoproyecto.jpg')}
                     style={{borderRadius: 10, height: '100%'}}>
                     <View
-                      style={{alignItems: 'stretch', flex: 1, borderRadius: 5, justifyContent:'center'}}>
+                      style={{
+                        alignItems: 'stretch',
+                        flex: 1,
+                        borderRadius: 5,
+                        justifyContent: 'center',
+                      }}>
                       <Text
                         style={{
                           textAlign: 'center',
@@ -133,12 +144,12 @@ const CenterButtonTab = () => {
                           marginRight: '10%',
                           // marginTop: RFPercentage(8),
                           // paddingTop: '4%',
-                          textAlignVertical:'center',
+                          textAlignVertical: 'center',
                           backgroundColor: 'white',
                           alignSelf: 'center',
                           padding: '4%',
                           borderRadius: 7,
-                          color:'black'
+                          color: 'black',
                         }}>
                         Crear un nuevo proyecto
                       </Text>
@@ -146,14 +157,21 @@ const CenterButtonTab = () => {
                   </ImageBackground>
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.cards} onPress={() => navigateTo('CreateOrganization')}>
+              <TouchableOpacity
+                style={styles.cards}
+                onPress={() => navigateTo('CreateOrganization')}>
                 <View style={{flex: 1}}>
                   <ImageBackground
                     borderRadius={10}
                     // source={require(urii)}
                     source={require('../assets/backgrounds/nuevaorganizacion.jpg')}
                     style={{borderRadius: 10, height: '100%'}}>
-                    <View style={{alignItems: 'stretch', flex: 1, justifyContent:'center'}}>
+                    <View
+                      style={{
+                        alignItems: 'stretch',
+                        flex: 1,
+                        justifyContent: 'center',
+                      }}>
                       <Text
                         style={{
                           textAlign: 'center',
@@ -165,7 +183,7 @@ const CenterButtonTab = () => {
                           alignSelf: 'center',
                           padding: '4%',
                           borderRadius: 7,
-                          color:'black'
+                          color: 'black',
                         }}>
                         Crear una nueva organización
                       </Text>
@@ -187,7 +205,7 @@ export const BottomTabNavigation = () => {
   const {permissions} = useContext(PermissionsContext);
 
   //si no está logged, se le redirigirá hasta la pantalla de login
-  const {status} = useContext(AuthContext);
+  const {status, isGuest} = useContext(AuthContext);
 
   if (status === 'checking') {
     return <LoadingScreen />;
@@ -218,12 +236,14 @@ export const BottomTabNavigation = () => {
             {state.routes.map((route, index) => {
               const {options} = descriptors[route.key];
 
+              if (isGuest) {
+                return null; // No renderizar el CenterButtonTab si isGuest es verdadero
+              }
               if (route.name === 'CenterButtonTab') {
                 return <CenterButtonTab key={route.key} />;
               }
 
-              const label =
-                route.name === 'HomeNavigator' ? 'Home' : 'Perfil';
+              const label = route.name === 'HomeNavigator' ? 'Home' : 'Perfil';
 
               return (
                 <CustomTab
@@ -249,7 +269,6 @@ export const BottomTabNavigation = () => {
             })}
           </View>
         )}>
-        {/* esto sería cambiarlo a que lleve a homeScreem o a otro donde se incluya para ver los proyectos */}
         <Tab.Screen
           name="HomeNavigator"
           component={HomeNavigator}
@@ -267,6 +286,7 @@ export const BottomTabNavigation = () => {
           }}
         />
         <Tab.Screen name="CenterButtonTab" component={CenterButtonTab} />
+
         <Tab.Screen
           name="ProfileScreen"
           component={ProfileScreen}
@@ -335,7 +355,7 @@ const styles = StyleSheet.create({
   cards: {
     height: '95%',
     // width: RFPercentage(18),
-    width:'50%',
+    width: '50%',
     margin: 4,
     borderRadius: 10,
     backgroundColor: 'white',

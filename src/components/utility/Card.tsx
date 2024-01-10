@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -24,6 +24,7 @@ import {
   widthPercentageToDP,
 } from 'react-native-responsive-screen';
 import {Topic} from '../../interfaces/appInterfaces';
+import { AuthContext } from '../../context/AuthContext';
 
 // const categoryIcons = [
 //   require('../../assets/icons/category/Group-6.png'),
@@ -71,6 +72,9 @@ export const Card = ({
   styleProp,
   list = [],
 }: Props) => {
+
+  const {isGuest} = useContext(AuthContext)
+
   const cardType = () => {
     switch (type) {
       case 'category':
@@ -268,7 +272,7 @@ export const Card = ({
                 style={{
                   marginHorizontal: RFPercentage(2),
                   marginTop: RFPercentage(1.4),
-                  marginBottom: 6,
+                  marginBottom: RFPercentage(0.5),
                 }}>
                 <Text
                   style={{
@@ -280,7 +284,7 @@ export const Card = ({
                     color: 'black',
                     fontFamily: FontFamily.NotoSansDisplayMedium,
                   }}>
-                  {title.length > 25 ? title.slice(0, 25) + '...' : title}
+                  {title.length > 20 ? title.slice(0, 20) + '...' : title}
                 </Text>
                 <Text
                   style={{
@@ -1019,7 +1023,7 @@ const style = StyleSheet.create({
   },
   importants: {
     // height: RFPercentage(30),
-    height: heightPercentageToDP(38),
+    height: heightPercentageToDP(35),
     width: widthPercentageToDP(52),
     // margin: 4,
     paddingBottom: heightPercentageToDP(2),

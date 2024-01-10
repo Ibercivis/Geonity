@@ -379,7 +379,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
       case 'register':
         return (
           // <ScrollView style={{width: '100%', flexGrow: 1}}>
-          <View style={{marginHorizontal: '9%', left: '0.7%'}}>
+          <View style={{marginHorizontal: '9%', left: '2%'}}>
             <View style={{}}>
               {/* contenedor de los inputs */}
               <View
@@ -655,11 +655,11 @@ export const LoginScreen = ({navigation, route}: Props) => {
                   style={{
                     alignSelf: 'center',
                     flexDirection: 'row',
-                    borderBottomWidth: onTouchBorderWidth2,
+                    borderBottomWidth: onTouchBorderWidth3,
                     borderBottomColor: Colors.primaryLigth,
                   }}
                   onPress={() => onTouchLogin()}
-                  onFocus={() => setOnTouchBorderWidth2(0)}>
+                  onFocus={() => setOnTouchBorderWidth3(0)}>
                   <Text
                     style={{
                       color: 'black',
@@ -686,7 +686,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
         );
       case 'forgot':
         return (
-          <View style={{marginHorizontal: '9%', left: '0.7%'}}>
+          <View style={{marginHorizontal: '9%', left: '5%'}}>
             {/* info */}
             <View
               style={{
@@ -763,7 +763,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                 width: '100%',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                // marginTop: '10%',
+                marginBottom: '5%',
               }}>
               <Divider style={{borderWidth: 0.6, width: '45%'}} />
               <Text
@@ -780,8 +780,8 @@ export const LoginScreen = ({navigation, route}: Props) => {
             <View
               style={{
                 marginHorizontal: '26%',
-                marginTop: '13%',
-                marginBottom: '14%',
+                marginTop: '2%',
+                zIndex: 1
               }}>
               <CustomButton
                 backgroundColor={Colors.primaryDark}
@@ -792,9 +792,9 @@ export const LoginScreen = ({navigation, route}: Props) => {
             </View>
 
             {/* back */}
-            <View style={{marginHorizontal: '26%', marginBottom: '10%'}}>
+            <View style={{marginHorizontal: '26%', marginTop: '15%', zIndex: 2}}>
               <TouchableOpacity
-                activeOpacity={1}
+                activeOpacity={0.4}
                 style={{
                   alignSelf: 'center',
                   flexDirection: 'row',
@@ -822,6 +822,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                   {translate.strings.recovery_screen[0].session}
                 </Text>
               </TouchableOpacity>
+              
             </View>
           </View>
         );
@@ -1085,7 +1086,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                   {/* invitado */}
                   
                   <TouchableOpacity
-                    activeOpacity={1}
+                    activeOpacity={0.4}
                     style={{
                       alignSelf: 'center',
                       marginTop: '25%',
@@ -1157,7 +1158,7 @@ const styles = StyleSheet.create({
     // marginHorizontal: '9%',
     marginTop: '5%',
     marginBottom: '17%',
-    right: '1.7%',
+    right: '1%',
   },
   loginButtonsContainer: {
     marginHorizontal: '17%',

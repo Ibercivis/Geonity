@@ -49,6 +49,7 @@ import {PermissionsContext} from '../../../context/PermissionsContext';
 import Toast from 'react-native-toast-message';
 import RNFS from 'react-native-fs';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
+import { imageUrl } from '../../../api/citmapApi';
 
 const data = [
   require('../../../assets/backgrounds/login-background.jpg'),
@@ -217,6 +218,7 @@ export const ProjectPage = (props: Props) => {
    * metodo para ir al mapa
    */
   const navigateToMap = () => {
+    
     if (project) {
       if (project.is_private) {
         showModalPass();
@@ -225,6 +227,7 @@ export const ProjectPage = (props: Props) => {
         if (permissions.locationStatus === 'granted') {
           // checkLocationPErmission();
           // props.navigation.navigate("PermissionsScreen")
+          // props.navigation.removeListener
           props.navigation.navigate('ParticipateMap', {id: project.id!});
         } else {
           setHasPermission(false);
@@ -270,6 +273,7 @@ export const ProjectPage = (props: Props) => {
             setIsValidPass(true);
             hideModalPass();
             if (permissions.locationStatus === 'granted') {
+              // props.navigation.removeListener
               props.navigation.dispatch(
                 CommonActions.navigate({
                   name: 'ParticipateMap',
@@ -585,7 +589,7 @@ export const ProjectPage = (props: Props) => {
                             <Image
                               source={{
                                 uri:
-                                  'http://dev.ibercivis.es:10001' +
+                                  imageUrl +
                                   imagesCharged[x.index].image,
                               }}
                               style={{

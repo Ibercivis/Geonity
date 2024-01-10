@@ -17,6 +17,7 @@ import {useTogglePasswordVisibility} from '../../hooks/useTogglePasswordVisibili
 import {IconBootstrap} from './IconBootstrap';
 import {TextInput} from 'react-native-paper';
 import {globalStyles} from '../../theme/theme';
+import { RFPercentage } from 'react-native-responsive-fontsize';
 
 const window = Dimensions.get('window');
 
@@ -114,7 +115,7 @@ export const InputText = ({
             justifyContent: 'center',
             top: 1,
           }}>
-          <IconBootstrap name={iconLeft} size={20} color={iconColorFocus} />
+          <IconBootstrap name={iconLeft} size={RFPercentage(2)} color={iconColorFocus} />
         </View>
       )}
       <TextInput
@@ -183,13 +184,13 @@ export const InputText = ({
           activeOpacity={1}
           onPress={fieldButtonFunction}
           style={{
-            marginRight: '4%',
+            marginRight: '2%',
             flex: 1,
             alignItems: 'center',
             justifyContent: 'center',
             top: '1%',
           }}>
-          <IconBootstrap name={iconRight} size={20} color={'black'} />
+          <IconBootstrap name={iconRight} size={RFPercentage(2)} color={'black'} />
         </TouchableOpacity>
       )}
     </View>
