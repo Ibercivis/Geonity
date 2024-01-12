@@ -115,6 +115,7 @@ export const Profile = ({navigation}: Props) => {
       code: '',
       name: '',
     },
+    created_organizations: [],
     participated_projects: [],
     created_projects: [],
     liked_projects: [],
@@ -823,7 +824,7 @@ export const Profile = ({navigation}: Props) => {
   }, []);
 
   useEffect(() => {
-    userDataApi()
+    userDataApi();
   }, [userEdit]);
 
   useEffect(() => {
@@ -848,9 +849,13 @@ export const Profile = ({navigation}: Props) => {
       });
       setLikedProject(resp.data.filter(x => x.is_liked_by_user === true));
       //convierte la lista de de participated a una de valores id solo
-      const idsListParticipated = userProfile.participated_projects.map(obj => obj.id)
-      setContributionProject(resp.data.filter(x => idsListParticipated.includes(x.id)));
-      console.log(idsListParticipated)
+      const idsListParticipated = userProfile.participated_projects.map(
+        obj => obj.id,
+      );
+      setContributionProject(
+        resp.data.filter(x => idsListParticipated.includes(x.id)),
+      );
+      // console.log(idsListParticipated);
       setCreatedProject(resp.data.filter(x => x.creator === user.pk));
     } catch {}
   };
@@ -881,7 +886,7 @@ export const Profile = ({navigation}: Props) => {
       }
       setIsSwitchOn(profile.data.profile.visibility);
       getCountriesApi();
-      // console.log(JSON.stringify(profile.data.profile, null, 2))
+      console.log(JSON.stringify(profile.data.profile, null, 2))
     } catch {}
   };
 
@@ -1164,7 +1169,7 @@ export const Profile = ({navigation}: Props) => {
             // text2: '',
           });
         }
-      } catch (error:any) {
+      } catch (error: any) {
         if (error.response) {
           // Se recibió una respuesta del servidor con un código de estado de error
 
@@ -1375,11 +1380,12 @@ export const Profile = ({navigation}: Props) => {
                     alignItems: 'center',
                     marginVertical: RFPercentage(1),
                   }}>
-                  <Text style={{
-                    color: 'black',
-                    fontFamily: FontFamily.NotoSansDisplayLight,
-                    fontSize: FontSize.fontSizeText13,
-                  }}>
+                  <Text
+                    style={{
+                      color: 'black',
+                      fontFamily: FontFamily.NotoSansDisplayLight,
+                      fontSize: FontSize.fontSizeText13,
+                    }}>
                     Si lo activas tu perfil pasará a estar oculto para los demás
                     usuarios de Geonity, pero podrás seguir creando proyectos y
                     participando en ellos
@@ -1392,9 +1398,14 @@ export const Profile = ({navigation}: Props) => {
                     width: '80%',
                     marginVertical: RFPercentage(1),
                   }}>
-                  <Text style={{color: 'black',
+                  <Text
+                    style={{
+                      color: 'black',
                       fontFamily: FontFamily.NotoSansDisplayMedium,
-                      fontSize: FontSize.fontSizeText15,}}>Nombre de usuario</Text>
+                      fontSize: FontSize.fontSizeText15,
+                    }}>
+                    Nombre de usuario
+                  </Text>
                   <InputText
                     editable={false}
                     // isInputText={() => setIsInputText(!isInputText)}
@@ -1415,9 +1426,14 @@ export const Profile = ({navigation}: Props) => {
                     marginVertical: RFPercentage(1),
                     marginHorizontal: RFPercentage(5),
                   }}>
-                  <Text style={{color: 'black',
+                  <Text
+                    style={{
+                      color: 'black',
                       fontFamily: FontFamily.NotoSansDisplayMedium,
-                      fontSize: FontSize.fontSizeText15,}}>Biografía</Text>
+                      fontSize: FontSize.fontSizeText15,
+                    }}>
+                    Biografía
+                  </Text>
                   <InputText
                     // isInputText={() => setIsInputText(!isInputText)}
                     label={'Biografía'}
@@ -1438,12 +1454,12 @@ export const Profile = ({navigation}: Props) => {
                     <Text
                       style={{
                         color:
-                          form.biography.length <= MAX_CHARACTERS
+                          form.biography &&form.biography.length <= MAX_CHARACTERS
                             ? 'black'
                             : 'red',
                         fontSize: FontSize.fontSizeText13,
                       }}>
-                      {form.biography.length}
+                      {form.biography && form.biography.length ? form.biography.length : 0}
                     </Text>
                     <Text style={{fontSize: FontSize.fontSizeText13}}>
                       /{MAX_CHARACTERS}
@@ -1513,9 +1529,14 @@ export const Profile = ({navigation}: Props) => {
                     width: '80%',
                     marginVertical: RFPercentage(1),
                   }}>
-                  <Text style={{color: 'black',
+                  <Text
+                    style={{
+                      color: 'black',
                       fontFamily: FontFamily.NotoSansDisplayMedium,
-                      fontSize: FontSize.fontSizeText15}}>Organización</Text>
+                      fontSize: FontSize.fontSizeText15,
+                    }}>
+                    Organización
+                  </Text>
 
                   <TouchableOpacity
                     style={{backgroundColor: 'transparent'}}
@@ -1524,9 +1545,11 @@ export const Profile = ({navigation}: Props) => {
                     <View
                       style={{
                         ...globalStyles.inputContainer,
-                        backgroundColor: organization
-                          ? Colors.semanticSuccessLight
-                          : Colors.semanticInfoLight,
+                        backgroundColor:
+                          userProfile.created_organizations &&
+                          userProfile.created_organizations.length > 0
+                            ? Colors.semanticSuccessLight
+                            : Colors.semanticInfoLight,
 
                         // height: '30%'
                         borderWidth: 0,
@@ -1538,7 +1561,8 @@ export const Profile = ({navigation}: Props) => {
                           justifyContent: 'center',
                           top: 1,
                         }}>
-                        {organization ? (
+                        {userProfile.created_organizations &&
+                        userProfile.created_organizations.length > 0 ? (
                           <IconBootstrap
                             name={'BookMark'}
                             size={RFPercentage(2)}
@@ -1570,28 +1594,34 @@ export const Profile = ({navigation}: Props) => {
                           textAlignVertical: 'center',
                           alignItems: 'center',
                           alignContent: 'center',
-                          textAlign: 'center',
+                          textAlign: userProfile.created_organizations &&
+                          userProfile.created_organizations.length > 0 ? 'center':'left',
                           height: Size.window.height * 0.04,
-                          paddingTop: Platform.OS === 'ios' ? RFPercentage(0.9) : 0
+                          paddingTop:
+                            Platform.OS === 'ios' ? RFPercentage(0.9) : 0,
                         }}>
-                        {organization ? 'organization name' : '¿Perteneces a una organización?'}
+                        {userProfile.created_organizations &&
+                        userProfile.created_organizations.length > 0
+                          ? userProfile.created_organizations[0].principalName
+                          : '¿Perteneces a una organización?'}
                       </Text>
-                      {organization && (
-                        <View
-                          style={{
-                            marginRight: '7%',
-                            // flex: 1,
-                            alignItems: 'flex-end',
-                            justifyContent: 'center',
-                            top: '1%',
-                          }}>
-                          <IconBootstrap
-                            name={'CheckCircle'}
-                            size={20}
-                            color={'white'}
-                          />
-                        </View>
-                      )}
+                      {userProfile.created_organizations &&
+                        userProfile.created_organizations.length > 0 && (
+                          <View
+                            style={{
+                              marginRight: '7%',
+                              // flex: 1,
+                              alignItems: 'flex-end',
+                              justifyContent: 'center',
+                              top: '1%',
+                            }}>
+                            <IconBootstrap
+                              name={'CheckCircle'}
+                              size={RFPercentage(3)}
+                              color={'white'}
+                            />
+                          </View>
+                        )}
                     </View>
                   </TouchableOpacity>
                   {/* <View
@@ -1629,9 +1659,14 @@ export const Profile = ({navigation}: Props) => {
                     width: '80%',
                     marginVertical: RFPercentage(1),
                   }}>
-                  <Text style={{color: 'black',
+                  <Text
+                    style={{
+                      color: 'black',
                       fontFamily: FontFamily.NotoSansDisplayMedium,
-                      fontSize: FontSize.fontSizeText15,}}>Ubicacion</Text>
+                      fontSize: FontSize.fontSizeText15,
+                    }}>
+                    Ubicacion
+                  </Text>
                   <Picker
                     selectedValue={form.country.code}
                     onValueChange={(itemValue, itemIndex) => {
@@ -1641,9 +1676,12 @@ export const Profile = ({navigation}: Props) => {
                       // onChange(itemValue, 'country')
                       changeCountry(itemValue);
                     }}
-                    style={{width: RFPercentage(41), color: 'black',
-                    fontFamily: FontFamily.NotoSansDisplayMedium,
-                    fontSize: FontSize.fontSizeText15,}}>
+                    style={{
+                      width: RFPercentage(41),
+                      color: 'black',
+                      fontFamily: FontFamily.NotoSansDisplayMedium,
+                      fontSize: FontSize.fontSizeText15,
+                    }}>
                     {countries.map((pais, index) => (
                       <Picker.Item
                         key={index}
@@ -1880,15 +1918,16 @@ export const Profile = ({navigation}: Props) => {
                 {profileImage ? (
                   <>
                     <Image
-                      borderRadius={100}
+                      borderRadius={10}
                       source={{
                         uri: 'data:image/jpeg;base64,' + profileImage.data,
                       }}
                       style={{
                         height: '100%',
+                        maxHeight:heightPercentageToDP(14),
                         maxWidth: RFPercentage(14),
                         // borderRadius: 10,
-                        borderRadius: 50,
+                        borderRadius: 10,
                         resizeMode: 'cover',
                       }}
                     />
@@ -1896,15 +1935,16 @@ export const Profile = ({navigation}: Props) => {
                 ) : profileImageCharged ? (
                   <>
                     <Image
-                      borderRadius={100}
+                      borderRadius={10}
                       source={{
                         uri: profileImageCharged,
                       }}
                       style={{
                         height: '100%',
+                        maxHeight:heightPercentageToDP(14),
                         maxWidth: RFPercentage(14),
                         // borderRadius: 10,
-                        borderRadius: 50,
+                        borderRadius: 10,
                         resizeMode: 'cover',
                         top: heightPercentageToDP(1),
                       }}
@@ -1915,9 +1955,10 @@ export const Profile = ({navigation}: Props) => {
                     <Image
                       borderRadius={100}
                       // source={require(urii)}
-                      source={require('../../../assets/backgrounds/login-background.jpg')}
+                      source={require('../../../assets/icons/profile/Profile.jpg')}
                       style={{
-                        height: '100%',
+                        // height: '100%',
+                        maxHeight:heightPercentageToDP(14),
                         maxWidth: RFPercentage(14),
                         borderRadius: 10,
                       }}
@@ -2020,7 +2061,10 @@ export const Profile = ({navigation}: Props) => {
                         fontFamily: FontFamily.NotoSansDisplayRegular,
                         // backgroundColor:'red'
                       }}>
-                      {user.username}
+                      {userProfile.created_organizations &&
+                      userProfile.created_organizations.length > 0
+                        ? userProfile.created_organizations[0].principalName
+                        : 'Sin organizaciones'}
                     </Text>
                   </View>
                   <View
@@ -2075,8 +2119,9 @@ export const Profile = ({navigation}: Props) => {
                   fontFamily: FontFamily.NotoSansDisplayLight,
                   textAlign: 'left',
                 }}>
-                {(userProfile.biography && userProfile.biography.length > 0) ||
-                userProfile.biography == null
+                {userProfile.biography && userProfile.biography.length > 0 && 
+                userProfile.biography != null && userProfile.biography !=  undefined && 
+                userProfile.biography != 'null'
                   ? userProfile.biography
                   : 'No hay ninguna descripción'}
               </Text>

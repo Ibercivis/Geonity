@@ -38,7 +38,7 @@ import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from 'react-native-responsive-screen';
-import {SaveProyectModal} from '../components/utility/Modals';
+import {PoliciesModal, SaveProyectModal} from '../components/utility/Modals';
 import Toast from 'react-native-toast-message';
 
 interface Props extends StackScreenProps<any, any> {}
@@ -112,6 +112,10 @@ export const LoginScreen = ({navigation, route}: Props) => {
   const [saveModal, setSaveModal] = useState(false);
   const showModalSave = () => setSaveModal(true);
   const hideModalSave = () => setSaveModal(false);
+
+  const [policiesModal, setPoliciesModal] = useState(false);
+  const showModalPolicies = () => setPoliciesModal(true);
+  const hideModalPolicies = () => setPoliciesModal(false);
 
   //#endregion
 
@@ -421,7 +425,13 @@ export const LoginScreen = ({navigation, route}: Props) => {
                     keyboardType="email-address"
                     multiline={false}
                     numOfLines={1}
-                    onChangeText={value => onChangeRegister(value, 'username')}
+                    isValid={!usernameError}
+                    onChangeText={value => {
+                      onChangeRegister(value, 'username');
+                      if (usernameError) {
+                        setUsernameError(false);
+                      }
+                    }}
                   />
                 </View>
                 {usernameError ? (
@@ -471,7 +481,13 @@ export const LoginScreen = ({navigation, route}: Props) => {
                     keyboardType="email-address"
                     multiline={false}
                     numOfLines={1}
-                    onChangeText={value => onChangeRegister(value, 'email')}
+                    isValid={!mailRegisterError}
+                    onChangeText={value => {
+                      onChangeRegister(value, 'email');
+                      if (mailRegisterError) {
+                        setMailRegisterError(false);
+                      }
+                    }}
                   />
                 </View>
                 {mailRegisterError ? (
@@ -522,7 +538,13 @@ export const LoginScreen = ({navigation, route}: Props) => {
                     multiline={false}
                     numOfLines={1}
                     isSecureText={true}
-                    onChangeText={value => onChangeRegister(value, 'password1')}
+                    isValid={!password1Error}
+                    onChangeText={value => {
+                      onChangeRegister(value, 'password1');
+                      if (password1Error) {
+                        setPassword1Error(false);
+                      }
+                    }}
                   />
                 </View>
                 {password1Error ? (
@@ -573,7 +595,13 @@ export const LoginScreen = ({navigation, route}: Props) => {
                     multiline={false}
                     numOfLines={1}
                     isSecureText={true}
-                    onChangeText={value => onChangeRegister(value, 'password2')}
+                    isValid={!password2Error}
+                    onChangeText={value => {
+                      onChangeRegister(value, 'password2');
+                      if (password2Error) {
+                        setPassword2Error(false);
+                      }
+                    }}
                   />
                 </View>
                 {password2Error ? (
@@ -598,7 +626,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
               <CustomButton
                 backgroundColor={Colors.secondaryDark}
                 label={translate.strings.register_screen[0].register_button}
-                onPress={() => onRegister()}
+                onPress={() => showModalPolicies()}
               />
               {/* divider */}
               <View
@@ -655,11 +683,11 @@ export const LoginScreen = ({navigation, route}: Props) => {
                   style={{
                     alignSelf: 'center',
                     flexDirection: 'row',
-                    borderBottomWidth: onTouchBorderWidth3,
+                    borderBottomWidth: onTouchBorderWidth2,
                     borderBottomColor: Colors.primaryLigth,
                   }}
                   onPress={() => onTouchLogin()}
-                  onFocus={() => setOnTouchBorderWidth3(0)}>
+                  onFocus={() => setOnTouchBorderWidth2(0)}>
                   <Text
                     style={{
                       color: 'black',
@@ -883,7 +911,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                   {
                     translateX: spinValue.interpolate({
                       inputRange: [0, 1],
-                      outputRange: [0, widthPercentageToDP(-10.4)],
+                      outputRange: [0, widthPercentageToDP(-10.5)],
                     }),
                   },
                 ],
@@ -914,7 +942,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                     {
                       translateX: transitionSpinValue.interpolate({
                         inputRange: [0, 1],
-                        outputRange: [0, widthPercentageToDP(-10.4)],
+                        outputRange: [0, widthPercentageToDP(-10.5)],
                       }),
                     },
                   ],
@@ -1136,6 +1164,17 @@ export const LoginScreen = ({navigation, route}: Props) => {
             size={RFPercentage(8)}
             color={Colors.semanticWarningDark}
             label="No se pudo registrar, compruebe que el correo exista e intentelo de nuevo"
+            helper={false}
+          />
+          <PoliciesModal
+            visible={policiesModal}
+            hideModal={hideModalPolicies}
+            onPress={() => {
+              onRegister(), hideModalPolicies();
+            }}
+            size={RFPercentage(8)}
+            color={Colors.semanticWarningDark}
+            label=""
             helper={false}
           />
         </ScrollView>

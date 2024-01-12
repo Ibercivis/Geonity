@@ -55,13 +55,14 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import NotCreated from '../../../assets/icons/profile/No hay creados.svg';
 import Geonity from '../../../assets/icons/general/Geonity-Tittle.svg';
 import {CustomButton} from '../../utility/CustomButton';
+import {InfoModal, InfoModalGuest} from '../../utility/Modals';
 
 interface Props extends StackScreenProps<any, any> {}
 
 export const Home = ({navigation}: Props) => {
   //#region Variables/const
 
-  const {isGuest} = useContext(AuthContext)
+  const {isGuest} = useContext(AuthContext);
 
   let notchHeight = 0;
   const insets = useSafeAreaInsets();
@@ -101,6 +102,7 @@ export const Home = ({navigation}: Props) => {
     useContext(AuthContext);
 
   const [menuVisible, setMenuVisible] = useState(false);
+  const [guestModal, setGuestModal] = useState(false);
 
   const mostrarMenu = () => {
     setMenuVisible(true);
@@ -108,6 +110,14 @@ export const Home = ({navigation}: Props) => {
 
   const ocultarMenu = () => {
     setMenuVisible(false);
+  };
+
+  const showGuestModal = () => {
+    setGuestModal(true);
+  };
+
+  const hideGuestModal = () => {
+    setGuestModal(false);
   };
 
   //#endregion
@@ -295,29 +305,31 @@ export const Home = ({navigation}: Props) => {
   };
 
   const categoryListApi = async () => {
-    // let token;
-
-    // while (!token) {
-    //   token = await AsyncStorage.getItem('token');
-    // }
+    let token;
+    if (!isGuest) {
+      while (!token) {
+        token = await AsyncStorage.getItem('token');
+      }
+    }
 
     let retries = 0;
     let success = false;
 
     try {
-      const resp = await citmapApi.get<Topic[]>('/project/topics/'
-      // , {
-      //   headers: {
-      //     Authorization: token,
-      //   },
-      // }
+      const resp = await citmapApi.get<Topic[]>(
+        '/project/topics/',
+         {
+          headers: {
+            Authorization: token,
+          },
+        }
       );
       //TODO ORDENAR
       setCategoryList(resp.data);
 
       success = true;
       projectListApi();
-    } catch (err:any) {
+    } catch (err: any) {
       console.log(err.response.data);
       setErrorMessage(err);
       retries++;
@@ -336,44 +348,46 @@ export const Home = ({navigation}: Props) => {
   };
 
   const projectListApi = async () => {
-    // let token;
+    let token;
+    if (!isGuest) {
+      while (!token) {
+        token = await AsyncStorage.getItem('token');
+      }
+    }
 
-    // while (!token) {
-    //   token = await AsyncStorage.getItem('token');
-    // }
     try {
-      const resp = await citmapApi.get<ShowProject[]>('/project/'
-      // , {
-      //   headers: {
-      //     Authorization: token,
-      //   },
-      // }
-      );
+      const resp = await citmapApi.get<ShowProject[]>('/project/', {
+        headers: {
+          Authorization: token,
+        },
+      });
 
       setNewProjectList(resp.data);
       chunkArray(resp.data, NUM_SLICE_NEW_PROJECT_LIST);
       // setLoading(false);
       organizationListApi();
       // console.log(JSON.stringify(resp.data, null, 2))
-    } catch (err:any) {
+    } catch (err: any) {
       console.log(err.response.data);
     } finally {
     }
   };
 
   const organizationListApi = async () => {
-    // let token;
-
-    // while (!token) {
-    //   token = await AsyncStorage.getItem('token');
-    // }
+    let token;
+    if (!isGuest) {
+      while (!token) {
+        token = await AsyncStorage.getItem('token');
+      }
+    }
     try {
-      const resp = await citmapApi.get<Organization[]>('/organization/'
-      // , {
-      //   headers: {
-      //     Authorization: token,
-      //   },
-      // }
+      const resp = await citmapApi.get<Organization[]>(
+        '/organization/'
+        , {
+          headers: {
+            Authorization: token,
+          },
+        }
       );
       setOrganizationList(resp.data);
       setLoading(false);
@@ -450,6 +464,21 @@ export const Home = ({navigation}: Props) => {
   };
 
   //#endregion
+
+  const toastInfoGuest = () => {
+    // Toast.show({
+    //   type: 'info',
+    //   text1: 'Registrate para disfrutar de la app al máximo.',
+    //   // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+    //   // text2: errMessage,
+    // });
+    showGuestModal();
+  };
+
+  const toLogginIfGuest = () => {
+    hideGuestModal();
+    signOut();
+  };
 
   //#endregion
 
@@ -736,9 +765,14 @@ export const Home = ({navigation}: Props) => {
                                     type="newProjectsPlus"
                                     categoryImage={index}
                                     onPress={() => {
-                                      navigation.navigate('ProjectList', {
-                                        title: 'Nuevos proyectos',
-                                      });
+                                      if (!isGuest) {
+                                        navigation.navigate('ProjectList', {
+                                          title: 'Nuevos proyectos',
+                                        });
+                                      } else {
+                                        toastInfoGuest();
+                                        // signOut();
+                                      }
                                     }}
                                   />
                                 </View>
@@ -762,7 +796,14 @@ export const Home = ({navigation}: Props) => {
                                     }
                                     categoryImage={index}
                                     title={item.name}
-                                    onPress={() => onProjectPress(item.id)}
+                                    onPress={() => {
+                                      if (!isGuest) {
+                                        onProjectPress(item.id);
+                                      } else {
+                                        toastInfoGuest();
+                                        // signOut();
+                                      }
+                                    }}
                                   />
                                 </View>
                               );
@@ -843,9 +884,14 @@ export const Home = ({navigation}: Props) => {
                                       : ''
                                   }
                                   onPress={() => {
-                                    navigation.navigate('ProjectList', {
-                                      title: 'Proyectos destacados',
-                                    });
+                                    if (!isGuest) {
+                                      navigation.navigate('ProjectList', {
+                                        title: 'Proyectos destacados',
+                                      });
+                                    } else {
+                                      toastInfoGuest();
+                                      // signOut();
+                                    }
                                   }}
                                 />
                               </View>
@@ -869,7 +915,12 @@ export const Home = ({navigation}: Props) => {
                                       : ''
                                   }
                                   onPress={() => {
-                                    onProjectPress(item.id);
+                                    if (!isGuest) {
+                                      onProjectPress(item.id);
+                                    } else {
+                                      toastInfoGuest();
+                                      // signOut();
+                                    }
                                   }}
                                   contribution={item.contributions}
                                   title={item.name}
@@ -958,9 +1009,14 @@ export const Home = ({navigation}: Props) => {
                                   type="interestingPlus"
                                   categoryImage={index}
                                   onPress={() => {
-                                    navigation.navigate('ProjectList', {
-                                      title: 'Te puede interesar...',
-                                    });
+                                    if (!isGuest) {
+                                      navigation.navigate('ProjectList', {
+                                        title: 'Te puede interesar...',
+                                      });
+                                    } else {
+                                      toastInfoGuest();
+                                      // signOut();
+                                    }
                                   }}
                                 />
                               </View>
@@ -979,7 +1035,12 @@ export const Home = ({navigation}: Props) => {
                                   type="interesting"
                                   categoryImage={index}
                                   onPress={() => {
-                                    onProjectPress(x.id);
+                                    if (!isGuest) {
+                                      onProjectPress(x.id);
+                                    } else {
+                                      toastInfoGuest();
+                                      // signOut();
+                                    }
                                   }}
                                   cover={
                                     x.cover && x.cover[0]
@@ -1063,9 +1124,14 @@ export const Home = ({navigation}: Props) => {
                                   key={index}
                                   type="organizationPlus"
                                   categoryImage={index}
-                                  onPress={() =>
-                                    navigation.navigate('OrganizationList')
-                                  }
+                                  onPress={() => {
+                                    if (!isGuest) {
+                                      navigation.navigate('OrganizationList');
+                                    } else {
+                                      toastInfoGuest();
+                                      // signOut();
+                                    }
+                                  }}
                                 />
                               </View>
                             );
@@ -1085,11 +1151,16 @@ export const Home = ({navigation}: Props) => {
                                   cover={x.logo ? x.logo : ''}
                                   title={x.principalName}
                                   description={x.description}
-                                  onPress={() =>
-                                    navigation.navigate('OrganizationPage', {
-                                      id: x.id,
-                                    })
-                                  }
+                                  onPress={() => {
+                                    if (!isGuest) {
+                                      navigation.navigate('OrganizationPage', {
+                                        id: x.id,
+                                      });
+                                    } else {
+                                      toastInfoGuest();
+                                      // signOut();
+                                    }
+                                  }}
                                 />
                               </View>
                             );
@@ -1299,6 +1370,7 @@ export const Home = ({navigation}: Props) => {
               </View>
             </View>
           )}
+
           <Spinner visible={loading} />
           <Toast />
           <Modal
@@ -1350,6 +1422,14 @@ export const Home = ({navigation}: Props) => {
               </View>
             </TouchableWithoutFeedback>
           </Modal>
+          <View>
+            <InfoModalGuest
+              hideModal={hideGuestModal}
+              visible={guestModal}
+              onPress={toLogginIfGuest}
+              label="Registrate para disfrutar de la app al máximo."
+            />
+          </View>
         </SafeAreaView>
       </KeyboardAvoidingView>
     </>

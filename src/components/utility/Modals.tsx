@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   ScrollView,
+  Linking,
 } from 'react-native';
 import {Button, Divider, List, Portal, Provider} from 'react-native-paper';
 import Animales from '../../assets/icons/category/Animales.svg';
@@ -29,6 +30,7 @@ interface Props {
   subLabel?: string;
   subLabel2?: string;
   onPress?: () => void;
+  onPress2?: () => void;
   visible: boolean;
   helper?: boolean;
   hideModal: () => void;
@@ -574,7 +576,7 @@ export const InfoModal = ({
                 style={{
                   ...styles.modalContent,
                   alignItems: 'center',
-                  height: '46%',
+                  height: 'auto',
                   width: '75%',
                   // justifyContent: 'center',
                   // paddingHorizontal: '11%',
@@ -583,7 +585,7 @@ export const InfoModal = ({
                   style={{
                     flexDirection: 'row',
                     width: '100%',
-                    height: '20%',
+                    height:  heightPercentageToDP(10),
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
@@ -743,6 +745,93 @@ export const InfoModalMap = ({
                     Aceptar
                   </Text>
                 </TouchableOpacity>
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
+      </Portal>
+    </Provider>
+  );
+};
+
+export const InfoModalGuest = ({
+  onPress,
+  visible,
+  hideModal,
+  label,
+  subLabel,
+  subLabel2,
+  icon,
+  size,
+  color,
+  helper = true,
+}: Props) => {
+  return (
+    <Provider>
+      <Portal>
+        <Modal visible={visible} transparent>
+          <TouchableWithoutFeedback onPress={hideModal}>
+            <View style={{...styles.modalContainer}}>
+              <View
+                style={{
+                  ...styles.modalContent,
+                  alignItems: 'center',
+                  height:'auto',
+                  width: '75%',
+                  // justifyContent: 'center',
+                  // paddingHorizontal: '11%',
+                }}>
+                <View
+                  style={{
+                    // flexDirection: 'row',
+                    width: '100%',
+                    height: heightPercentageToDP(10),
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  
+                  <View style={{width: '80%'}}>
+                    <Text
+                      style={{
+                        color: Colors.semanticInfoLight,
+                        textAlign: 'center',
+                        fontSize: FontSize.fontSizeText17,
+                        justifyContent: 'center'
+                      }}>
+                      {label}
+                    </Text>
+                  </View>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'column',
+                    width: '95%',
+                    // height: 'auto',
+                    alignItems: 'center',
+                    // justifyContent: 'flex-start',
+                  }}>
+                  <TouchableOpacity
+                    activeOpacity={0.9}
+                    style={{
+                      backgroundColor: 'transparent',
+                      marginTop: '5%',
+                      borderWidth: 1,
+                      borderRadius: 10,
+                      paddingHorizontal: RFPercentage(3),
+                      paddingVertical: RFPercentage(1),
+                    }}
+                    onPress={onPress}>
+                    <Text
+                      style={{
+                        color: 'black',
+                        fontSize: FontSize.fontSizeText13,
+                        justifyContent: 'center',
+                        fontFamily: FontFamily.NotoSansDisplayRegular,
+                      }}>
+                      Iniciar sesión
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           </TouchableWithoutFeedback>
@@ -936,6 +1025,211 @@ export const DeleteModal = ({
                     style={{...styles.button,}}
                     onPress={() => hideModal()}>
                     <Text style={styles.textButton}>Cancelar</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
+      </Portal>
+    </Provider>
+  );
+};
+
+export const PoliciesModal = ({
+  onPress,
+  onPress2,
+  visible,
+  hideModal,
+  label,
+  subLabel,
+  icon,
+  size,
+  color,
+  helper = true,
+}: Props) => {
+  const handleLinkPress = () => {
+    const url = 'https://ibercivis.es/politica-de-privacidad/'; // Reemplaza con tu URL real
+    Linking.openURL(url);
+  };
+  return (
+    <Provider>
+      <Portal>
+        <Modal visible={visible} transparent>
+          <TouchableWithoutFeedback>
+            <View style={{...styles.modalContainer}}>
+              <View
+                style={{
+                  ...styles.modalContent,
+                  // alignItems: 'center',
+                  // height: '80%',
+                  width: '90%',
+                  justifyContent: 'center',
+                  paddingHorizontal: '7%',
+                }}>
+                <Text
+                  style={{
+                    textAlign: 'left',
+                    fontSize: FontSize.fontSizeText18,
+                    color: Colors.textColorPrimary,
+                    fontFamily: FontFamily.NotoSansDisplaySemiBold,
+                  }}>
+                  {'Política de Privacidad'}
+                </Text>
+
+                <ScrollView
+                  style={{
+                    marginTop: '5%',
+                    marginBottom: '1%',
+                    // backgroundColor: 'green',
+                    // height: 'auto',
+                  }}
+                  showsVerticalScrollIndicator={false}>
+                  <Text
+                    style={{
+                      fontSize: FontSize.fontSizeText15,
+                      color: Colors.textColorPrimary,
+                      fontFamily: FontFamily.NotoSansDisplayRegular,
+                      marginBottom: '1%',
+                      marginTop: '2%',
+                      // fontWeight: '600',
+                      textAlign: 'left',
+                    }}>
+                    {
+                      'Al registrarse en Geonity, usted acepta que la Fundación Ibercivis recopile y procese su información personal de acuerdo con nuestra Política de Privacidad.'
+                    }
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: FontSize.fontSizeText15,
+                      color: Colors.textColorPrimary,
+                      fontFamily: FontFamily.NotoSansDisplayRegular,
+                      marginBottom: '1%',
+                      marginTop: '1%',
+                      // fontWeight: '600',
+                      textAlign: 'left',
+                    }}>
+                    {
+                      'Nos comprometemos a proteger su privacidad y a usar su información exclusivamente para mejorar su experiencia con la aplicación y para proporcionarle los servicios solicitados.'
+                    }
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: FontSize.fontSizeText15,
+                      color: Colors.textColorPrimary,
+                      fontFamily: FontFamily.NotoSansDisplayRegular,
+                      marginBottom: '1%',
+                      marginTop: '1%',
+                      // fontWeight: '600',
+                      textAlign: 'left',
+                    }}>
+                    {
+                      'No compartiremos su información personal con terceros sin su consentimiento explícito, excepto cuando sea requerido por ley.'
+                    }
+                  </Text>
+                  <View>
+                    <Text
+                      style={{
+                        fontSize: FontSize.fontSizeText15,
+                        color: Colors.textColorPrimary,
+                        fontFamily: FontFamily.NotoSansDisplayRegular,
+                        marginBottom: '1%',
+                        marginTop: '1%',
+                        // fontWeight: '600',
+                        textAlign: 'left',
+                      }}>
+                      {
+                        'Para más información sobre cómo recopilamos, usamos y protegemos su información, por favor, consulte nuestra Política de Privacidad completa en '
+                      }
+                      <Text
+                        onPress={handleLinkPress}
+                        style={{
+                          textDecorationLine: 'underline',
+                          color: Colors.semanticInfoLight,
+                        }}>
+                        {'https://ibercivis.es/politica-de-privacidad/'}
+                      </Text>
+                      .
+                    </Text>
+                    {/* <TouchableOpacity onPress={handleLinkPress}>
+                      <Text
+                        style={{
+                          fontSize: FontSize.fontSizeText15,
+                          color: Colors.semanticInfoLight,
+                          fontFamily: FontFamily.NotoSansDisplayRegular,
+                          marginBottom: '1%',
+                          marginTop: '1%',
+                          // fontWeight: '600',
+                          textAlign: 'left',
+                          textDecorationLine: 'underline',
+                        }}>
+                        {'https://ibercivis.es/politica-de-privacidad/'}
+                      </Text>
+                    </TouchableOpacity> */}
+                  </View>
+                </ScrollView>
+
+                <View
+                  style={{
+                    // width: RFPercentage(42),
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginTop: '7%',
+                    // backgroundColor: 'red',
+                    // justifyContent: 'space-between',
+                  }}>
+                  {/* <Checkbox
+                    uncheckedColor={'#838383'}
+                    color={Colors.primaryLigth}
+                    status={helper ? 'checked' : 'unchecked'}
+                    onPress={onPress2}
+                  /> */}
+                  <Text
+                    style={{
+                      color: Colors.semanticInfoLight,
+                      fontSize: FontSize.fontSizeText14,
+                      fontFamily: FontFamily.NotoSansDisplayLight,
+                    }}>
+                    {
+                      'Al pulsar el botón de “Aceptar”, usted confirma que ha leído y entendido nuestra Política de Privacidad y da su consentimiento para el tratamiento de sus datos personales según se describe.'
+                    }
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    marginTop: '10%',
+                    // width: '100%',
+                  }}>
+                  <TouchableOpacity
+                    activeOpacity={0.9}
+                    style={{
+                      ...styles.button,
+                      minWidth: widthPercentageToDP(10),
+                      width: widthPercentageToDP(25),
+                      marginHorizontal: '4%',
+                    }}
+                    onPress={() => hideModal()}>
+                    <Text style={styles.textButton}>Cancelar</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    activeOpacity={0.9}
+                    style={{
+                      ...styles.button,
+                      minWidth: widthPercentageToDP(10),
+                      width: widthPercentageToDP(25),
+                      marginHorizontal: '4%',
+                      backgroundColor: Colors.primaryLigth,
+                    }}
+                    onPress={onPress}>
+                    <Text
+                      style={{
+                        ...styles.textButton,
+                        color: 'white',
+                      }}>
+                      Aceptar
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>

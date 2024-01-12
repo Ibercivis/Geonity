@@ -30,10 +30,9 @@ import {
   User,
   CreateFieldForm,
   ShowProject,
-  OrganizationWrite,
 } from '../../../interfaces/interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import citmapApi from '../../../api/citmapApi';
+import citmapApi, { imageUrl } from '../../../api/citmapApi';
 import {Checkbox, IconButton, Switch} from 'react-native-paper';
 import Hashtag from '../../../assets/icons/general/Hashtag.svg';
 import {FontFamily, FontSize} from '../../../theme/fonts';
@@ -44,6 +43,7 @@ import PlusSquare from '../../../assets/icons/general/plus-square.svg';
 import FrontPage from '../../../assets/icons/project/image.svg';
 import PlusImg from '../../../assets/icons/general/Plus-img.svg';
 import PlusBlue from '../../../assets/icons/project/plus-circle-blue.svg';
+import UserMissing from '../../../assets/icons/profile/User-image.svg';
 import Delete from '../../../assets/icons/project/trash.svg';
 import {QuestionCard} from '../../utility/QuestionCard';
 import {IconTemp} from '../../IconTemp';
@@ -204,14 +204,15 @@ export const CreateProject = ({navigation, route}: Props) => {
    * está puesto aquí para que entre solo cuando la organizationList haya cargado
    */
   useEffect(() => {
-    if (organizationList.length > 0) {
+    console.log('entra para decir que está editando')
       if (route.params) {
         if (route.params.id) {
+          
           setIsEdit(true);
           getProjectApi();
         }
       } else setWaitingData(false);
-    }
+    
   }, [organizationList]);
 
   useEffect(() => {
@@ -324,7 +325,7 @@ export const CreateProject = ({navigation, route}: Props) => {
         },
       });
       setCategoryList(resp.data);
-      resp.data.map((x: Topic) => {
+      resp.data.map(x => {
         if (userCategories.includes(x)) {
           setUserCategories(
             userCategories.filter(selectedItem => selectedItem !== x),
@@ -398,7 +399,7 @@ export const CreateProject = ({navigation, route}: Props) => {
 
       // form.organizations_write = resp.data.organizations_write;
       if (resp.data.organizations.length > 0) {
-        resp.data.organizations.forEach((id: OrganizationWrite) => {
+        resp.data.organizations.forEach(id => {
           const sugg = organizationList.find(x => x.id === id.id);
           if (
             sugg &&
@@ -414,7 +415,7 @@ export const CreateProject = ({navigation, route}: Props) => {
           Authorization: token,
         },
       });
-      const fieldform = dataField.data.find((x: FieldForm) => x.project === route.params.id);
+      const fieldform = dataField.data.find(x => x.project === route.params.id);
       console.log(JSON.stringify(dataField.data, null, 2));
       console.log(route.params.id);
       if (fieldform) {
@@ -1138,7 +1139,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                 {images[0] ? (
                   <Image
                     source={{
-                      uri: 'data:image/jpeg;base64,' + images[0].data,
+                      uri:'data:image/jpeg;base64,' + images[0].data,
                     }}
                     style={{
                       position: 'absolute',
@@ -1323,7 +1324,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                     <Image
                       source={{
                         uri:
-                          'http://dev.ibercivis.es:10001' +
+                          imageUrl+
                           imagesCharged[0].image,
                       }}
                       style={{
@@ -1584,7 +1585,7 @@ export const CreateProject = ({navigation, route}: Props) => {
               marginVertical: RFPercentage(1),
             }}>
             <Text style={{color: 'black'}}>Añadir categorías al proyecto</Text>
-            <View style={{width: RFPercentage(41)}}>
+            <View style={{width: widthPercentageToDP(85)}}>
               <CustomButton
                 backgroundColor={Colors.secondaryDark}
                 label={'Seleccionar categorías'}
@@ -1659,11 +1660,11 @@ export const CreateProject = ({navigation, route}: Props) => {
             </Text>
             <View
               style={{
-                width: RFPercentage(41),
+                width: '100%',
                 marginBottom: RFPercentage(4),
               }}>
               <TextInput
-                placeholder="Search..."
+                placeholder="Buscar organizaciones..."
                 value={inputValueOrganization}
                 onChangeText={value => handleInputChangeOrganization(value)}
                 style={styles.input}
@@ -1715,19 +1716,40 @@ export const CreateProject = ({navigation, route}: Props) => {
                 suggestionsSelected.map((item, index) => (
                   <View
                     style={{
-                      width: RFPercentage(41),
+                      width: '100%',
                       marginVertical: '4%',
                       flexDirection: 'row',
                     }}
                     key={index + 1}>
                     {/* sustituir por avatar */}
-                    <View
-                      style={{
-                        backgroundColor: 'red',
-                        width: '10%',
-                        marginRight: '5%',
-                        borderRadius: 50,
-                      }}></View>
+                    {item.logo ? (
+                              <Image
+                                source={{
+                                  uri: item.logo,
+                                }}
+                                style={{
+                                  width: '12%',
+                                  height: '100%',
+                                  borderRadius: 50,
+                                  resizeMode: 'cover',
+                                  backgroundColor: 'blue',
+                                  marginRight: '2%',
+                                }}
+                              />
+                            ) : (
+                              <View
+                                style={{
+                                  width: '12%',
+                                  height: '100%',
+                                  borderRadius: 100,
+                                  marginRight: '2%',
+                                  alignContent:'center',
+                                  alignItems:'center',
+                                  marginTop:'1.3%'
+                                }}>
+                                <UserMissing height={RFPercentage(3.8)} width={RFPercentage(3.8)} />
+                              </View>
+                            )}
                     {/* sustituir texto de abajo por el que sea */}
                     <View
                       style={{
@@ -2523,8 +2545,8 @@ const styles = StyleSheet.create({
   input: {
     fontSize: FontSize.fontSizeText13,
     // marginBottom: 10,
-    width: RFPercentage(41),
-    height: RFPercentage(4.5),
+    width: widthPercentageToDP(85),
+    height: widthPercentageToDP(9),
     borderColor: 'grey',
     borderWidth: 1,
     borderRadius: 10,

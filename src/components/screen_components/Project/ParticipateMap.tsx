@@ -162,7 +162,9 @@ export const ParticipateMap = ({navigation, route}: Props) => {
    * lista de observations que van filtradas por el fieldform asociado
    */
   const [observationList, setObservationList] = useState<Observation[]>([]);
-  const [observationListcopy, setObservationListcopy] = useState<Observation[]>([]);
+  const [observationListcopy, setObservationListcopy] = useState<Observation[]>(
+    [],
+  );
 
   /**
    * esta lista estará compuesta de los marcadores que crea el usuario
@@ -306,10 +308,6 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     if (!waitingData) {
       setChargedData(true);
     }
-    if(observationList.length > 0){
-      console.log('------------------------------------*************************-------------------------------')
-      console.log(JSON.stringify(observationList, null, 2))
-    }
   }, [observationList]);
 
   //#endregion
@@ -383,7 +381,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
         await setWaitingData(false);
       }
       setObservationList(newDataParse);
-      setObservationListcopy(newDataParse)
+      setObservationListcopy(newDataParse);
     } catch {}
   };
 
@@ -975,10 +973,10 @@ export const ParticipateMap = ({navigation, route}: Props) => {
    * Centra la camara a la posición del usuario. Para eso, hace una llamada al useLocation para rescatar las actuales coordenadas del usuario.
    */
   const centerPosition = async () => {
-    const location = await getCurrentLocation();
+    // const location = await getCurrentLocation();
     // setFollowUser(true);
     // followView.current = true;
-    const posi: Position = [location.longitude, location.latitude];
+    const posi: Position = [userLocation.longitude, userLocation.latitude];
     cameraRef.current?.flyTo(posi, 200);
     // followView.current = false;
     cameraRef.current?.setCamera({
@@ -989,11 +987,16 @@ export const ParticipateMap = ({navigation, route}: Props) => {
   //#endregion
 
   //#region UPDATE MAP
-  const [mapUpdateFlag, setMapUpdateFlag] = useState(false);
+  const [mapUpdateFlag, setMapUpdateFlag] = useState(true);
   // Ejemplo de cómo actualizar el estado cuando ocurra algún evento
   const updateMap = () => {
     // Realiza las operaciones necesarias...
-    setMapUpdateFlag(prevFlag => !prevFlag); // Cambia el estado para forzar la actualización
+    // setMapUpdateFlag(prevFlag => !prevFlag); // Cambia el estado para forzar la actualización
+    // setObservationList([])
+    // setObservationList(observationListcopy)
+    // getProjectApi()
+    mapViewRef.current?.forceUpdate();
+    console.log('entra en el touch end para hacer force update');
   };
 
   //#endregion
@@ -1039,7 +1042,11 @@ export const ParticipateMap = ({navigation, route}: Props) => {
       {chargedData ? (
         <>
           {showMap ? (
-            <View style={{flex: 1}}>
+            <View
+              style={{flex: 1}}
+              onTouchEnd={() => {
+                updateMap();
+              }}>
               <MapView
                 ref={element => (mapViewRef.current = element!)}
                 key={mapUpdateFlag ? 'mapUpdate' : 'mapNoUpdate'}
@@ -1048,13 +1055,13 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                 scaleBarEnabled={false}
                 compassEnabled={false}
                 collapsable={true}
-                onTouchStart={() => (
-                  setSelectedObservation(clearSelectedObservation())
-                )}
+                onTouchStart={() => {
+                  setSelectedObservation(clearSelectedObservation());
+                  // if (!mapUpdateFlag) setMapUpdateFlag(true);
+                }}
                 onLongPress={data => {
                   addMarkLongPress(data);
-                }}
-                >
+                }}>
                 <Camera
                   ref={reference => (cameraRef.current = reference!)}
                   zoomLevel={15}
@@ -1068,17 +1075,21 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                   allowUpdates={true}
                 />
                 <Mapbox.UserLocation visible animated />
-                {observationList.length > 0 &&
-                  observationList.map((x, index) => {
-                    if (x.geoposition.point) {
-                      if (selectedObservation.id !== x.id) {
-                        return (
-                          <View key={index}>
+
+                <>
+                  {observationList.length > 0 &&
+                    observationList.map((x, index) => {
+                      if (x.geoposition.point) {
+                        if (selectedObservation.id !== x.id) {
+                          return (
+                            // <View key={index}>
                             <MarkerView
+                              key={index}
                               coordinate={[
                                 x.geoposition.point.latitude,
                                 x.geoposition.point.longitude,
-                              ]}>
+                              ]}
+                              allowOverlapWithPuck={true}>
                               {/* sustituir esto por una imagen */}
                               <TouchableOpacity
                                 // style={{backgroundColor: 'cyan'}}
@@ -1086,7 +1097,8 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                                 onPress={() => {
                                   setSelectedObservation(x);
                                   setShowSelectedObservation(x);
-                                  setObservationListcopy(observationList)
+                                  // setMapUpdateFlag(false);
+                                  // updateMap();
                                   // console.log('aprieta la marca')
                                 }}>
                                 <View
@@ -1104,15 +1116,17 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                                 </View>
                               </TouchableOpacity>
                             </MarkerView>
-                          </View>
-                        );
+                            // </View>
+                          );
+                        } else {
+                          return <View key={index}></View>;
+                        }
                       } else {
                         return <View key={index}></View>;
                       }
-                    } else {
-                      return <View key={index}></View>;
-                    }
-                  })}
+                    })}
+                </>
+
                 {observationListCreator.length > 0 &&
                   observationListCreator.map((x, index) => {
                     if (x.geoposition) {

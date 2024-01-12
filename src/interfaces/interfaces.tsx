@@ -117,9 +117,15 @@ export interface UserProfile {
     visibility:            boolean;
     country:               Country;
     cover?:                string;
+    created_organizations?: CreatedOrganizationsUserProfile[];
     participated_projects: CreatedProject[];
     created_projects:      CreatedProject[];
     liked_projects:        CreatedProject[];
+}
+
+export interface CreatedOrganizationsUserProfile{
+    id: number;
+    principalName: string;
 }
 
 export interface Country {
