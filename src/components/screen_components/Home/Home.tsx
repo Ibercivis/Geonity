@@ -563,7 +563,9 @@ export const Home = ({navigation}: Props) => {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Ajusta la vista por encima del teclado
       >
         <SafeAreaView style={{flexGrow: 1, backgroundColor: 'white'}}>
-          <View style={{flex: 1}} onTouchEnd={onClickExit}>
+          <View style={{flex: 1}} onTouchEnd={() => {
+              onClickExit();
+            }}>
             {/* titulo */}
             <View style={{...HomeStyles.titleView}}>
               {/* <Text style={HomeStyles.title}>Geonity</Text> */}
@@ -607,7 +609,9 @@ export const Home = ({navigation}: Props) => {
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
               }
               style={HomeStyles.scrollParent}
-              onTouchEnd={onClickExit}
+              onTouchEnd={() => {
+                onClickExit();
+              }}
               nestedScrollEnabled={true}
               // contentContainerStyle={{flexGrow: 1}}
               contentContainerStyle={{paddingBottom: '20%'}}
@@ -1427,7 +1431,8 @@ export const Home = ({navigation}: Props) => {
               hideModal={hideGuestModal}
               visible={guestModal}
               onPress={toLogginIfGuest}
-              label="Registrate para disfrutar de la app al máximo."
+              label="¡Únete a Geonity ahora!"
+              subLabel='Registrate o inicia sesión para poder participar en los proyectos y aprovechar al máximo todas las funcionalidades disponibles'
             />
           </View>
         </SafeAreaView>

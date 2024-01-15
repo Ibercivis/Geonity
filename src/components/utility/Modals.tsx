@@ -23,7 +23,10 @@ import {FontSize, FontWeight, FontFamily} from '../../theme/fonts';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 import {Colors} from '../../theme/colors';
 import {InputText} from './InputText';
-import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen';
+import {
+  heightPercentageToDP,
+  widthPercentageToDP,
+} from 'react-native-responsive-screen';
 
 interface Props {
   label?: string;
@@ -585,7 +588,7 @@ export const InfoModal = ({
                   style={{
                     flexDirection: 'row',
                     width: '100%',
-                    height:  heightPercentageToDP(10),
+                    height: heightPercentageToDP(10),
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
@@ -776,7 +779,7 @@ export const InfoModalGuest = ({
                 style={{
                   ...styles.modalContent,
                   alignItems: 'center',
-                  height:'auto',
+                  height: 'auto',
                   width: '75%',
                   // justifyContent: 'center',
                   // paddingHorizontal: '11%',
@@ -789,14 +792,13 @@ export const InfoModalGuest = ({
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
-                  
                   <View style={{width: '80%'}}>
                     <Text
                       style={{
                         color: Colors.semanticInfoLight,
                         textAlign: 'center',
                         fontSize: FontSize.fontSizeText17,
-                        justifyContent: 'center'
+                        justifyContent: 'center',
                       }}>
                       {label}
                     </Text>
@@ -810,20 +812,26 @@ export const InfoModalGuest = ({
                     alignItems: 'center',
                     // justifyContent: 'flex-start',
                   }}>
+                  <View style={{width: '80%'}}>
+                    <Text style={{marginTop: '1%', marginBottom: '15%', color:'black', fontSize: FontSize.fontSizeText14,}}>
+                      {subLabel}
+                    </Text>
+                  </View>
+
                   <TouchableOpacity
                     activeOpacity={0.9}
                     style={{
-                      backgroundColor: 'transparent',
+                      backgroundColor: Colors.primaryLigth,
                       marginTop: '5%',
-                      borderWidth: 1,
-                      borderRadius: 10,
+                      // borderWidth: 1,
+                      borderRadius: 12,
                       paddingHorizontal: RFPercentage(3),
                       paddingVertical: RFPercentage(1),
                     }}
                     onPress={onPress}>
                     <Text
                       style={{
-                        color: 'black',
+                        color: 'white',
                         fontSize: FontSize.fontSizeText13,
                         justifyContent: 'center',
                         fontFamily: FontFamily.NotoSansDisplayRegular,
@@ -1012,17 +1020,23 @@ export const DeleteModal = ({
                     flexDirection: 'column',
                     justifyContent: 'space-between',
                     marginTop: '5%',
-                    width:'100%'
+                    width: '100%',
                   }}>
                   <TouchableOpacity
                     activeOpacity={0.9}
-                    style={{...styles.button,}}
+                    style={{...styles.button}}
                     onPress={onPress}>
-                    <Text style={{...styles.textButton, color: Colors.semanticDangerLight}}>Borrar</Text>
+                    <Text
+                      style={{
+                        ...styles.textButton,
+                        color: Colors.semanticDangerLight,
+                      }}>
+                      Borrar
+                    </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     activeOpacity={0.9}
-                    style={{...styles.button,}}
+                    style={{...styles.button}}
                     onPress={() => hideModal()}>
                     <Text style={styles.textButton}>Cancelar</Text>
                   </TouchableOpacity>
@@ -1276,7 +1290,7 @@ const styles = StyleSheet.create({
     marginBottom: RFPercentage(2),
     backgroundColor: 'white',
     padding: RFPercentage(1),
-    borderRadius:10,
+    borderRadius: 10,
     paddingVertical: '5%',
     shadowColor: '#000',
     shadowOffset: {
@@ -1287,9 +1301,9 @@ const styles = StyleSheet.create({
     shadowRadius: 1.41,
     elevation: 2,
   },
-  textButton:{
-    textAlign:'center',
-    textAlignVertical:'center',
-    alignSelf: 'center'
-  }
+  textButton: {
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    alignSelf: 'center',
+  },
 });
