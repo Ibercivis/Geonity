@@ -1427,31 +1427,54 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                             }
                             showModal={value => {
                               if (value) {
-                                console.log('la imagen pesa demasiado');
+                                Toast.show({
+                                  type: 'error',
+                                  text1: 'Image',
+                                  // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+                                  text2:
+                                    'La imagen pesa demasiado. Peso máximo, 4MB',
+                                });
                               }
                             }}
                           />
                         </View>
                       );
                     } else {
-                      let image;
+                      let image = undefined;
                       let selectedElement;
+                      let valueToUse = undefined;
+
+                      //mira de que haya imagenes, si es así, las recorre
                       if (showSelectedObservation.images) {
                         image = showSelectedObservation.images.find(
                           img => img.question === x.id,
                         );
                       }
+
+                      //recorre igualmente el formulario para dejar seleccionado el elemento correspondiente
                       if (form.data) {
                         selectedElement = form.data.find(
                           item => item.key === x.id!.toString(),
                         );
-                      }
 
-                      const valueToUse = image
-                        ? image.image
-                        : selectedElement
-                        ? selectedElement.value
-                        : '';
+                        //establece el value para usar en las cards
+                        valueToUse = selectedElement
+                          ? selectedElement.value
+                          : '';
+                      }
+                      /**
+                       * si la imagen está definida significa que el elemento es una imagen, se sobreescribe el valuetouse
+                       * de esta forma, se enviará el tipo imagen
+                       */
+                      if (image !== undefined) {
+                        valueToUse = image ? image.image : undefined;
+                      }
+                      console.log(valueToUse);
+                      // valueToUse = image
+                      //   ? image.image
+                      //   : selectedElement
+                      //   ? selectedElement.value
+                      //   : '';
                       return (
                         <View
                           style={{

@@ -671,7 +671,7 @@ export const InfoModalMap = ({
                 style={{
                   ...styles.modalContent,
                   alignItems: 'center',
-                  height: heightPercentageToDP(50),
+                  // height: heightPercentageToDP(50),
                   width: widthPercentageToDP(75),
                   // justifyContent: 'center',
                   // paddingHorizontal: '11%',
@@ -812,6 +812,7 @@ export const InfoModalGuest = ({
                     alignItems: 'center',
                     // justifyContent: 'flex-start',
                   }}>
+
                   <View style={{width: '80%'}}>
                     <Text style={{marginTop: '1%', marginBottom: '15%', color:'black', fontSize: FontSize.fontSizeText14,}}>
                       {subLabel}

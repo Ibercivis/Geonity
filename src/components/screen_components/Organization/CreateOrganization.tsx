@@ -1016,6 +1016,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                           />
                         </TouchableOpacity>
                         <TouchableOpacity
+                        onPress={() => openPortadaPhoto()}
                           style={{
                             width: RFPercentage(4),
                             position: 'absolute',

@@ -13,6 +13,7 @@
       {
         "title": "Inicio de sesión",
         "mail_input": "Nombre de usuario",
+        "mail_input_recover": "Correo electrónico",
         "password_input": "Contraseña",
         "recovery_password": "¿Has olvidado la ",
         "or_login": "O logear con...",

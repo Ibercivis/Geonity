@@ -103,7 +103,7 @@ export const CardAnswerMap = ({
           })
           .catch(err => {
             setImageBlob({});
-            setImages({});
+            setImages(null);
             showModal(true);
           });
         break;
@@ -118,7 +118,7 @@ export const CardAnswerMap = ({
           includeBase64: true,
         })
           .then(response => {
-            //   console.log(JSON.stringify(response[0].sourceURL));
+              
             if (response && response.data) {
               if (response.size < 4 * 1024 * 1024) {
                 const newImage = response;
@@ -136,8 +136,9 @@ export const CardAnswerMap = ({
             }
           })
           .catch(err => {
+            console.log(`@CameraModal - handleTakeAPhoto: ${err}`)
             setImageBlob({});
-            setImages({});
+            setImages(null);
             showModal(true);
           });
         break;
@@ -172,7 +173,7 @@ export const CardAnswerMap = ({
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
-                  <Text style={{flexWrap: 'wrap', textAlign: 'justify'}}>
+                  <Text style={{flexWrap: 'wrap',}}>
                     {item.question_text}
                   </Text>
                 </View>
@@ -260,7 +261,7 @@ export const CardAnswerMap = ({
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
-                  <Text style={{flexWrap: 'wrap', textAlign: 'justify'}}>
+                  <Text style={{flexWrap: 'wrap',}}>
                     {item.question_text}
                   </Text>
                 </View>
@@ -340,7 +341,7 @@ export const CardAnswerMap = ({
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
-                  <Text style={{flexWrap: 'wrap', textAlign: 'justify'}}>
+                  <Text style={{flexWrap: 'wrap',}}>
                     {item.question_text}
                   </Text>
                 </View>
@@ -390,6 +391,7 @@ export const CardAnswerMap = ({
                         />
                       </TouchableOpacity>
                       <TouchableOpacity
+                      onPress={showModalImageType}
                         style={{
                           width: RFPercentage(4),
                           position: 'absolute',
@@ -462,7 +464,7 @@ export const CardAnswerMap = ({
                         justifyContent: 'center',
                         alignItems: 'center',
                         backgroundColor: images
-                          ? 'transparent'
+                          ? ''
                           : Colors.secondaryBackground,
                         borderRadius: 10,
                         padding: '2%',
@@ -517,6 +519,33 @@ export const CardAnswerMap = ({
                           value !== ''
                             ? {uri: value}
                             : require('../../assets/backgrounds/nuevoproyecto.jpg')
+                        }
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          borderRadius: 10,
+                          // resizeMode: 'cover',
+                        }}
+                      />
+                    </View>
+                  )}
+                  {!value && onlyRead && (
+                    <View
+                      style={{
+                        width: '95%',
+                        // height: '110%',
+                        marginTop: '6%',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        borderRadius: 10,
+                        padding: '2%',
+                        backgroundColor: value ? 'transparent' : 'white',
+                      }}>
+                      <ImageBackground
+                        borderRadius={10}
+                        // source={require(urii)}
+                        source={
+                          require('../../assets/backgrounds/nuevoproyecto.jpg')
                         }
                         style={{
                           width: '100%',
@@ -607,8 +636,8 @@ const styles = StyleSheet.create({
       width: 1,
       height: 1.1,
     },
-    shadowOpacity: 6.2,
-    shadowRadius: 4.41,
+    shadowOpacity: 0.3,
+    shadowRadius: 3.41,
     elevation: 1,
   },
   container: {
