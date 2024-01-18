@@ -32,7 +32,7 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>We need access to your camera.</string>
+	<string>$(PRODUCT_NAME) camera description.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Se necesita saber tu ubicación para mostrar el mapa</string>
 	<key>NSLocationAlwaysUsageDescription</key>

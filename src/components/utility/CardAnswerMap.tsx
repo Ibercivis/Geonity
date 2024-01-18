@@ -23,6 +23,7 @@ import {Colors} from '../../theme/colors';
 import {useDateTime} from '../../hooks/useDateTime';
 import { PermissionsContext } from '../../context/PermissionsContext';
 import Toast from 'react-native-toast-message';
+import { launchCamera } from 'react-native-image-picker';
 
 interface Props {
   //   onChangeText?: (fieldName: string, value: any) => void;
@@ -73,43 +74,10 @@ export const CardAnswerMap = ({
       });
       return;
     }
+    
     switch (type) {
       case 1: //openPicker
         ImagePicker.openPicker({
-          mediaType: 'photo',
-          multiple: false,
-          quality: 1,
-          maxWidth: 300,
-          maxHeight: 300,
-          includeBase64: true,
-        })
-          .then(response => {
-            //   console.log(JSON.stringify(response[0].sourceURL));
-            if (response && response.data) {
-              if (response.size < 4 * 1024 * 1024) {
-                const newImage = response;
-                setImages(newImage);
-                const texto: string = getFormattedDateTime();
-                onChangeText({
-                  uri: newImage.path, // Debes ajustar esto según la estructura de response
-                  type: newImage.mime, // Tipo MIME de la imagen
-                  name: texto + 'cover.jpg', // Nombre de archivo de la imagen (puedes cambiarlo)
-                });
-              } else {
-                showModal(true);
-                setImages(undefined);
-              }
-            }
-          })
-          .catch(err => {
-            setImageBlob({});
-            setImages(null);
-            showModal(true);
-          });
-        break;
-
-      case 2: //openCamera
-        ImagePicker.openCamera({
           mediaType: 'photo',
           multiple: false,
           quality: 1,
@@ -134,17 +102,99 @@ export const CardAnswerMap = ({
                 setImages(undefined);
               }
             }
+            hideModalImageType();
           })
           .catch(err => {
+            hideModalImageType();
+            console.log(`@CameraModal - handleGALLERY: ${err}`)
+            setImageBlob({});
+            setImages(null);
+            showModal(true);
+          });
+          // hideModalImageType();
+        break;
+      case 2:
+        const options = {
+          mediaType: 'photo',
+          includeBase64: false,
+          maxHeight: 2000,
+          maxWidth: 2000,
+        };
+      
+        launchCamera({
+          mediaType: 'photo',
+          includeBase64: true,
+          maxHeight: 2000,
+          maxWidth: 2000,
+        }, response => {
+          if (response.didCancel) {
+            console.log('User cancelled camera');
+            hideModalImageType();
+          } else if (response.errorCode) {
+            console.log('Camera Error: ', response.errorMessage);
+            hideModalImageType();
+          } else {
+            if(response && response.assets){
+              if (response.assets[0].fileSize && response.assets[0].fileSize < 4 * 1024 * 1024 ) {
+              const newImage = response.assets;
+              console.log(JSON.stringify(newImage, null, 2))
+              setImages(newImage);
+              const texto: string = getFormattedDateTime();
+              onChangeText({
+                uri: newImage[0].originalPath, // Debes ajustar esto según la estructura de response
+                type: newImage[0].type, // Tipo MIME de la imagen
+                name: texto + 'cover.jpg', // Nombre de archivo de la imagen (puedes cambiarlo)
+              });
+            } else {
+              showModal(true);
+              setImages(undefined);
+            }
+            hideModalImageType();
+            }
+            
+          }
+        });
+        break;
+      case 3: //openCamera
+        ImagePicker.openCamera({
+          mediaType: 'photo',
+          multiple: false,
+          quality: 1,
+          maxWidth: 300,
+          maxHeight: 300,
+          includeBase64: true,
+        })
+          .then(response => {
+              
+            if (response && response.data) {
+              if (response.size < 4 * 1024 * 1024) {
+                const newImage = response;
+                setImages(newImage);
+                const texto: string = getFormattedDateTime();
+                onChangeText({
+                  uri: newImage.path, // Debes ajustar esto según la estructura de response
+                  type: newImage.mime, // Tipo MIME de la imagen
+                  name: texto + 'cover.jpg', // Nombre de archivo de la imagen (puedes cambiarlo)
+                });
+              } else {
+                showModal(true);
+                setImages(undefined);
+              }
+              hideModalImageType();
+            }
+          })
+          .catch(err => {
+            hideModalImageType();
             console.log(`@CameraModal - handleTakeAPhoto: ${err}`)
             setImageBlob({});
             setImages(null);
             showModal(true);
           });
+          // hideModalImageType();
         break;
     }
 
-    hideModalImageType();
+    
   };
 
   //#region SECCIÓN RENDERS
@@ -437,7 +487,9 @@ export const CardAnswerMap = ({
                       />
 
                       <TouchableOpacity
-                        onPress={showModalImageType}
+                        onPress={() => {
+                          showModalImageType();
+                        }}
                         style={{
                           width: RFPercentage(4),
                           position: 'absolute',
@@ -543,9 +595,10 @@ export const CardAnswerMap = ({
                       }}>
                       <ImageBackground
                         borderRadius={10}
+                        resizeMode='contain'
                         // source={require(urii)}
                         source={
-                          require('../../assets/backgrounds/nuevoproyecto.jpg')
+                          require('../../assets/backgrounds/noimage.jpg')
                         }
                         style={{
                           width: '100%',

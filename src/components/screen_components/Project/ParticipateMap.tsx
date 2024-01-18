@@ -1377,6 +1377,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                                   // text2: 'No se han podido obtener los datos, por favor reinicie la app',
                                   text2:
                                     'La imagen pesa demasiado. Peso máximo, 4MB',
+                                    position: 'bottom'
                                 });
                               }
                             }}
@@ -1432,7 +1433,8 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                                   text1: 'Image',
                                   // text2: 'No se han podido obtener los datos, por favor reinicie la app',
                                   text2:
-                                    'La imagen pesa demasiado. Peso máximo, 4MB',
+                                    'Error al cargar la imagen. Peso máximo, 4MB',
+                                    position: 'top'
                                 });
                               }
                             }}
@@ -1492,7 +1494,14 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                             }
                             showModal={value => {
                               if (value) {
-                                console.log('la imagen pesa demasiado');
+                                Toast.show({
+                                  type: 'error',
+                                  text1: 'Image',
+                                  // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+                                  text2:
+                                    'La imagen pesa demasiado. Peso máximo, 4MB',
+                                    position: 'bottom'
+                                });
                               }
                             }}
                           />

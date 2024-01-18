@@ -35,7 +35,7 @@ import {
   UserInfo,
 } from '../../../interfaces/interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import citmapApi from '../../../api/citmapApi';
+import citmapApi, { imageUrl } from '../../../api/citmapApi';
 import {HasTag, Topic} from '../../../interfaces/appInterfaces';
 import {LoadingScreen} from '../../../screens/LoadingScreen';
 import {PassModal, SaveProyectModal} from '../../utility/Modals';
@@ -49,7 +49,6 @@ import {PermissionsContext} from '../../../context/PermissionsContext';
 import Toast from 'react-native-toast-message';
 import RNFS from 'react-native-fs';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
-import { imageUrl } from '../../../api/citmapApi';
 
 const data = [
   require('../../../assets/backgrounds/login-background.jpg'),
@@ -165,9 +164,9 @@ export const ProjectPage = (props: Props) => {
     try {
       const result = await Share.share({
         message:
-          'https://play.google.com/store/apps/details?id=nic.goi.aarogyasetu&hl=en',
+          'https://play.google.com/store/apps/details?id=com.reactnativeplantilla',
         title: 'Compartir el proyecto con:',
-        url: 'www.google.es',
+        url: 'https://play.google.com/store/apps/details?id=com.reactnativeplantilla',
       });
       console.log(result);
       if (result.action === Share.sharedAction) {
@@ -218,7 +217,6 @@ export const ProjectPage = (props: Props) => {
    * metodo para ir al mapa
    */
   const navigateToMap = () => {
-    
     if (project) {
       if (project.is_private) {
         showModalPass();
@@ -227,7 +225,6 @@ export const ProjectPage = (props: Props) => {
         if (permissions.locationStatus === 'granted') {
           // checkLocationPErmission();
           // props.navigation.navigate("PermissionsScreen")
-          // props.navigation.removeListener
           props.navigation.navigate('ParticipateMap', {id: project.id!});
         } else {
           setHasPermission(false);
@@ -273,7 +270,6 @@ export const ProjectPage = (props: Props) => {
             setIsValidPass(true);
             hideModalPass();
             if (permissions.locationStatus === 'granted') {
-              // props.navigation.removeListener
               props.navigation.dispatch(
                 CommonActions.navigate({
                   name: 'ParticipateMap',
@@ -470,7 +466,7 @@ export const ProjectPage = (props: Props) => {
       //     text2: 'Datos no cargados de organización',
       //   });
       // }
-    } catch (err:any) {
+    } catch (err: any) {
       console.log(err.response.data);
     }
   };
@@ -589,7 +585,7 @@ export const ProjectPage = (props: Props) => {
                             <Image
                               source={{
                                 uri:
-                                  imageUrl +
+                                imageUrl +
                                   imagesCharged[x.index].image,
                               }}
                               style={{
