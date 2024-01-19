@@ -739,7 +739,7 @@ export const Card = ({
             </View>
           </TouchableOpacity>
         );
-        case 'organizationFound':
+      case 'organizationFound':
           return (
             <TouchableOpacity
               activeOpacity={0.5}
@@ -827,7 +827,7 @@ export const Card = ({
               </View>
             </TouchableOpacity>
           );
-        case 'projectOrganization':
+      case 'projectOrganization':
           return (
             <>
               <TouchableOpacity
@@ -1072,7 +1072,7 @@ const style = StyleSheet.create({
     // height: '100%',
     // width:'100%',
     marginTop: RFPercentage(1),
-    height: heightPercentageToDP(13),
+    height: heightPercentageToDP(15),
     width: widthPercentageToDP(27),
     borderRadius: 100,
     alignSelf: 'center',
@@ -1080,12 +1080,12 @@ const style = StyleSheet.create({
     backgroundColor: 'white',
     shadowColor: '#000000',
     shadowOffset: {
-      width: 0,
-      height: 0.1,
+      width: 3,
+      height: 3.1,
     },
     shadowOpacity: 0.2,
     shadowRadius: 1.41,
-    elevation: 4,
+    elevation: 1,
   },
   touchableOrganization: {
     // height: '100%',
