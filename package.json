@@ -22,6 +22,7 @@
     "@types/react-native-snap-carousel": "^3.8.10",
     "axios": "^1.3.2",
     "date-fns": "^3.1.0",
+    "ios-deploy": "^1.12.2",
     "react": "18.2.0",
     "react-native": "0.73.1",
     "react-native-bootstrap-icons": "^1.5.0",

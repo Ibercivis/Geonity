@@ -187,7 +187,7 @@ export const OrganizationPage = (props: Props) => {
   //#endregion
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    // <SafeAreaView style={{flex: 1}}>
       <ScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{flexGrow: 1}}>
@@ -459,7 +459,7 @@ export const OrganizationPage = (props: Props) => {
           /> */}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    // </SafeAreaView>
   );
 };
 

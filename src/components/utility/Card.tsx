@@ -1072,7 +1072,7 @@ const style = StyleSheet.create({
     // height: '100%',
     // width:'100%',
     marginTop: RFPercentage(1),
-    height: heightPercentageToDP(15),
+    height: heightPercentageToDP(13),
     width: widthPercentageToDP(27),
     borderRadius: 100,
     alignSelf: 'center',
