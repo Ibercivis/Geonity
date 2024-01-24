@@ -556,7 +556,7 @@ export const CardAnswerMap = ({
                       </TouchableOpacity>
                     </View>
                   )}
-                  {images && !onlyRead && (
+                  {images && images[0] && images[0].base64 && !onlyRead && (
                     <View
                       style={{
                         width: '80%',
