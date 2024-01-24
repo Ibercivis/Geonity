@@ -1173,7 +1173,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                       <View
                         style={{
                           alignItems: 'center',
-                          width: RFPercentage(15),
+                          width: RFPercentage(18),
                           height: RFPercentage(15),
                           backgroundColor: 'transparent',
                           right: RFPercentage(-3),
