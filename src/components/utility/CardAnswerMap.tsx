@@ -56,6 +56,7 @@ export const CardAnswerMap = ({
   const [imageBlob, setImageBlob] = useState<any>();
 
   const [imageType, setImageType] = useState(false);
+  const [imageTypeNumber, setImageTypeNumber] = useState(0);
   const showModalImageType = () => setImageType(true);
   const hideModalImageType = () => setImageType(false);
 
@@ -78,6 +79,7 @@ export const CardAnswerMap = ({
     
     switch (type) {
       case 1: //openPicker
+      setImageTypeNumber(1)
         ImagePicker.openPicker({
           mediaType: 'photo',
           multiple: false,
@@ -115,6 +117,7 @@ export const CardAnswerMap = ({
           // hideModalImageType();
         break;
       case 2:
+        setImageTypeNumber(2)
         const options = {
           mediaType: 'photo',
           includeBase64: false,
@@ -556,7 +559,54 @@ export const CardAnswerMap = ({
                       </TouchableOpacity>
                     </View>
                   )}
-                  {images && images[0] && images[0].base64 && !onlyRead && (
+                  {/* este entra en galería */}
+                  {imageTypeNumber === 1 && images && !onlyRead && (
+                    <View
+                      style={{
+                        width: '80%',
+                        height: heightPercentageToDP(13),
+                        // marginTop: '3.5%',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        backgroundColor: images
+                          ? 'transparent'
+                          : Colors.secondaryBackground,
+                        borderRadius: 10,
+                        padding: '2%',
+                      }}>
+                      <Image
+                        source={{
+                          uri: 'data:image/jpeg;base64,' + images.data,
+                        }}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          borderRadius: 10,
+                          resizeMode: 'cover',
+                        }}
+                      />
+
+                      <TouchableOpacity
+                        onPress={showModalImageType}
+                        style={{
+                          width: RFPercentage(4),
+                          position: 'absolute',
+                          bottom: RFPercentage(-1),
+                          left: RFPercentage(17),
+                          zIndex: 999,
+                          backgroundColor: 'white',
+                          borderRadius: 50,
+                        }}>
+                        <PlusImg
+                          width={RFPercentage(4)}
+                          height={RFPercentage(4)}
+                          fill={'#0059ff'}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                  {/* este entra en camera */}
+                  {imageTypeNumber === 2 && images && images[0] && images[0].base64 && !onlyRead && (
                     <View
                       style={{
                         width: '80%',
