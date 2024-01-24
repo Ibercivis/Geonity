@@ -32,7 +32,7 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>$(PRODUCT_NAME) camera description.</string>
+	<string>Se requiere el uso de la camara para poder tomar fotografías en algunas observaciones</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Se necesita saber tu ubicación para mostrar el mapa</string>
 	<key>NSLocationAlwaysUsageDescription</key>
@@ -40,7 +40,7 @@
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>We need access to your photo library to pick images.</string>
+	<string>Se requiere el uso de la galería para poder seleccionar fotografías en algunas observaciones</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>

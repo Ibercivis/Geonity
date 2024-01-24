@@ -695,7 +695,7 @@ export const CardAnswerMap = ({
                       <ImageBackground
                         borderRadius={10}
                         // source={require(urii)}
-                        resizeMode="cover"
+                        resizeMode="contain"
                         source={
                           value !== ''
                             ? {uri: value}
@@ -760,7 +760,7 @@ export const CardAnswerMap = ({
                       activeOpacity={0.9}
                       style={{...stylesModal.button}}
                       onPress={() => selectImage(2)}>
-                      <Text style={stylesModal.textButton}>Camara</Text>
+                      <Text style={stylesModal.textButton}>Cámara</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
