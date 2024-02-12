@@ -420,7 +420,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
       case 'register':
         return (
           // <ScrollView style={{width: '100%', flexGrow: 1}}>
-          <View style={{marginHorizontal: '9%', left: '2%'}}>
+          <View style={{marginHorizontal: '9%', left: '6%'}}>
             <View style={{}}>
               {/* contenedor de los inputs */}
               <View
@@ -751,7 +751,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
         );
       case 'forgot':
         return (
-          <View style={{marginHorizontal: '9%', left: '5%'}}>
+          <View style={{marginHorizontal: '9%', left: '6%'}}>
             {/* info */}
             <View
               style={{
@@ -1182,7 +1182,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                           marginHorizontal: '3%',
                           marginVertical: ' 1%',
                         }}>
-                        {'Entrar como invitado'}
+                        {fontLanguage.login_screen[0].guest}
                       </Text>
                   </TouchableOpacity>
                   <View  style={{marginTop:'20%'}}></View>

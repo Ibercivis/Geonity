@@ -1,345 +1,349 @@
 {
-    "strings": {
-      "global": [
-        {
-          "next_button": "Next",
-          "back_button": "Back",
-          "close_button": "Close",
-          "save_button": "Save",
-          "clean_all_button": "Clean all",
-          "cancel_button": "Cancel",
-          "acept_button": "Accept",
-          "delete_button": "Delete",
-          "continue_button": "Continue",
-          "confirm_button": "Confirm",
-          "apply":"Apply"
-        }
-      ],
-      "login_screen": [
-        {
-          "title": "Login",
-          "mail_input": "Username",
-          "mail_input_recover": "Email",
-          "mail_input_recover_err": "Username or email does not exist",
-          "password_input": "Password",
-          "recovery_password": "Forgot ",
-          "recovery_password_2": "password?",
-          "or_login": "Or log in with...",
-          "new_in_app": "New to the App?",
-          "register": "Create account",
-          "login_button": "Continue",
-          "loggin_google": "Continue with Google",
-          "loggin_apple": "Continue with Apple",
-          "loggin_microsoft": "Continue with Microsoft",
-          "subtitle": "Welcome!",
-          "subtitle_register": "Let's get started!",
-          "subtitle_problems": ""
-        }
-      ],
-      "register_screen": [
-        {
-          "title": "Register",
-          "subtitle": "Let's get started!",
-          "user_name_input": "Username",
-          "user_name_input_err": "Username required",
-          "email_input": "Email",
-          "email_input_err": "Invalid email",
-          "password1_input": "Password",
-          "password2_input": "Confirm password",
-          "password1_input_err": "Password must be 8 alphanumeric characters",
-          "password2_input_err1": "Passwords do not match",
-          "password2_input_err2": "Password must be 8 alphanumeric characters",
-          "have_account": "Already have an account?",
-          "enter": " Enter",
-          "register_button": "Create account",
-          "register_google": "Continue with Google",
-          "register_apple": "Continue with Apple",
-          "register_microsoft": "Continue with Microsoft"
-        }
-      ],
-      "new_project_screen": [
-        {
-          "title": "NEW PROJECT",
-          "title_edit": "EDIT",
-          "title_section": "Main data",
-          "project_name_input": "Name",
-          "project_name_helper": "Project name",
-          "description_input": "Description",
-          "description_helper": "Description of what the project is about",
-          "image_title": "Project image",
-          "dialog": [
-            {
-              "title": "Creation error",
-              "body": "Valid name and description are required."
-            }
-          ]
-        }
-      ],
-      "recovery_screen": [
-        {
-          "title": "Register",
-          "subtitle": "Let's get started!",
-          "title_info": "Trouble logging in?",
-          "content_info": "Enter your email, and we'll send you a link to get back into your account.",
-          "email_input": "Email",
-          "email_input_err": "Incorrect email",
-          "session": " at login",
-          "back": "Back",
-          "send_email": "Send link",
-          "send_email_try_again": "Try again",
-          "create_account": "Create account"
-        }
-      ],
-      "Home": [
-        {
-          "title": "Home",
-          "no_projects_text_1": "No projects created yet...",
-          "no_projects_text_2": "You can create your own projects",
-          "no_observations_text_1": "No organizations created yet...",
-          "no_observations_text_2": "You can create your own organization",
-          "search": "Search projects",
-          "category": "Categories",
-          "new_project": "New projects",
-          "important_projects": "Featured projects",
-          "no_organization": "No organization",
-          "interesting": "You might be interested in...",
-          "important_organizations": "Featured organizations",
-          "project_found": "FOUND PROJECTS",
-          "all_categories": "All categories",
-          "logout": "Log out"
-        }
-      ],
-      "organization": [
-        {
-          "title_edit": "Edit organization",
-          "title_create": "Create organization",
-          "title_list": "List",
+  "strings": {
+    "global": [
+      {
+        "next_button": "Next",
+        "back_button": "Back",
+        "close_button": "Close",
+        "save_button": "Save",
+        "clean_all_button": "Clean all",
+        "cancel_button": "Cancel",
+        "acept_button": "Accept",
+        "delete_button": "Delete",
+        "continue_button": "Continue",
+        "confirm_button": "Confirm",
+        "apply": "Apply"
+      }
+    ],
+    "login_screen": [
+      {
+        "title": "Login",
+        "guest": "Enter as guest",
+        "mail_input": "Username",
+        "mail_input_recover": "Email",
+        "mail_input_recover_err": "Username or email does not exist",
+        "password_input": "Password",
+        "recovery_password": "Forgot ",
+        "recovery_password_2": "password?",
+        "or_login": "Or log in with...",
+        "new_in_app": "New to the App?",
+        "register": "Create account",
+        "login_button": "Continue",
+        "loggin_google": "Continue with Google",
+        "loggin_apple": "Continue with Apple",
+        "loggin_microsoft": "Continue with Microsoft",
+        "subtitle": "Welcome!",
+        "subtitle_register": "Let's get started!",
+        "subtitle_problems": ""
+      }
+    ],
+    "register_screen": [
+      {
+        "title": "Register",
+        "subtitle": "Let's get started!",
+        "user_name_input": "Username",
+        "user_name_input_err": "Username required",
+        "email_input": "Email",
+        "email_input_err": "Invalid email",
+        "password1_input": "Password",
+        "password2_input": "Confirm password",
+        "password1_input_err": "Password must be 8 alphanumeric characters",
+        "password2_input_err1": "Passwords do not match",
+        "password2_input_err2": "Password must be 8 alphanumeric characters",
+        "have_account": "Already have an account?",
+        "enter": " Enter",
+        "register_button": "Create account",
+        "register_google": "Continue with Google",
+        "register_apple": "Continue with Apple",
+        "register_microsoft": "Continue with Microsoft"
+      }
+    ],
+    "new_project_screen": [
+      {
+        "title": "NEW PROJECT",
+        "title_edit": "EDIT",
+        "title_section": "Main data",
+        "project_name_input": "Name",
+        "project_name_helper": "Project name",
+        "description_input": "Description",
+        "description_helper": "Description of what the project is about",
+        "image_title": "Project image",
+        "dialog": [
+          {
+            "title": "Creation error",
+            "body": "Valid name and description are required."
+          }
+        ]
+      }
+    ],
+    "recovery_screen": [
+      {
+        "title": "Register",
+        "subtitle": "Let's get started!",
+        "title_info": "Trouble logging in?",
+        "content_info": "Enter your email, and we'll send you a link to get back into your account.",
+        "email_input": "Email",
+        "email_input_err": "Incorrect email",
+        "session": " at login",
+        "back": "Back",
+        "send_email": "Send link",
+        "send_email_try_again": "Try again",
+        "create_account": "Create account"
+      }
+    ],
+    "Home": [
+      {
+        "title": "Home",
+        "no_projects_text_1": "No projects created yet...",
+        "no_projects_text_2": "You can create your own projects",
+        "no_observations_text_1": "No organizations created yet...",
+        "no_observations_text_2": "You can create your own organization",
+        "search": "Search projects",
+        "category": "Categories",
+        "new_project": "New projects",
+        "important_projects": "Featured projects",
+        "no_organization": "No organization",
+        "interesting": "You might be interested in...",
+        "important_organizations": "Featured organizations",
+        "project_found": "FOUND PROJECTS",
+        "all_categories": "All categories",
+        "logout": "Log out"
+      }
+    ],
+    "organization": [
+      {
+        "title_edit": "Edit organization",
+        "title_create": "Create organization",
+        "title_list": "List",
+        "image_weight": "The image is too heavy. Maximum weight, 4MB",
+        "image_not_selected": "Image not selected",
+        "project_deleted_success": "Project successfully deleted.",
+        "project_deleted_error": "Error in deletion.",
+        "profile_images": "Profile images",
+        "front_page_image": "Front page images",
+        "organization_name": "Organization name",
+        "organization_name_label": "Enter the organization name...",
+        "contact_mail": "Contact email",
+        "biography": "Biography",
+        "biography_label": "Introduce your organization in the biography",
+        "add_members": "Add members",
+        "search_members": "Search members...",
+        "how_to_add_members": "How to add members?",
+        "members_list": "Members list",
+        "administrator": "Administrator",
+        "member": "Member",
+        "project": "Projects",
+        "save_changes": "Save changes",
+        "create_organization": "Create organization",
+        "save_modal_label": "There was a problem, please try again.",
+        "save_modal_image_label": "The image cannot weigh more than 4 Mb",
+        "info_modal_label": "How to add members?",
+        "info_modal_sublabel": "You must enter the username of the member you want to add; they will automatically receive a request to join the organization. Once the user accepts, they will become a member of the organization.",
+        "delete_modal_label": "Do you want to delete the organization?",
+        "delete_modal_sublabel": "Once deleted, it cannot be recovered",
+        "no_projects": "No associated projects",
+        "info_no_projects_text": "As the organization associates with different projects, they will be displayed here.",
+        "modal_label_created": "Organization created!",
+        "modal_sublabel_created": "Don't forget to share your project to increase participation."
+      }
+    ],
+    "project": [
+      {
+        "title_list": "Listing",
+        "location_permission": "Location permission required",
+        "give_permissions": "Give permissions",
+        "show_map": "Show map!",
+        "created_by": "Created by:",
+        "organization": "Organization:",
+        "no_organization": "No linked organization",
+        "modal_save_label": "Project created!",
+        "modal_save_sublabel": "Don't forget to share your project to increase participation",
+        "modal_pass_label": "Enter the project password",
+        "title_permission": "Storage Permission",
+        "menssage": "The app needs access to storage to download files.",
+        "neutral_button": "Ask Later",
+        "toast_no_permission_text1": "No permissions",
+        "toast_no_permission_text2": "Storage permissions not granted",
+        "toast_err_download_text1": "Error downloading from the server",
+        "toast_download_completed_text1": "Download completed",
+        "toast_download_completed_text2": "File saved at:"
+      }
+    ],
+    "create_project": [
+      {
+        "title_edit": "Edit project",
+        "title_create": "Create a new project",
+        "save_changes": "Save changes",
+        "create_continue": "Create and continue",
+        "categories": "Categories",
+        "apply": "Apply",
+        "response_type": "Response type",
+        "first_screen": {
           "image_weight": "The image is too heavy. Maximum weight, 4MB",
           "image_not_selected": "Image not selected",
-          "project_deleted_success": "Project successfully deleted.",
-          "project_deleted_error": "Error in deletion.",
-          "profile_images": "Profile images",
-          "front_page_image": "Front page images",
-          "organization_name": "Organization name",
-          "organization_name_label": "Enter the organization name...",
-          "contact_mail": "Contact email",
+          "project_image": "Project image",
+          "project_name": "Project name",
+          "project_description": "Project description",
+          "project_description_label": "Write the description",
+          "add_categories": "Add categories to the project",
+          "select_categories": "Select categories",
+          "add_organizations": "Add organizations to the project",
+          "add_organizations_placeholder": "Search organizations...",
+          "how_to_add_organizations": "How to add organizations?",
+          "organizations_list": "Organization list"
+        },
+        "second_screen": {
+          "privacy_data_base_project": "Project database privacy",
+          "privacy_info_data_base_project": "If activated, your project's database cannot be downloaded by any user and will be hidden.",
+          "privacy_project": "Project privacy",
+          "privacy_info_project": "If activated, your project will become private. Participation will only be possible through a password.",
+          "write_pass_label": "Enter the password",
+          "confirm_pass_label": "Confirm the password"
+        },
+        "modals": {
+          "save_problem_label": "There was a problem, please try again.",
+          "pass_problem_label": "Passwords do not match.",
+          "how_to_add_organizations_label": "How to add organizations?",
+          "how_to_add_organizations_sublabel": "You must enter the name of the organization you want to add to the project; a request will be sent to the administrator automatically. Once the administrator accepts, the organization will be added to the project.",
+          "delete_proyect_label": "Do you want to delete the project?",
+          "delete_proyect_sublabel": "Once deleted, it cannot be recovered"
+        }
+      }
+    ],
+    "map": [
+      {
+        "toast_err_question": "Could not retrieve questions",
+        "toast_err_obligatory_fields": "Obligatory fields must be filled",
+        "delete_observation": "Marker successfully deleted",
+        "not_delete_observation": "Could not delete the marker",
+        "enable_gps": "Enable GPS to access the map",
+        "recharge_screen": "Reload the screen",
+        "number_mark": "Marker No. ",
+        "show_more": "Show more",
+        "want_to_confirm": "Do you want to confirm the marker?",
+        "modal": {
+          "info_label": "How to participate and add a marker?",
+          "info_sublabel": "If you belong to an organization existing in Geonity, contact the organization's admin to invite you or add you as a member.",
+          "info_sublabel2": "Once you have accepted the request, you can add the organization to your biography.",
+          "delete_label": "Do you want to delete the observation?"
+        },
+        "mark": {
+          "save": "Save",
+          "delete": "Delete marker",
+          "finish": "Finish",
+          "image_weight": "The image is too heavy. Maximum weight, 4MB",
+          "": ""
+        },
+        "cards": {
+          "permission_text1": "No permissions",
+          "permission_text2": "Camera access permissions not granted",
+          "text_answer": "Text question",
+          "number_answer": "Numeric question",
+          "galery": "Gallery",
+          "camera": "Camera"
+        }
+      }
+    ],
+    "profile": [
+      {
+        "title_one": "Contributions",
+        "title_two": "Likes",
+        "title_three": "Created",
+        "contribution_not_participate": "You haven't participated...",
+        "contribution_participate": "Participate! All the projects you contribute to will appear here",
+        "liked_not_fav": "You have no favorite projects",
+        "liked_fav": "Like the projects that interest you, and they will be saved here",
+        "created_not": "No projects created yet...",
+        "created_proyect": "Create your own projects, and they will appear here",
+        "image_weight": "The image is too heavy. Maximum weight, 4MB",
+        "image_not_selected": "Image not selected",
+        "toast_save_success": "Save successful",
+        "toast_err": "Save error",
+        "form": {
+          "visibility": "Profile visibility",
+          "visibility_description": "If activated, your profile will be hidden from other Geonity users, but you can still create and participate in projects",
+          "user_name": "Username",
           "biography": "Biography",
-          "biography_label": "Introduce your organization in the biography",
-          "add_members": "Add members",
-          "search_members": "Search members...",
-          "how_to_add_members": "How to add members?",
-          "members_list": "Members list",
-          "administrator": "Administrator",
-          "member": "Member",
-          "project": "Projects",
-          "save_changes": "Save changes",
-          "create_organization": "Create organization",
-          "save_modal_label": "There was a problem, please try again.",
-          "save_modal_image_label": "The image cannot weigh more than 4 Mb",
-          "info_modal_label": "How to add members?",
-          "info_modal_sublabel": "You must enter the username of the member you want to add; they will automatically receive a request to join the organization. Once the user accepts, they will become a member of the organization.",
-          "delete_modal_label": "Do you want to delete the organization?",
-          "delete_modal_sublabel": "Once deleted, it cannot be recovered",
-          "no_projects": "No associated projects",
-          "info_no_projects_text": "As the organization associates with different projects, they will be displayed here.",
-          "modal_label_created": "Organization created!",
-          "modal_sublabel_created": "Don't forget to share your project to increase participation."
-        }
-      ],
-      "project": [
-        {
-          "title_list": "Listing",
-          "location_permission": "Location permission required",
-          "give_permissions": "Give permissions",
-          "show_map": "Show map!",
-          "created_by": "Created by:",
-          "organization": "Organization:",
-          "no_organization": "No linked organization",
-          "modal_save_label": "Project created!",
-          "modal_save_sublabel": "Don't forget to share your project to increase participation",
-          "modal_pass_label": "Enter the project password",
-          "title_permission": "Storage Permission",
-          "menssage": "The app needs access to storage to download files.",
-          "neutral_button": "Ask Later",
-          "toast_no_permission_text1": "No permissions",
-          "toast_no_permission_text2": "Storage permissions not granted",
-          "toast_err_download_text1": "Error downloading from the server",
-          "toast_download_completed_text1": "Download completed",
-          "toast_download_completed_text2": "File saved at:"
-        }
-      ],
-      "create_project": [
-        {
-          "title_edit": "Edit project",
-          "title_create": "Create a new project",
-          "save_changes": "Save changes",
-          "create_continue": "Create and continue",
-          "categories": "Categories",
-          "apply": "Apply",
-          "response_type": "Response type",
-          "first_screen": {
-            "image_weight": "The image is too heavy. Maximum weight, 4MB",
-            "image_not_selected": "Image not selected",
-            "project_image": "Project image",
-            "project_name": "Project name",
-            "project_description": "Project description",
-            "project_description_label": "Write the description",
-            "add_categories": "Add categories to the project",
-            "select_categories": "Select categories",
-            "add_organizations": "Add organizations to the project",
-            "add_organizations_placeholder": "Search organizations...",
-            "how_to_add_organizations": "How to add organizations?",
-            "organizations_list": "Organization list"
-          },
-          "second_screen": {
-            "privacy_data_base_project": "Project database privacy",
-            "privacy_info_data_base_project": "If activated, your project's database cannot be downloaded by any user and will be hidden.",
-            "privacy_project": "Project privacy",
-            "privacy_info_project": "If activated, your project will become private. Participation will only be possible through a password.",
-            "write_pass_label": "Enter the password",
-            "confirm_pass_label": "Confirm the password"
-          },
-          "modals": {
-            "save_problem_label": "There was a problem, please try again.",
-            "pass_problem_label": "Passwords do not match.",
-            "how_to_add_organizations_label": "How to add organizations?",
-            "how_to_add_organizations_sublabel": "You must enter the name of the organization you want to add to the project; a request will be sent to the administrator automatically. Once the administrator accepts, the organization will be added to the project.",
-            "delete_proyect_label": "Do you want to delete the project?",
-            "delete_proyect_sublabel": "Once deleted, it cannot be recovered"
-          }
-        }
-      ],
-      "map": [
-        {
-          "toast_err_question": "Could not retrieve questions",
-          "toast_err_obligatory_fields": "Obligatory fields must be filled",
-          "delete_observation": "Marker successfully deleted",
-          "not_delete_observation": "Could not delete the marker",
-          "enable_gps": "Enable GPS to access the map",
-          "recharge_screen": "Reload the screen",
-          "number_mark": "Marker No. ",
-          "show_more": "Show more",
-          "want_to_confirm": "Do you want to confirm the marker?",
-          "modal": {
-            "info_label": "How to participate and add a marker?",
-            "info_sublabel": "If you belong to an organization existing in Geonity, contact the organization's admin to invite you or add you as a member.",
-            "info_sublabel2": "Once you have accepted the request, you can add the organization to your biography.",
-            "delete_label": "Do you want to delete the observation?"
-          },
-          "mark": {
-            "save": "Save",
-            "delete": "Delete marker",
-            "finish": "Finish",
-            "image_weight": "The image is too heavy. Maximum weight, 4MB",
-            "": ""
-          },
-          "cards": {
-            "permission_text1": "No permissions",
-            "permission_text2": "Camera access permissions not granted",
-            "text_answer": "Text question",
-            "number_answer": "Numeric question",
-            "galery": "Gallery",
-            "camera": "Camera"
-          }
-        }
-      ],
-      "profile": [
-        {
-          "title_one": "Contributions",
-          "title_two": "Likes",
-          "title_three": "Created",
-          "contribution_not_participate": "You haven't participated...",
-          "contribution_participate": "Participate! All the projects you contribute to will appear here",
-          "liked_not_fav": "You have no favorite projects",
-          "liked_fav": "Like the projects that interest you, and they will be saved here",
-          "created_not": "No projects created yet...",
-          "created_proyect": "Create your own projects, and they will appear here",
-          "image_weight": "The image is too heavy. Maximum weight, 4MB",
-          "image_not_selected": "Image not selected",
-          "toast_save_success": "Save successful",
-          "toast_err": "Save error",
-          "form": {
-            "visibility": "Profile visibility",
-            "visibility_description": "If activated, your profile will be hidden from other Geonity users, but you can still create and participate in projects",
-            "user_name": "Username",
-            "biography": "Biography",
-            "organization": "Organization",
-            "question_organization": "Are you a member of an organization?",
-            "location": "Location",
-            "modal_save_image": "The image cannot weigh more than 4 Mb",
-            "modal_info_label": "Are you a member of an organization?",
-            "modal_info_sublabel": "If you belong to an organization existing in Geonity, contact the organization's admin to invite you or add you as a member.",
-            "modal_info_sublabel2": "Once you have accepted the request, you can add the organization to your biography."
-          },
-          "contributions": "Contributions",
-          "created": "Created",
-          "without_organizations": "Without organizations",
-          "without_location": "Without location",
-          "without_description": "No description available",
-          "edit_profile": "Edit profile"
-        }
-      ],
-      "modals": [
-        {
-          "accept_button_text": "Accept",
-          "cancel_button_text": "Cancel",
-          "delete_button_text": "Delete",
-          "password_text": "Password",
-          "password_text_label": "Enter the password",
-          "save_project_login_err": "Registration failed. Check the data and try again",
-          "policies": {
-            "title": "Privacy Policy",
-            "text_1": "By registering on Geonity, you agree that the Ibercivis Foundation collects and processes your personal information in accordance with our Privacy Policy.",
-            "text_2": "We are committed to protecting your privacy and using your information solely to enhance your experience with the application and provide the requested services.",
-            "text_3": "We will not share your personal information with third parties without explicit consent, except as required by law.",
-            "text_4": "For more information on how we collect, use, and protect your information, please see our complete Privacy Policy at",
-            "accept_text": "By pressing the 'Accept' button, you confirm that you have read and understood our Privacy Policy and consent to the processing of your personal data as described."
-          },
-          "map": {
-            "text_1": "You have two options:",
-            "text_2": "Hold down",
-            "text_3": "the screen at the exact point on the map where you want to place the marker",
-            "text_4": "Press the '+' button ",
-            "text_5": "an automatically linked marker will be added to your current position. (The button is located in the bottom right corner of the map).",
-            "accept_text": ""
-          },
-          "bottom_tab_nav": {
-            "title": "What would you like to do?",
-            "project": "Create a new project",
-            "organization": "Create a new organization",
-            "profile": "Profile",
-            "settings": "Settings"
-          }
-        }
-      ],
-      "utility": [
-        {
-          "description": "Description"
-        }
-      ],
-      "cards": [
-        {
-          "more": "More...",
-          "category": {},
-          "new_projects": {},
-          "importants": {},
-          "interesting": {},
-          "organization": {},
-          "project_found": {},
-          "organization_found": {},
-          "project_organization": {}
-        }
-      ],
-      "question_card": [
-        {
-          "text_type": "Text type",
-          "number_type": "Numeric type",
-          "image_type": "Image type",
-          "response_type": "Response type",
-          "write_answer": "Write your question",
-          "obligatory": "Mandatory"
-        }
-      ]
-    }
+          "organization": "Organization",
+          "question_organization": "Are you a member of an organization?",
+          "location": "Location",
+          "modal_save_image": "The image cannot weigh more than 4 Mb",
+          "modal_info_label": "Are you a member of an organization?",
+          "modal_info_sublabel": "If you belong to an organization existing in Geonity, contact the organization's admin to invite you or add you as a member.",
+          "modal_info_sublabel2": "Once you have accepted the request, you can add the organization to your biography."
+        },
+        "contributions": "Contributions",
+        "created": "Created",
+        "without_organizations": "Without organizations",
+        "without_location": "Without location",
+        "without_description": "No description available",
+        "edit_profile": "Edit profile"
+      }
+    ],
+    "modals": [
+      {
+        "accept_button_text": "Accept",
+        "cancel_button_text": "Cancel",
+        "delete_button_text": "Delete",
+        "password_text": "Password",
+        "password_text_label": "Enter the password",
+        "save_project_login_err": "Registration failed. Check the data and try again",
+        "policies": {
+          "title": "Privacy Policy",
+          "text_1": "By registering on Geonity, you agree that the Ibercivis Foundation collects and processes your personal information in accordance with our Privacy Policy.",
+          "text_2": "We are committed to protecting your privacy and using your information solely to enhance your experience with the application and provide the requested services.",
+          "text_3": "We will not share your personal information with third parties without explicit consent, except as required by law.",
+          "text_4": "For more information on how we collect, use, and protect your information, please see our complete Privacy Policy at",
+          "accept_text": "By pressing the 'Accept' button, you confirm that you have read and understood our Privacy Policy and consent to the processing of your personal data as described."
+        },
+        "map": {
+          "text_1": "You have two options:",
+          "text_2": "Hold down",
+          "text_3": "the screen at the exact point on the map where you want to place the marker",
+          "text_4": "Press the '+' button ",
+          "text_5": "an automatically linked marker will be added to your current position. (The button is located in the bottom right corner of the map).",
+          "accept_text": ""
+        },
+        "bottom_tab_nav": {
+          "title": "What would you like to do?",
+          "project": "Create a new project",
+          "organization": "Create a new organization",
+          "profile": "Profile",
+          "settings": "Settings"
+        },
+
+        "log_in": "Log in",
+        "guest_label_1": "Join Geonity now!",
+        "guest_label_2": "Sign up or log in to participate in projects and make the most of all available features."
+      }
+    ],
+    "utility": [
+      {
+        "description": "Description"
+      }
+    ],
+    "cards": [
+      {
+        "more": "More...",
+        "category": {},
+        "new_projects": {},
+        "importants": {},
+        "interesting": {},
+        "organization": {},
+        "project_found": {},
+        "organization_found": {},
+        "project_organization": {}
+      }
+    ],
+    "question_card": [
+      {
+        "text_type": "Text type",
+        "number_type": "Numeric type",
+        "image_type": "Image type",
+        "response_type": "Response type",
+        "write_answer": "Write your question",
+        "obligatory": "Mandatory"
+      }
+    ]
   }
-  
+}

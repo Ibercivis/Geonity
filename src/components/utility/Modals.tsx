@@ -844,7 +844,7 @@ export const InfoModalGuest = ({
                         justifyContent: 'center',
                         fontFamily: FontFamily.NotoSansDisplayRegular,
                       }}>
-                      Iniciar sesión
+                      {fontLanguage.modals[0].log_in}
                     </Text>
                   </TouchableOpacity>
                 </View>

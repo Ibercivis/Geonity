@@ -18,6 +18,7 @@
     "login_screen": [
       {
         "title": "Inicio de sesión",
+        "guest": "Entrar como invitado",
         "mail_input": "Nombre de usuario",
         "mail_input_recover": "Correo electrónico",
         "mail_input_recover_err": "El nombre de usuario o correo no existe",
@@ -309,7 +310,11 @@
           "organization": "Crear una nueva organización",
           "profile": "Perfil",
           "settings": "Ajustes"
-        }
+        },
+        "log_in":"Iniciar sesión",
+        "guest_label_1":"¡Únete a Geonity ahora!",
+        "guest_label_2":"Regístrate o inicia sesión para poder participar en los proyectos y aprovechar al máximo todas las funcionalidades disponibles."
+        
       }
     ],
     "utility": [

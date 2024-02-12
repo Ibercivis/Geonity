@@ -1441,9 +1441,9 @@ if (!isGuest) {
               hideModal={hideGuestModal}
               visible={guestModal}
               onPress={toLogginIfGuest}
-              label="¡Únete a Geonity ahora!"
-              subLabel='Registrate o inicia sesión para poder participar en los proyectos y aprovechar al máximo todas las funcionalidades disponibles'
-            />
+              label={fontLanguage.modals[0].guest_label_1}
+              subLabel={fontLanguage.modals[0].guest_label_2}
+               />
           </View>
         </SafeAreaView>
       </KeyboardAvoidingView>

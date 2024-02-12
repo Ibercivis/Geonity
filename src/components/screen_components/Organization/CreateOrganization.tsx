@@ -1145,7 +1145,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                     width: '100%',
                     marginVertical: RFPercentage(1),
                   }}>
-                  <Text style={{color: 'black'}}>Biografía</Text>
+                  <Text style={{color: 'black'}}>{fontLanguage.organization[0].biography}</Text>
                   <InputText
                     // isInputText={() => setIsInputText(!isInputText)}
                     isValid={descriptionValidate}
