@@ -31,11 +31,13 @@ import NotContribution from '../../../assets/icons/profile/No hay contribuciones
 import PencilSquare from '../../../assets/icons/general/pencil-square.svg';
 import {CommonActions, useFocusEffect} from '@react-navigation/native';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
+import { useLanguage } from '../../../hooks/useLanguage';
 
 interface Props extends StackScreenProps<StackParams, 'OrganizationPage'> {}
 
 export const OrganizationPage = (props: Props) => {
   //#region CONST
+  const {fontLanguage} = useLanguage();
   const [organization, setOrganization] = useState<Organization>();
   const [projectList, setProjectList] = useState<ShowProject[]>([]);
   const [canEdit, setCanEdit] = useState(false);
@@ -187,7 +189,7 @@ export const OrganizationPage = (props: Props) => {
   //#endregion
 
   return (
-    // <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{flex: 1}}>
       <ScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{flexGrow: 1}}>
@@ -272,7 +274,7 @@ export const OrganizationPage = (props: Props) => {
                     alignContent: 'center',
                     alignSelf: 'center',
                   }}>
-                  Proyectos
+                  {fontLanguage.organization[0].project}
                 </Text>
               </View>
               <View
@@ -299,7 +301,7 @@ export const OrganizationPage = (props: Props) => {
                     alignContent: 'center',
                     alignSelf: 'center',
                   }}>
-                  Integrantes
+                  {fontLanguage.organization[0].member}
                 </Text>
               </View>
             </View>
@@ -362,7 +364,7 @@ export const OrganizationPage = (props: Props) => {
               color: 'black',
               marginHorizontal: RFPercentage(3),
             }}>
-            Proyectos
+            {fontLanguage.organization[0].project}
           </Text>
           {projectList.length <= 0 ? (
             <>
@@ -375,7 +377,7 @@ export const OrganizationPage = (props: Props) => {
                     fontFamily: FontFamily.NotoSansDisplayRegular,
                     fontWeight: '700',
                   }}>
-                  No hay proyectos asociados...
+                  {fontLanguage.organization[0].no_projects}
                 </Text>
                 <Text
                   style={{
@@ -387,8 +389,7 @@ export const OrganizationPage = (props: Props) => {
                     fontWeight: '600',
                     marginTop: '3%',
                   }}>
-                  Conforme la organización se asocie con los diferentes
-                  proyectos, se irán mostrando aquí.
+                  {fontLanguage.organization[0].info_no_projects_text}
                 </Text>
                 <View style={{alignItems: 'center'}}>
                   <NotContribution
@@ -434,9 +435,8 @@ export const OrganizationPage = (props: Props) => {
             onPress={hideModalSave}
             size={RFPercentage(6)}
             color={Colors.semanticSuccessLight}
-            label="¡Organización creada!"
-            subLabel="No olvides compartir tu proyecto para obtener una mayor
-          participación"
+            label={fontLanguage.organization[0].modal_label_created}
+            subLabel={fontLanguage.organization[0].modal_sublabel_created}
           />
           {/* <FlatList
             style={{flex: 1}}
@@ -459,7 +459,7 @@ export const OrganizationPage = (props: Props) => {
           /> */}
         </View>
       </ScrollView>
-    // </SafeAreaView>
+    </SafeAreaView>
   );
 };
 

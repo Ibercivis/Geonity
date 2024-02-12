@@ -24,6 +24,7 @@ import {
   widthPercentageToDP,
 } from 'react-native-responsive-screen';
 import {Topic} from '../../interfaces/appInterfaces';
+import { useLanguage } from '../../hooks/useLanguage';
 import { AuthContext } from '../../context/AuthContext';
 
 // const categoryIcons = [
@@ -39,6 +40,8 @@ import { AuthContext } from '../../context/AuthContext';
 //   require('../../assets/icons/category/Group-1.png'),
 //   require('../../assets/icons/category/Group-1.png'),
 // ];
+
+const {fontLanguage} = useLanguage();
 
 interface Props {
   type?: string;
@@ -66,8 +69,8 @@ export const Card = ({
   auxString = '',
   boolHelper = false,
   pressed = false,
-  totalLikes = 0, 
-  contribution = 0, 
+  totalLikes = 0,
+  contribution = 0,
   cover,
   styleProp,
   list = [],
@@ -156,9 +159,9 @@ export const Card = ({
                   marginBottom: '5%',
                   marginLeft: '10%',
                   marginRight: '5%',
-                  color: Colors.textColorPrimary
+                  color: Colors.textColorPrimary,
                 }}>
-                Más...
+                {fontLanguage.cards[0].more}
               </Text>
             </View>
           </TouchableOpacity>
@@ -217,10 +220,10 @@ export const Card = ({
                     height: '50%',
                   }}>
                   <Plus
-                  style={{alignSelf: 'center'}}
-                  height={RFPercentage(5)}
-                  width={RFPercentage(5)}
-                />
+                    style={{alignSelf: 'center'}}
+                    height={RFPercentage(5)}
+                    width={RFPercentage(5)}
+                  />
                 </View>
                 <Text
                   style={{
@@ -233,7 +236,7 @@ export const Card = ({
                     color: 'black',
                     fontFamily: FontFamily.NotoSansDisplayMedium,
                   }}>
-                  Más...
+                 {fontLanguage.cards[0].more}
                 </Text>
               </View>
             </View>
@@ -284,7 +287,7 @@ export const Card = ({
                     color: 'black',
                     fontFamily: FontFamily.NotoSansDisplayMedium,
                   }}>
-                  {title.length > 20 ? title.slice(0, 20) + '...' : title}
+                  {title.length > 25 ? title.slice(0, 25) + '...' : title}
                 </Text>
                 <Text
                   style={{
@@ -320,9 +323,9 @@ export const Card = ({
                       {contribution}
                     </Text>
                   </View>
-                  {
+{
                     !isGuest && (
-                      <TouchableOpacity
+                  <TouchableOpacity
                     activeOpacity={1}
                     onPress={onLike}
                     style={{
@@ -349,7 +352,7 @@ export const Card = ({
                       {totalLikes}
                     </Text>
                   </TouchableOpacity>
-                    )
+)
                   }
                   
                 </View>
@@ -388,7 +391,7 @@ export const Card = ({
                     color: 'black',
                     fontFamily: FontFamily.NotoSansDisplayMedium,
                   }}>
-                  Más...
+                  {fontLanguage.cards[0].more}
                 </Text>
               </View>
             </View>
@@ -471,7 +474,7 @@ export const Card = ({
                     color: 'black',
                     fontFamily: FontFamily.NotoSansDisplayMedium,
                   }}>
-                  Más...
+                  {fontLanguage.cards[0].more}
                 </Text>
               </View>
             </View>
@@ -568,7 +571,7 @@ export const Card = ({
                     color: 'black',
                     fontFamily: FontFamily.NotoSansDisplayMedium,
                   }}>
-                  Más...
+                  {fontLanguage.cards[0].more}
                 </Text>
               </View>
             </View>
@@ -581,11 +584,13 @@ export const Card = ({
             style={style.projectFound}
             onPress={onPress}>
             <View
-              style={{
-                // paddingHorizontal: RFPercentage(3),
-                // width:'100%',
-                // backgroundColor:'green'
-              }}>
+              style={
+                {
+                  // paddingHorizontal: RFPercentage(3),
+                  // width:'100%',
+                  // backgroundColor:'green'
+                }
+              }>
               <View
                 style={{
                   // marginHorizontal: RFPercentage(2),
@@ -637,7 +642,7 @@ export const Card = ({
                     alignSelf: 'flex-start',
                     marginBottom: '2%',
                     marginTop: RFPercentage(2),
-                    color: Colors.textColorPrimary
+                    color: Colors.textColorPrimary,
                     // padding: RFPercentage(1)
                     // color: 'black',
                   }}>
@@ -684,7 +689,7 @@ export const Card = ({
                       style={{
                         fontSize: FontSize.fontSizeText13,
                         marginHorizontal: RFPercentage(1),
-                        color: Colors.textColorPrimary
+                        color: Colors.textColorPrimary,
                       }}>
                       {contribution}
                     </Text>
@@ -702,7 +707,7 @@ export const Card = ({
                       style={{
                         fontSize: FontSize.fontSizeText13,
                         marginHorizontal: RFPercentage(1),
-                        color: Colors.textColorPrimary
+                        color: Colors.textColorPrimary,
                       }}>
                       {totalLikes}
                     </Text>
@@ -740,25 +745,25 @@ export const Card = ({
           </TouchableOpacity>
         );
       case 'organizationFound':
-          return (
-            <TouchableOpacity
-              activeOpacity={0.5}
-              style={style.organizationFound}
-              onPress={onPress}>
+        return (
+          <TouchableOpacity
+            activeOpacity={0.5}
+            style={style.organizationFound}
+            onPress={onPress}>
+            <View
+              style={{
+                flexDirection: 'row',
+                // backgroundColor: 'red'
+              }}>
               <View
                 style={{
-                  flexDirection: 'row',
-                  // backgroundColor: 'red'
+                  alignSelf: 'center',
+                  width: '30%',
+                  alignContent: 'center',
+                  alignItems: 'center',
+                  // backgroundColor: 'blue',
                 }}>
-                <View
-                  style={{
-                    alignSelf: 'center',
-                    width: '30%',
-                    alignContent: 'center',
-                    alignItems: 'center',
-                    // backgroundColor: 'blue',
-                  }}>
-                  {/* <ImageBackground
+                {/* <ImageBackground
                     borderRadius={100}
                     // source={require(urii)}
                     source={require('../../assets/backgrounds/login-background.jpg')}
@@ -766,215 +771,213 @@ export const Card = ({
                       height: RFPercentage(12),
                       width: RFPercentage(12),
                     }}></ImageBackground> */}
-                  <View
-                    style={{
-                      height: RFPercentage(12),
-                      width: RFPercentage(12),
-                      backgroundColor: cover ? 'transparent' : 'grey',
-                      borderRadius: 100,
-                    }}>
-                    <Image
-                      source={
-                        cover !== ''
+                <View
+                  style={{
+                    height: RFPercentage(12),
+                    width: RFPercentage(12),
+                    backgroundColor: cover ? 'transparent' : 'grey',
+                    borderRadius: 100,
+                  }}>
+                  <Image
+                    source={
+                      cover !== ''
                         ? {uri: cover}
                         : require('../../assets/backgrounds/nuevoproyecto.jpg')
-                      }
+                    }
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      borderRadius: 100,
+                      // resizeMode: 'cover',
+                    }}
+                  />
+                </View>
+              </View>
+
+              <View
+                style={{
+                  marginHorizontal: RFPercentage(1),
+                  marginTop: 13,
+                  justifyContent: 'center',
+                  marginBottom: 6,
+                  width: '70%',
+                }}>
+                <Text
+                  style={{
+                    // backgroundColor: 'white',
+                    marginBottom: '1%',
+                    alignSelf: 'flex-start',
+                    fontWeight: 'bold',
+                    fontSize: FontSize.fontSizeText15,
+                    color: 'black',
+                  }}>
+                  {title}
+                </Text>
+
+                <Text
+                  style={{
+                    // backgroundColor: 'white',
+                    alignSelf: 'flex-start',
+                    marginBottom: '4%',
+                    fontSize: FontSize.fontSizeText13,
+                    color: 'black',
+                  }}>
+                  {description.length > 120
+                    ? description.slice(0, 120) + '...'
+                    : description}
+                </Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        );
+      case 'projectOrganization':
+        return (
+          <>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              style={style.projectOrganization}
+              onPress={onPress}>
+              <View
+                style={{
+                  alignSelf: 'center',
+                  width: '36%',
+                  // alignContent: 'center',
+                  // alignItems: 'center',
+                  backgroundColor: 'transparent',
+                }}>
+                <ImageBackground
+                  // borderRadius={10}
+                  borderBottomLeftRadius={10}
+                  borderTopLeftRadius={10}
+                  // source={require(urii)}
+                  source={
+                    cover !== ''
+                      ? {uri: imageUrl + cover}
+                      : require('../../assets/backgrounds/nuevoproyecto.jpg')
+                  }
+                  style={{height: '100%'}}>
+                  <View style={{alignItems: 'stretch', flex: 1}}>
+                    <Text
                       style={{
-                        width: '100%',
-                        height: '100%',
-                        borderRadius: 100,
-                        // resizeMode: 'cover',
-                      }}
+                        // textAlign: 'center',
+                        marginBottom: '1%',
+                        marginLeft: '4%',
+                        marginRight: '4%',
+                        top: RFPercentage(13),
+                        backgroundColor: 'white',
+                        alignSelf: 'flex-start',
+                        paddingHorizontal: RFPercentage(0.5),
+                        color: 'black',
+                      }}>
+                      {/* {title} */}
+                      {title.length > 20 ? title.slice(0, 20) + '...' : title}
+                      {/* titulazo que tiene mas de 20 caracteres y que  */}
+                    </Text>
+                  </View>
+                </ImageBackground>
+              </View>
+
+              <View
+                style={{
+                  // marginHorizontal: RFPercentage(1),
+                  marginTop: RFPercentage(1),
+                  // marginBottom: 6,
+                  width: '100%',
+                }}>
+                <Text
+                  style={{
+                    // backgroundColor: 'red',
+                    alignSelf: 'stretch',
+                    marginTop: '4%',
+                    marginHorizontal: RFPercentage(2),
+                    fontSize: FontSize.fontSizeText13,
+                    height: '60%',
+                    width: '60%',
+                    color: 'black',
+                  }}>
+                  {description.length > 120
+                    ? description.slice(0, 120) + '...'
+                    : description}
+                </Text>
+                <View
+                  style={{
+                    marginBottom: RFPercentage(0),
+                    marginHorizontal: RFPercentage(2),
+                    flexDirection: 'row',
+                    alignContent: 'center',
+                    alignItems: 'center',
+                    // justifyContent: 'space-between',
+                    alignSelf: 'stretch',
+                    height: '30%',
+                  }}>
+                  {/* personas */}
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-around',
+                    }}>
+                    {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
+                    <People
+                      width={RFPercentage(2)}
+                      height={RFPercentage(2)}
+                      color={'#000000'}
+                    />
+                    <Text
+                      style={{
+                        fontSize: FontSize.fontSizeText13,
+                        marginHorizontal: RFPercentage(1),
+                        alignSelf: 'center',
+                        color: 'black',
+                      }}>
+                      {contribution}
+                    </Text>
+                  </TouchableOpacity>
+
+                  {/*favorito */}
+                  <TouchableOpacity
+                    onPress={onLike}
+                    style={{flexDirection: 'row'}}>
+                    {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
+                    {boolHelper ? (
+                      <HeartFill width={16} height={16} color={'#ff0000'} />
+                    ) : (
+                      <Heart width={16} height={16} color={'#000000'} />
+                    )}
+                    <Text
+                      style={{
+                        fontSize: FontSize.fontSizeText13,
+                        marginHorizontal: RFPercentage(1),
+                        color: 'black',
+                      }}>
+                      {totalLikes}
+                    </Text>
+                  </TouchableOpacity>
+
+                  {/* ver mas */}
+                  <View
+                    style={{
+                      width: RFPercentage(9),
+                      left: RFPercentage(5),
+                      bottom: 2,
+                      borderRadius: 100,
+                    }}>
+                    <CustomButton
+                      height={RFPercentage(3.4)}
+                      borderRadius={11}
+                      onPress={() => console.log('pressed')}
+                      label={fontLanguage.cards[0].more}
+                      backgroundColor={Colors.primaryLigth}
+                      iconRight="arrow-right"
+                      iconColor="white"
+                      fontSize={FontSize.fontSizeText10}
                     />
                   </View>
                 </View>
-  
-                <View
-                  style={{
-                    marginHorizontal: RFPercentage(1),
-                    marginTop: 13,
-                    justifyContent: 'center',
-                    marginBottom: 6,
-                    width: '70%',
-                  }}>
-                  <Text
-                    style={{
-                      // backgroundColor: 'white',
-                      marginBottom: '1%',
-                      alignSelf: 'flex-start',
-                      fontWeight: 'bold',
-                      fontSize: FontSize.fontSizeText15,
-                      color:'black'
-                    }}>
-                    {title}
-                  </Text>
-  
-                  <Text
-                    style={{
-                      // backgroundColor: 'white',
-                      alignSelf: 'flex-start',
-                      marginBottom: '4%',
-                      fontSize: FontSize.fontSizeText13,
-                      color:'black'
-                    }}>
-                    {description.length > 120
-                      ? description.slice(0, 120) + '...'
-                      : description}
-  
-                      
-                  </Text>
-                </View>
               </View>
             </TouchableOpacity>
-          );
-      case 'projectOrganization':
-          return (
-            <>
-              <TouchableOpacity
-                activeOpacity={0.5}
-                style={style.projectOrganization}
-                onPress={onPress}>
-                <View
-                  style={{
-                    alignSelf: 'center',
-                    width: '36%',
-                    // alignContent: 'center',
-                    // alignItems: 'center',
-                    backgroundColor: 'transparent',
-                  }}>
-                  <ImageBackground
-                    // borderRadius={10}
-                    borderBottomLeftRadius={10}
-                    borderTopLeftRadius={10}
-                    // source={require(urii)}
-                    source={
-                      cover !== ''
-                        ? {uri: imageUrl + cover}
-                        : require('../../assets/backgrounds/nuevoproyecto.jpg')
-                    }
-                    style={{height: '100%'}}>
-                    <View style={{alignItems: 'stretch', flex: 1}}>
-                      <Text
-                        style={{
-                          // textAlign: 'center',
-                          marginBottom: '1%',
-                          marginLeft: '4%',
-                          marginRight: '4%',
-                          top: RFPercentage(13),
-                          backgroundColor: 'white',
-                          alignSelf: 'flex-start',
-                          paddingHorizontal: RFPercentage(0.5),
-                          color:'black'
-                        }}>
-                        {/* {title} */}
-                        {title.length > 20 ? title.slice(0, 20) + '...' : title}
-                        {/* titulazo que tiene mas de 20 caracteres y que  */}
-                      </Text>
-                    </View>
-                  </ImageBackground>
-                </View>
-  
-                <View
-                  style={{
-                    // marginHorizontal: RFPercentage(1),
-                    marginTop: RFPercentage(1),
-                    // marginBottom: 6,
-                    width: '100%',
-                  }}>
-                  <Text
-                    style={{
-                      // backgroundColor: 'red',
-                      alignSelf: 'stretch',
-                      marginTop: '4%',
-                      marginHorizontal: RFPercentage(2),
-                      fontSize: FontSize.fontSizeText13,
-                      height: '60%',
-                      width:'60%',
-                      color:'black'
-                    }}>
-                    {description.length > 120
-                      ? description.slice(0, 120) + '...'
-                      : description}
-                  </Text>
-                  <View
-                    style={{
-                      marginBottom: RFPercentage(0),
-                      marginHorizontal: RFPercentage(2),
-                      flexDirection: 'row',
-                      alignContent: 'center',
-                      alignItems: 'center',
-                      // justifyContent: 'space-between',
-                      alignSelf: 'stretch',
-                      height: '30%',
-                    }}>
-                    {/* personas */}
-                    <TouchableOpacity
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-around',
-                      }}>
-                      {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
-                      <People
-                        width={RFPercentage(2)}
-                        height={RFPercentage(2)}
-                        color={'#000000'}
-                      />
-                      <Text
-                        style={{
-                          fontSize: FontSize.fontSizeText13,
-                          marginHorizontal: RFPercentage(1),
-                          alignSelf: 'center',
-                          color:'black'
-                        }}>
-                        {contribution}
-                      </Text>
-                    </TouchableOpacity>
-  
-                    {/*favorito */}
-                    <TouchableOpacity
-                      onPress={onLike}
-                      style={{flexDirection: 'row'}}>
-                      {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
-                      {boolHelper ? (
-                        <HeartFill width={16} height={16} color={'#ff0000'} />
-                      ) : (
-                        <Heart width={16} height={16} color={'#000000'} />
-                      )}
-                      <Text
-                        style={{
-                          fontSize: FontSize.fontSizeText13,
-                          marginHorizontal: RFPercentage(1),
-                          color:'black'
-                        }}>
-                        {totalLikes}
-                      </Text>
-                    </TouchableOpacity>
-  
-                    {/* ver mas */}
-                    <View
-                      style={{
-                        width: RFPercentage(9),
-                        left: RFPercentage(5),
-                        bottom: 2,
-                        borderRadius: 100,
-                      }}>
-                      <CustomButton
-                      height={RFPercentage(3.4)}
-                        borderRadius={11}
-                        onPress={() => console.log('pressed')}
-                        label="Ver más "
-                        backgroundColor={Colors.primaryLigth}
-                        iconRight="arrow-right"
-                        iconColor="white"
-                        fontSize={FontSize.fontSizeText10}
-                      />
-                    </View>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            </>
-          );
-        default:
+          </>
+        );
+      default:
         return <h1>No project match</h1>;
     }
   };
@@ -1121,7 +1124,7 @@ const style = StyleSheet.create({
     // height: '100%',
     flexShrink: 1,
     width: '100%',
-    marginTop:'4%',
+    marginTop: '4%',
     // marginVertical: RFPercentage(2),
     // borderRadius: 10,
   },

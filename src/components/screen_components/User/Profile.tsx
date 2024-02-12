@@ -68,18 +68,20 @@ import {
 } from 'react-native-responsive-screen';
 import {Spinner} from '../../utility/Spinner';
 import Toast from 'react-native-toast-message';
+import { useLanguage } from '../../../hooks/useLanguage';
 
 interface Props extends StackScreenProps<any, any> {}
 
 export const Profile = ({navigation}: Props) => {
   //#region Variables
   // const navigation = useNavigation();
+  const {fontLanguage} = useLanguage();
   const MAX_CHARACTERS = 300;
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    {key: 'one', title: 'Contribuciones'},
-    {key: 'two', title: 'Me gustan'},
-    {key: 'three', title: 'Creados'},
+    {key: 'one', title: fontLanguage.profile[0].title_one},
+    {key: 'two', title: fontLanguage.profile[0].title_two},
+    {key: 'three', title: fontLanguage.profile[0].title_three},
   ]);
 
   const [isAllCharged, setIsAllCharged] = useState(false);
@@ -161,7 +163,7 @@ export const Profile = ({navigation}: Props) => {
                 fontFamily: FontFamily.NotoSansDisplayRegular,
                 fontWeight: '700',
               }}>
-              No has participado...
+              {fontLanguage.profile[0].contribution_not_participate}
             </Text>
             <Text
               style={{
@@ -173,8 +175,7 @@ export const Profile = ({navigation}: Props) => {
                 fontWeight: '600',
                 marginTop: '3%',
               }}>
-              ¡Participa! Y todos los proyectos en los que contribuyas
-              aparecerán aquí.
+              {fontLanguage.profile[0].contribution_participate}
             </Text>
             <View style={{alignItems: 'center'}}>
               <NotContribution
@@ -367,7 +368,7 @@ export const Profile = ({navigation}: Props) => {
                 fontFamily: FontFamily.NotoSansDisplayRegular,
                 fontWeight: '700',
               }}>
-              No tienes proyectos favoritos
+              {fontLanguage.profile[0].liked_not_fav}
             </Text>
             <Text
               style={{
@@ -379,8 +380,7 @@ export const Profile = ({navigation}: Props) => {
                 fontWeight: '600',
                 marginTop: '3%',
               }}>
-              Dale "me gusta" a los proyectos que te interesan y se guardarán
-              aquí
+              {fontLanguage.profile[0].liked_fav}
             </Text>
             <View style={{alignItems: 'center'}}>
               <NotLiked width={RFPercentage(28)} height={RFPercentage(28)} />
@@ -570,7 +570,7 @@ export const Profile = ({navigation}: Props) => {
                 fontFamily: FontFamily.NotoSansDisplayRegular,
                 fontWeight: '700',
               }}>
-              Aún no se han creado proyectos...
+              {fontLanguage.profile[0].created_not}
             </Text>
             <Text
               style={{
@@ -582,7 +582,7 @@ export const Profile = ({navigation}: Props) => {
                 fontWeight: '600',
                 marginTop: '3%',
               }}>
-              Crea tus propios proyectos y aparecerán aquí
+              {fontLanguage.profile[0].created_proyect}
             </Text>
             <View style={{alignItems: 'center'}}>
               <NotCreated width={RFPercentage(28)} height={RFPercentage(28)} />
@@ -954,7 +954,7 @@ export const Profile = ({navigation}: Props) => {
             marginTop: RFPercentage(0.5),
           }}>
           <TouchableOpacity onPress={() => saveProfile()}>
-            <Text style={{color: 'blue'}}>Guardar</Text>
+            <Text style={{color: 'blue'}}>{fontLanguage.global[0].save_button}</Text>
           </TouchableOpacity>
         </View>
       );
@@ -1069,7 +1069,7 @@ export const Profile = ({navigation}: Props) => {
               type: 'error',
               text1: 'Image',
               // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-              text2: 'La imagen pesa demasiado. Peso máximo, 4MB',
+              text2: fontLanguage.profile[0].image_weight,
             });
           }
         }
@@ -1079,7 +1079,7 @@ export const Profile = ({navigation}: Props) => {
           type: 'info',
           text1: 'Image',
           // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-          text2: 'Imagen no seleccionada',
+          text2: fontLanguage.profile[0].image_not_selected,
         });
       });
   };
@@ -1164,7 +1164,7 @@ export const Profile = ({navigation}: Props) => {
         if (resp) {
           Toast.show({
             type: 'success',
-            text1: 'Guardado exitoso',
+            text1: fontLanguage.profile[0].toast_save_success,
             // text2: 'No se han podido obtener los datos, por favor reinicie la app',
             // text2: '',
           });
@@ -1196,7 +1196,7 @@ export const Profile = ({navigation}: Props) => {
           }
           Toast.show({
             type: 'error',
-            text1: 'Error de guardado',
+            text1: fontLanguage.profile[0].toast_err,
             // text2: 'No se han podido obtener los datos, por favor reinicie la app',
             text2: error.response.data,
           });
@@ -1210,7 +1210,7 @@ export const Profile = ({navigation}: Props) => {
           );
           Toast.show({
             type: 'error',
-            text1: 'Error de guardado',
+            text1: fontLanguage.profile[0].toast_err,
             // text2: 'No se han podido obtener los datos, por favor reinicie la app',
             text2: error.request,
           });
@@ -1219,7 +1219,7 @@ export const Profile = ({navigation}: Props) => {
           console.log('Error de configuración de la solicitud:', error.message);
           Toast.show({
             type: 'error',
-            text1: 'Error de guardado',
+            text1: fontLanguage.profile[0].toast_err,
             // text2: 'No se han podido obtener los datos, por favor reinicie la app',
             text2: error.message,
           });
@@ -1248,7 +1248,7 @@ export const Profile = ({navigation}: Props) => {
   return (
     <>
       <HeaderComponent
-        title={!userEdit ? user.username : 'Editar perfil'}
+        title={!userEdit ? user.username : fontLanguage.profile[0].edit_profile}
         onPressLeft={() => navigation.goBack()}
         onPressRight={() => saveProfile()}
         rightIcon={canEdit ? true : false}
@@ -1361,7 +1361,7 @@ export const Profile = ({navigation}: Props) => {
                       fontFamily: FontFamily.NotoSansDisplayMedium,
                       fontSize: FontSize.fontSizeText15,
                     }}>
-                    Visibilidad del perfil
+                    {fontLanguage.profile[0].form.visibility}
                   </Text>
                   <Switch
                     value={isSwitchOn}
@@ -1386,9 +1386,7 @@ export const Profile = ({navigation}: Props) => {
                       fontFamily: FontFamily.NotoSansDisplayLight,
                       fontSize: FontSize.fontSizeText13,
                     }}>
-                    Si lo activas tu perfil pasará a estar oculto para los demás
-                    usuarios de Geonity, pero podrás seguir creando proyectos y
-                    participando en ellos
+                    {fontLanguage.profile[0].form.visibility_description}
                   </Text>
                 </View>
 
@@ -1404,12 +1402,12 @@ export const Profile = ({navigation}: Props) => {
                       fontFamily: FontFamily.NotoSansDisplayMedium,
                       fontSize: FontSize.fontSizeText15,
                     }}>
-                    Nombre de usuario
+                    {fontLanguage.profile[0].form.user_name}
                   </Text>
                   <InputText
                     editable={false}
                     // isInputText={() => setIsInputText(!isInputText)}
-                    label={'Nombre de usuario'}
+                    label={fontLanguage.profile[0].form.user_name}
                     keyboardType="default"
                     multiline={false}
                     numOfLines={1}
@@ -1432,11 +1430,11 @@ export const Profile = ({navigation}: Props) => {
                       fontFamily: FontFamily.NotoSansDisplayMedium,
                       fontSize: FontSize.fontSizeText15,
                     }}>
-                    Biografía
+                    {fontLanguage.profile[0].form.biography}
                   </Text>
                   <InputText
                     // isInputText={() => setIsInputText(!isInputText)}
-                    label={'Biografía'}
+                    label={fontLanguage.profile[0].form.biography}
                     keyboardType="default"
                     multiline={true}
                     maxLength={MAX_CHARACTERS}
@@ -1535,7 +1533,7 @@ export const Profile = ({navigation}: Props) => {
                       fontFamily: FontFamily.NotoSansDisplayMedium,
                       fontSize: FontSize.fontSizeText15,
                     }}>
-                    Organización
+                    {fontLanguage.profile[0].form.organization}
                   </Text>
 
                   <TouchableOpacity
@@ -1603,7 +1601,7 @@ export const Profile = ({navigation}: Props) => {
                         {userProfile.created_organizations &&
                         userProfile.created_organizations.length > 0
                           ? userProfile.created_organizations[0].principalName
-                          : '¿Perteneces a una organización?'}
+                          : fontLanguage.profile[0].form.question_organization}
                       </Text>
                       {userProfile.created_organizations &&
                         userProfile.created_organizations.length > 0 && (
@@ -1665,7 +1663,7 @@ export const Profile = ({navigation}: Props) => {
                       fontFamily: FontFamily.NotoSansDisplayMedium,
                       fontSize: FontSize.fontSizeText15,
                     }}>
-                    Ubicacion
+                    {fontLanguage.profile[0].form.location}
                   </Text>
                   <Picker
                     selectedValue={form.country.code}
@@ -1869,11 +1867,9 @@ export const Profile = ({navigation}: Props) => {
               onPress={hideModalInfo}
               size={RFPercentage(4)}
               color={Colors.primaryLigth}
-              label="¿Perteneces a una organización?"
-              subLabel="Si perteneces a una organización existente en Geonity, 
-              ponte en contacto con el admin de la organización para que te invite o te añada como integrante.
-              "
-              subLabel2="Una vez hayas aceptado la solicitud, podrás añadir la organzación a tu biografía."
+              label={fontLanguage.profile[0].form.modal_info_label}
+              subLabel={fontLanguage.profile[0].form.modal_info_sublabel}
+              subLabel2={fontLanguage.profile[0].form.modal_info_sublabel2}
               helper={false}
             />
             <SaveProyectModal
@@ -1882,7 +1878,7 @@ export const Profile = ({navigation}: Props) => {
               onPress={hideModalControlSizeImage}
               size={RFPercentage(8)}
               color={Colors.semanticWarningDark}
-              label="La imagen no puede pesar mas de 4 Mb"
+              label={fontLanguage.profile[0].form.modal_save_image}
               helper={false}
             />
           </SafeAreaView>
@@ -2023,10 +2019,10 @@ export const Profile = ({navigation}: Props) => {
                       marginTop: '2%',
                     }}>
                     <View style={styles.viewDataProfile}>
-                      <Text>Contribuciones</Text>
+                      <Text>{fontLanguage.profile[0].contributions}</Text>
                     </View>
                     <View style={styles.viewDataProfile}>
-                      <Text>Creados</Text>
+                      <Text>{fontLanguage.profile[0].created}</Text>
                     </View>
                   </View>
                 </View>
@@ -2064,7 +2060,7 @@ export const Profile = ({navigation}: Props) => {
                       {userProfile.created_organizations &&
                       userProfile.created_organizations.length > 0
                         ? userProfile.created_organizations[0].principalName
-                        : 'Sin organizaciones'}
+                        : fontLanguage.profile[0].without_organizations}
                     </Text>
                   </View>
                   <View
@@ -2093,7 +2089,7 @@ export const Profile = ({navigation}: Props) => {
                       userProfile.country.name &&
                       userProfile.country.name.length > 0
                         ? userProfile.country.name
-                        : 'Sin localización'}
+                        : fontLanguage.profile[0].without_location}
                     </Text>
                   </View>
                 </View>
@@ -2123,7 +2119,7 @@ export const Profile = ({navigation}: Props) => {
                 userProfile.biography != null && userProfile.biography !=  undefined && 
                 userProfile.biography != 'null'
                   ? userProfile.biography
-                  : 'No hay ninguna descripción'}
+                  : fontLanguage.profile[0].without_description}
               </Text>
             </View>
           </View>

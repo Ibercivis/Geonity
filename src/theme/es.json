@@ -6,7 +6,13 @@
         "back_button": "Volver",
         "close_button": "Cerrar",
         "save_button": "Guardar",
-        "cancel_button": "Cancelar"
+        "clean_all_button": "Limpiar todo",
+        "cancel_button": "Cancelar",
+        "acept_button": "Aceptar",
+        "delete_button": "Eliminar",
+        "continue_button": "Continuar",
+        "confirm_button": "Confirmar",
+        "apply":"Aplicar"
       }
     ],
     "login_screen": [
@@ -14,8 +20,10 @@
         "title": "Inicio de sesión",
         "mail_input": "Nombre de usuario",
         "mail_input_recover": "Correo electrónico",
+        "mail_input_recover_err": "El nombre de usuario o correo no existe",
         "password_input": "Contraseña",
         "recovery_password": "¿Has olvidado la ",
+        "recovery_password_2": "contraseña?",
         "or_login": "O logear con...",
         "new_in_app": "¿Nuevo en la App?",
         "register": "Crear cuenta",
@@ -33,9 +41,14 @@
         "title": "Registrar",
         "subtitle": "¡Vamos a empezar!",
         "user_name_input": "Nombre de usuario",
+        "user_name_input_err": "Nombre de usuario obligatorio",
         "email_input": "Correo electrónico",
+        "email_input_err": "Correo electrónico invalido",
         "password1_input": "Contraseña",
         "password2_input": "Confirmar contraseña",
+        "password1_input_err": "La contraseña ha de tener 8 digitos alfanumericos",
+        "password2_input_err1": "Las contraseñas no coinciden",
+        "password2_input_err2": "La contraseña ha de tener 8 digitos alfanumericos",
         "have_account": "¿Ya tienes una cuenta?",
         "enter": " Entrar",
         "register_button": "Crear cuenta",
@@ -44,22 +57,6 @@
         "register_microsoft": "Continuar con Microsoft"
       }
     ],
-    "recovery_screen": [
-      {
-        "title": "Registrar",
-        "subtitle": "¡Vamos a empezar!",
-        "title_info": "¿Problemas para iniciar sesión?",
-        "content_info": "Introduzca su correo electrónico y le enviaremos un enlace para que pueda volver a entrar en su cuenta.",
-        "email_input": "Correo electrónico",
-        "email_input_err": "Correo electrónico incorrecto",
-        "session": " al inicio de sesión",
-        "back": "Volver",
-        "send_email": "Enviar enlace",
-        "send_email_try_again": "Intentar de nuevo",
-        "create_account": "Crear cuenta"
-      }
-    ],
-    "home_screen": [],
     "new_project_screen": [
       {
         "title": "NUEVO PROYECTO",
@@ -78,105 +75,269 @@
         ]
       }
     ],
-    "new_project_mark_screen": [
+    "recovery_screen": [
       {
-        "title": "MARCADOR",
-        "none_mark": "Seleccione el tipo de respuesta del usuario",
-        "new_mark": [
-          {
-            "ask_input": "Pregunta",
-            "description_input": "Descripción de la pregunta",
-            "ask_input_err": "Debes indicar una pregunta",
-            "description_input_err": "Debes incluir una descripción",
-            "title": "Marca",
-            "save_button": "Guardar",
-            "close_button": "Cancelar"
-          }
-        ],
-        "modal_error": [
-          {
-            "title": "Error de creación",
-            "body": "Se requiere añadir al menos una pregunta.",
-            "close_button": "Cerrar"
-          }
-        ]
+        "title": "Registrar",
+        "subtitle": "¡Vamos a empezar!",
+        "title_info": "¿Problemas para iniciar sesión?",
+        "content_info": "Introduzca su correo electrónico y le enviaremos un enlace para que pueda volver a entrar en su cuenta.",
+        "email_input": "Correo electrónico",
+        "email_input_err": "Correo electrónico incorrecto",
+        "session": " al inicio de sesión",
+        "back": "Volver",
+        "send_email": "Enviar enlace",
+        "send_email_try_again": "Intentar de nuevo",
+        "create_account": "Crear cuenta"
       }
     ],
-    "new_project_mark_example_screen": [
+    "Home": [
       {
-        "title": "PRUEBA TU MARCADOR",
-        "response_input": "Respuesta",
-        "save_project": [
-          {
-            "title": "Finalizar",
-            "body": "¿ Desea guardar el proyecto ?",
-            "save_button": "Guardar",
-            "close_button": "Cancelar"
-          }
-        ],
-        "more_information": [
-          {
-            "title": "Más información",
-            "close_button": "Cerrar"
-          }
-        ]
+        "title": "Home",
+        "no_projects_text_1": "Aún no se han creado proyectos...",
+        "no_projects_text_2": "Puedes crear tus propios proyectos",
+        "no_observations_text_1": "Aún no se han creado organizaciones...",
+        "no_observations_text_2": "Puedes crear tu propia organización",
+        "search": "Buscar proyectos",
+        "category": "Categorías",
+        "new_project": "Nuevos proyectos",
+        "important_projects": "Proyectos destacados",
+        "no_organization": "Sin organización",
+        "interesting": "Te puede interesar...",
+        "important_organizations": "Organizaciones destacadas",
+        "project_found": "PROYECTOS ENCONTRADOS",
+        "all_categories": "Todas las categorías",
+        "logout": "Cerrar sesión"
       }
     ],
-    "new_organisation_screen": [
+    "organization": [
       {
-        "title": "NUEVA ORGANIZACIÓN",
-        "title_edit": "EDICIÓN",
-        "principal_information": [
-          {
-            "principal_title": "Información principal",
-            "principal_name_input": "Nombre",
-            "principal_enlace_input": "Enlace",
-            "principal_description_input": "Descripción",
-            "principal_type_input": "Tipo",
-            "principal_name_placeholder": "Por favor, escribe el nombre de la organización.",
-            "principal_enlace_placeholder": "Por favor, añade el enlace a la página web de la organización.",
-            "principal_description_placeholder": "Por favor, describe brevemente a la organización (máximo 300 caracteres).",
-            "principal_type_placeholder": "Por favor, seleccione uno."
-          }
-        ],
-        "contact_information": [
-          {
-            "contact_title": "Información de contacto",
-            "contact_name_input": "Nombre de la persona",
-            "contact_mail_input": "Email de contacto",
-            "contact_name_placeholder": "Por favor, indica la persona o punto de contacto de la organización.",
-            "contact_mail_placeholder": "Por favor, indica la dirección de correo electrónico del contacto de la organización. Ten en cuenta que deberá tener permiso para ello."
-          }
-        ],
-        "logo": [
-          {
-            "logo_title": "Logotipo de la organización",
-            "logo_placeholder": "Por favor, añade el logotipo de su organización (en .jpg o .png)",
-            "logo_credit_input": "Créditos del logotipo, si procede"
-          }
-        ],
-        "dialog": [
-          {
-            "title": "Error de creación",
-            "body": "Es oblicatorio rellenar todos los campos con *"
-          }
-        ]
+        "title_edit": "Editar organización",
+        "title_create": "Crear organización",
+        "title_list": "Listado",
+        "image_weight": "La imagen pesa demasiado. Peso máximo, 4MB",
+        "image_not_selected": "Imagen no seleccionada",
+        "project_deleted_success": "Proyecto borrado con éxito.",
+        "project_deleted_error": "Error en el borrado.",
+        "profile_images": "Imágenes del perfil",
+        "front_page_image": "Imágenes de portada",
+        "organization_name": "Nombre de la organización",
+        "organization_name_label": "Escribe el nombre de la organización...",
+        "contact_mail": "Email de contacto",
+        "biography": "Biografía",
+        "biography_label": "Presenta tu organización en la biografía",
+        "add_members": "Añadir integrantes",
+        "search_members": "Buscar integrantes...",
+        "how_to_add_members": "¿Cómo añadir integrantes?",
+        "members_list": "Lista de integrantes",
+        "administrator": "Administrador",
+        "member": "Miembros",
+        "project": "Proyectos",
+        "save_changes": "Guardar cambios",
+        "create_organization": "Crear organización",
+        "save_modal_label": "Ha surgido un problema, vuelva a intentarlo.",
+        "save_modal_image_label": "La imagen no puede pesar mas de 4 Mb",
+        "info_modal_label": "¿Cómo añadir integrantes?",
+        "info_modal_sublabel": "Debes de escribir el nombre de usuario del integrante al que quieres añadir, automáticamente se le enviará una solicitud para unirse a la organización. Una vez el usuario la acepte, pasará a ser integrante de la organización.",
+        "delete_modal_label": "¿Desea borrar la organización?",
+        "delete_modal_sublabel": "Una vez borrada no podrá recuperarse",
+        "no_projects": "No hay proyectos asociados",
+        "info_no_projects_text": "Conforme la organización se asocie con los diferentes proyectos, se irán mostrando aquí",
+        "modal_label_created":"¡Organización creada!",
+        "modal_sublabel_created":"No olvides compartir tu proyecto para obtener una mayor participación"
       }
     ],
-    "map_box_screen": [],
-    "settings_screen": [
+    "project": [
       {
-        "title": "Ajustes",
-        "change_password_screen":[
-          {
-            "title": "Cambio de contraseña",
-            "new_pass_1": "Nueva contraseña",
-            "new_pass_1_helper": "Introduzca la nueva contraseña",
-            "new_pass_2": "Repetir contraseña",
-            "new_pass_2_helper": "Repita la misma contraseña",
-            "modal_message": "Contraseña cambiada"
-          }
-        ]
+        "title_list": "Listado",
+        "location_permission": "Permiso de ubicación requerido",
+        "give_permissions": "Dar permisos",
+        "show_map": "¡Ver mapa!",
+        "created_by": "Creado por:",
+        "organization": "Organización:",
+        "no_organization": "No hay una organización vinculada",
+        "modal_save_label": "¡Proyecto creado!",
+        "modal_save_sublabel": "No olvides compartir tu proyecto para obtener una mayor participación",
+        "modal_pass_label": "Escribe la contraseña del proyecto",
+        "title_permission": "Permiso de Almacenamiento",
+        "menssage": "La app necesita acceso al almacenamiento para descargar archivos.",
+        "neutral_button": "Preguntar Luego",
+        "toast_no_permission_text1": "Sin permisos",
+        "toast_no_permission_text2": "No se concedieron los permisos de almacenamiento",
+        "toast_err_download_text1": "Error en la descarga del servidor",
+        "toast_download_completed_text1": "Descarga completada",
+        "toast_download_completed_text2": "Archivo guardado en:"
+      }
+    ],
+    "create_project": [
+      {
+        "title_edit": "Editar proyecto",
+        "title_create": "Crear un nuevo proyecto",
+        "save_changes": "Guardar cambios",
+        "create_continue": "Crear y continuar",
+        "categories": "Categorías",
+        "apply": "Aplicar",
+        "response_type": "Tipo de respuesta",
+        "first_screen": {
+          "image_weight": "La imagen pesa demasiado. Peso máximo, 4MB",
+          "image_not_selected": "Imagen no seleccionada",
+          "project_image": "Imagen del proyecto",
+          "project_name": "Nombre del proyecto",
+          "project_description": "Descripción del proyecto",
+          "project_description_label": "Escribe la descripción",
+          "add_categories": "Añadir categorías al proyecto",
+          "select_categories": "Seleccionar categorías",
+          "add_organizations": "Añadir organizaciones al proyecto",
+          "add_organizations_placeholder": "Buscar organizaciones...",
+          "how_to_add_organizations": "¿Cómo añadir organizaciones?",
+          "organizations_list": "Lista de organizaciones"
+        },
+        "second_screen": {
+          "privacy_data_base_project": "Privacidad base de datos del proyecto",
+          "privacy_info_data_base_project": "Si lo activas, la base de datos de tu proyecto no podrá ser descargada por ningún usuario y pasará a estar oculta.",
+          "privacy_project": "Privacidad del proyecto",
+          "privacy_info_project": "Si lo activas, tu proyecto pasará a ser privado. Solamente se podrá participar a través de una contraseña.",
+          "write_pass_label": "Escriba la contraseña",
+          "confirm_pass_label": "Confirme la contraseña"
+        },
+        "modals": {
+          "save_problem_label": "Ha surgido un problema, vuelva a intentarlo.",
+          "pass_problem_label": "La contraseña no coincide.",
+          "how_to_add_organizations_label": "¿Cómo añadir organizaciones?",
+          "how_to_add_organizations_sublabel": "Debes de escribir el nombre de la organización que quieres añadir al proyecto, automáticamente se le enviará una solicitud al administrador. Una vez el administrador acepte, se agregará la organización al proyecto",
+          "delete_proyect_label": "¿Desea borrar el proyecto?",
+          "delete_proyect_sublabel": "Una vez borrado no podrá recuperarse"
+        }
+      }
+    ],
+    "map": [
+      {
+        "toast_err_question": "No se han podido obtener las cuestiones",
+        "toast_err_obligatory_fields": "Los campos obligatorios tienen que ser rellenados",
+        "delete_observation": "Marca borrada con éxito",
+        "not_delete_observation": "No se pudo borrar la marca",
+        "enable_gps": "Habilita el GPS para poder acceder al mapa",
+        "recharge_screen": "Recargar la pantalla",
+        "number_mark": "Marcador Nº ",
+        "show_more": "Ver más",
+        "want_to_confirm": "¿Quieres confirmar el marcador?",
+        "modal": {
+          "info_label": "¿Como participar y añadir un marcador?",
+          "info_sublabel": "Si perteneces a una organización existente en Geonity, ponte en contacto con el admin de la organización para que te invite o te añada como integrante.",
+          "info_sublabel2": "Una vez hayas aceptado la solicitud, podrás añadir la organzación a tu biografía.",
+          "delete_label": "¿Desea borrar la observación?"
+        },
+        "mark": {
+          "save": "Guardar",
+          "delete": "Borrar marca",
+          "finish": "Finalizar",
+          "image_weight": "La imagen pesa demasiado. Peso máximo, 4MB",
+          "": ""
+        },
+        "cards": {
+          "permission_text1": "Sin permisos",
+          "permission_text2": "No se concedieron los permisos para acceder a la cámara",
+          "text_answer": "Pregunta de texto",
+          "number_answer": "Pregunta numérica",
+          "galery": "Galería",
+          "camera": "Cámara"
+        }
+      }
+    ],
+    "profile": [
+      {
+        "title_one": "Contribuciones",
+        "title_two": "Me gustan",
+        "title_three": "Creados",
+        "contribution_not_participate": "No has participado...",
+        "contribution_participate": "¡Participa! Y todos los proyectos en los que contribuyas aparecerán aquí",
+        "liked_not_fav": "No tienes proyectos favoritos",
+        "liked_fav": "Dale 'me gusta' a los proyectos que te interesan y se guardarán aquí",
+        "created_not": "Aún no se han creado proyectos...",
+        "created_proyect": "Crea tus propios proyectos y aparecerán aquí",
+        "image_weight": "La imagen pesa demasiado. Peso máximo, 4MB",
+        "image_not_selected": "Imagen no seleccionada",
+        "toast_save_success": "Guardado exitoso",
+        "toast_err": "Error de guardado",
+        "form": {
+          "visibility": "Visibilidad del perfil",
+          "visibility_description": "Si lo activas tu perfil pasará a estar oculto para los demás usuarios de Geonity, pero podrás seguir creando proyectos y participando en ellos",
+          "user_name": "Nombre de usuario",
+          "biography": "Biografía",
+          "organization": "Organización",
+          "question_organization": "¿Perteneces a una organización?",
+          "location": "Ubicación",
+          "modal_save_image": "La imagen no puede pesar más de 4 Mb",
+          "modal_info_label": "¿Perteneces a una organización?",
+          "modal_info_sublabel": "Si perteneces a una organización existente en Geonity, ponte en contacto con el admin de la organización para que te invite o te añada como integrante.",
+          "modal_info_sublabel2": "Una vez hayas aceptado la solicitud, podrás añadir la organzación a tu biografía."
+        },
+        "contributions": "Contribuciones",
+        "created": "Creados",
+        "without_organizations": "Sin organizaciones",
+        "without_location": "Sin localización",
+        "without_description": "No hay ninguna descripción",
+        "edit_profile": "Editar perfil"
+      }
+    ],
+    "modals": [
+      {
+        "accept_button_text": "Aceptar",
+        "cancel_button_text": "Cancelar",
+        "delete_button_text": "Borrar",
+        "password_text": "Contraseña",
+        "password_text_label": "Escriba la contraseña",
+        "save_project_login_err": "No pudo registrarse. Compruebe que los datos son correctos e intentelo de nuevo",
+        "policies": {
+          "title": "Política de Privacidad",
+          "text_1": "Al registrarse en Geonity, usted acepta que la Fundación Ibercivis recopile y procese su información personal de acuerdo con nuestra Política de Privacidad.",
+          "text_2": "Nos comprometemos a proteger su privacidad y a usar su información exclusivamente para mejorar su experiencia con la aplicación y para proporcionarle los servicios solicitados.",
+          "text_3": "No compartiremos su información personal con terceros sin su consentimiento explícito, excepto cuando sea requerido por ley.",
+          "text_4": "Para más información sobre cómo recopilamos, usamos y protegemos su información, por favor, consulte nuestra Política de Privacidad completa en",
+          "accept_text": "Al pulsar el botón de “Aceptar”, usted confirma que ha leído y entendido nuestra Política de Privacidad y da su consentimiento para el tratamiento de sus datos personales según se describe."
+        },
+        "map": {
+          "text_1": "Tienes dos opciones:",
+          "text_2": "Mantener presionada",
+          "text_3": "la pantalla en el punto exacto del mapa donde se quiera colocar el marcador",
+          "text_4": "Presiona el botón '+' ",
+          "text_5": "se añadirá automáticamente un marcador vinculado a tu posición actual. (El botón está situado en la parte inferior derecha del mapa).",
+          "accept_text": ""
+        },
+        "bottom_tab_nav": {
+          "title": "¿Qué desea hacer?",
+          "project": "Crear un nuevo proyecto",
+          "organization": "Crear una nueva organización",
+          "profile": "Perfil",
+          "settings": "Ajustes"
+        }
+      }
+    ],
+    "utility": [
+      {
+        "description": "Descripción"
+      }
+    ],
+    "cards": [
+      {
+        "more": "Más...",
+        "category": {},
+        "new_projects": {},
+        "importants": {},
+        "interesting": {},
+        "organization": {},
+        "project_found": {},
+        "organization_found": {},
+        "project_organization": {}
+      }
+    ],
+    "question_card": [
+      {
+        "text_type": "Tipo texto",
+        "number_type": "Tipo numérico",
+        "image_type": "Tipo imagen",
+        "response_type": "Tipo de respuesta",
+        "write_answer": "Escribe tu pregunta",
+        "obligatory": "Obligatorio"
       }
     ]
   }

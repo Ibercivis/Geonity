@@ -30,9 +30,10 @@ import {
   User,
   CreateFieldForm,
   ShowProject,
+  UserInfo,
 } from '../../../interfaces/interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import citmapApi, { imageUrl } from '../../../api/citmapApi';
+import citmapApi, {imageUrl} from '../../../api/citmapApi';
 import {Checkbox, IconButton, Switch} from 'react-native-paper';
 import Hashtag from '../../../assets/icons/general/Hashtag.svg';
 import {FontFamily, FontSize} from '../../../theme/fonts';
@@ -56,12 +57,15 @@ import {
   widthPercentageToDP,
 } from 'react-native-responsive-screen';
 import Toast from 'react-native-toast-message';
+import {useLanguage} from '../../../hooks/useLanguage';
 
 interface Props extends StackScreenProps<StackParams, 'CreateProject'> {}
 
 export const CreateProject = ({navigation, route}: Props) => {
+  const {fontLanguage} = useLanguage();
   const [currentStep, setCurrentStep] = useState(1);
   const [isEdit, setIsEdit] = useState(false);
+  const [canDelete, setCanDelete] = useState(false);
   const totalSteps = 3;
   const MAX_CHARACTERS = 1000;
   const {fontScale} = useWindowDimensions();
@@ -189,9 +193,9 @@ export const CreateProject = ({navigation, route}: Props) => {
     // {id: 7, type: 'IMG', name: 'Foto', icon: 'camera-outline'},
     // {id: 8, type: 'STR', name: 'Fecha', icon: 'calendar-range'},
     // {id: 9, type: 'STR', name: 'Hora', icon: 'clock-time-four-outline'},
-    {id: 10, type: 'STR', name: 'Tipo texto', icon: 'text'},
-    {id: 11, type: 'NUM', name: 'Tipo numérico', icon: 'numeric'},
-    {id: 12, type: 'IMG', name: 'Tipo imagen', icon: 'camera-outline'},
+    {id: 10, type: 'STR', name: fontLanguage.question_card[0].text_type, icon: 'text'},
+    {id: 11, type: 'NUM', name: fontLanguage.question_card[0].number_type, icon: 'numeric'},
+    {id: 12, type: 'IMG', name: fontLanguage.question_card[0].image_type, icon: 'camera-outline'},
   ];
 
   //#endregion
@@ -204,15 +208,12 @@ export const CreateProject = ({navigation, route}: Props) => {
    * está puesto aquí para que entre solo cuando la organizationList haya cargado
    */
   useEffect(() => {
-    console.log('entra para decir que está editando')
-      if (route.params) {
-        if (route.params.id) {
-          
-          setIsEdit(true);
-          getProjectApi();
-        }
-      } else setWaitingData(false);
-    
+    if (route.params) {
+      if (route.params.id) {
+        setIsEdit(true);
+        getProjectApi();
+      }
+    } else setWaitingData(false);
   }, [organizationList]);
 
   useEffect(() => {
@@ -354,7 +355,11 @@ export const CreateProject = ({navigation, route}: Props) => {
     setWaitingData(true);
     setQuestions([]);
     setImagesCharged([]);
-    const token = await AsyncStorage.getItem('token');
+    let token;
+
+    while (!token) {
+      token = await AsyncStorage.getItem('token');
+    }
     try {
       const resp = await citmapApi.get<ShowProject>(
         `/project/${route.params.id}`,
@@ -429,6 +434,37 @@ export const CreateProject = ({navigation, route}: Props) => {
       if (resp.data.cover != undefined) {
         setImagesCharged(resp.data.cover);
       }
+
+      const userInfo = await citmapApi.get<User>(
+        '/users/authentication/user/',
+        {
+          headers: {
+            Authorization: token,
+          },
+        },
+      );
+      const creatoruser = await citmapApi.get<UserInfo>(
+        `/users/${resp.data.creator}/`,
+        {
+          headers: {
+            Authorization: token,
+          },
+        },
+      );
+      //pequeña comprobación de si está editando el admin o el creator
+      let isAdmin = resp.data.administrators.find(x => x === userInfo.data.pk)
+      //si es creator, puede borrar
+      if (
+        userInfo.data != undefined &&
+        userInfo.data.pk === resp.data.creator
+      ) {
+        setCanDelete(true);
+      }
+      // si es admin puede editar pero no borrar
+      if(isAdmin !== undefined){
+        setCanDelete(false);
+      }
+
       setWaitingData(false);
     } catch (err) {
       console.log('hay un error: ' + err);
@@ -563,7 +599,7 @@ export const CreateProject = ({navigation, route}: Props) => {
               type: 'error',
               text1: 'Image',
               // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-              text2: 'La imagen pesa demasiado. Peso máximo, 4MB',
+              text2: fontLanguage.create_project[0].first_screen.image_weight,
             });
           }
         }
@@ -573,7 +609,7 @@ export const CreateProject = ({navigation, route}: Props) => {
           type: 'info',
           text1: 'Image',
           // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-          text2: 'Imagen no seleccionada',
+          text2:fontLanguage.create_project[0].first_screen.image_not_selected,
         });
       });
   };
@@ -1090,7 +1126,7 @@ export const CreateProject = ({navigation, route}: Props) => {
               marginVertical: RFPercentage(1),
               //   backgroundColor: 'red',
             }}>
-            <Text style={{color: 'black'}}>Imagen del proyecto</Text>
+            <Text style={{color: 'black'}}>{fontLanguage.create_project[0].first_screen.project_image}</Text>
             {images.length <= 0 && imagesCharged.length <= 0 && (
               <TouchableOpacity
                 style={{
@@ -1110,18 +1146,18 @@ export const CreateProject = ({navigation, route}: Props) => {
                   size={Size.iconSizeLarge}
                   onPress={() => selectImage()}
                 /> */}
-                <View style={{
-                  width:'100%',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
+                <View
+                  style={{
+                    width: '100%',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
                   <FrontPage
-                  fill={Colors.contentSecondaryLigth}
-                  width={RFPercentage(12)}
-                  height={RFPercentage(10)}
-                />
+                    fill={Colors.contentSecondaryLigth}
+                    width={RFPercentage(12)}
+                    height={RFPercentage(10)}
+                  />
                 </View>
-                
               </TouchableOpacity>
             )}
             {images.length > 0 && (
@@ -1139,7 +1175,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                 {images[0] ? (
                   <Image
                     source={{
-                      uri:'data:image/jpeg;base64,' + images[0].data,
+                      uri: 'data:image/jpeg;base64,' + images[0].data,
                     }}
                     style={{
                       position: 'absolute',
@@ -1323,9 +1359,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                   <>
                     <Image
                       source={{
-                        uri:
-                          imageUrl+
-                          imagesCharged[0].image,
+                        uri: imageUrl + imagesCharged[0].image,
                       }}
                       style={{
                         position: 'absolute',
@@ -1515,11 +1549,11 @@ export const CreateProject = ({navigation, route}: Props) => {
               width: '100%',
               marginVertical: RFPercentage(1),
             }}>
-            <Text style={{color: 'black'}}>Nombre del proyecto</Text>
+            <Text style={{color: 'black'}}>{fontLanguage.create_project[0].first_screen.project_name}</Text>
             <InputText
               // isInputText={() => setIsInputText(!isInputText)}
               isValid={nameValidate}
-              label={'Nombre del proyecto'}
+              label={fontLanguage.create_project[0].first_screen.project_name}
               keyboardType="default"
               multiline={false}
               numOfLines={1}
@@ -1536,10 +1570,10 @@ export const CreateProject = ({navigation, route}: Props) => {
               // width: widthPercentageToDP(71),
               marginVertical: RFPercentage(2),
             }}>
-            <Text style={{color: 'black'}}>Descripción del proyecto</Text>
+            <Text style={{color: 'black'}}>{fontLanguage.create_project[0].first_screen.project_description}</Text>
             <InputText
               isValid={descriptionValidate}
-              label={'Escribe la descripción'}
+              label={fontLanguage.create_project[0].first_screen.project_description_label}
               keyboardType="default"
               multiline={true}
               maxLength={MAX_CHARACTERS}
@@ -1584,11 +1618,11 @@ export const CreateProject = ({navigation, route}: Props) => {
               width: '100%',
               marginVertical: RFPercentage(1),
             }}>
-            <Text style={{color: 'black'}}>Añadir categorías al proyecto</Text>
+            <Text style={{color: 'black'}}>{fontLanguage.create_project[0].first_screen.add_categories}</Text>
             <View style={{width: widthPercentageToDP(85)}}>
               <CustomButton
                 backgroundColor={Colors.secondaryDark}
-                label={'Seleccionar categorías'}
+                label={fontLanguage.create_project[0].first_screen.select_categories}
                 onPress={() => {
                   Keyboard.dismiss(), setShowCategoryList(true);
                 }}
@@ -1635,7 +1669,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                     <View style={{width: RFPercentage(6)}}>
                       <CustomButton
                         backgroundColor={'transparent'}
-                        label={'Eliminar'}
+                        label={fontLanguage.global[0].delete_button}
                         onPress={() => setCheckCategories(x)}
                         fontColor="red"
                         outlineColor="red"
@@ -1656,7 +1690,7 @@ export const CreateProject = ({navigation, route}: Props) => {
               marginTop: RFPercentage(4),
             }}>
             <Text style={{color: 'black', marginBottom: '2%'}}>
-              Añadir organizaciones al proyeto
+            {fontLanguage.create_project[0].first_screen.add_organizations}
             </Text>
             <View
               style={{
@@ -1664,7 +1698,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                 marginBottom: RFPercentage(4),
               }}>
               <TextInput
-                placeholder="Buscar organizaciones..."
+                placeholder={fontLanguage.create_project[0].first_screen.add_organizations_placeholder}
                 value={inputValueOrganization}
                 onChangeText={value => handleInputChangeOrganization(value)}
                 style={styles.input}
@@ -1677,7 +1711,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                       marginHorizontal: '2%',
                       marginTop: '1%',
                     }}>
-                    ¿Cómo añadir organizaciones?
+                    {fontLanguage.create_project[0].first_screen.how_to_add_organizations}
                   </Text>
                 </TouchableOpacity>
               ) : (
@@ -1709,7 +1743,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                     marginTop: '10%',
                     marginBottom: '3%',
                   }}>
-                  Lista de organizaciones
+                  {fontLanguage.create_project[0].first_screen.organizations_list}
                 </Text>
               )}
               {suggestionsSelected.length > 0 &&
@@ -1723,33 +1757,36 @@ export const CreateProject = ({navigation, route}: Props) => {
                     key={index + 1}>
                     {/* sustituir por avatar */}
                     {item.logo ? (
-                              <Image
-                                source={{
-                                  uri: item.logo,
-                                }}
-                                style={{
-                                  width: '12%',
-                                  height: '100%',
-                                  borderRadius: 50,
-                                  resizeMode: 'cover',
-                                  backgroundColor: 'blue',
-                                  marginRight: '2%',
-                                }}
-                              />
-                            ) : (
-                              <View
-                                style={{
-                                  width: '12%',
-                                  height: '100%',
-                                  borderRadius: 100,
-                                  marginRight: '2%',
-                                  alignContent:'center',
-                                  alignItems:'center',
-                                  marginTop:'1.3%'
-                                }}>
-                                <UserMissing height={RFPercentage(3.8)} width={RFPercentage(3.8)} />
-                              </View>
-                            )}
+                      <Image
+                        source={{
+                          uri: item.logo,
+                        }}
+                        style={{
+                          width: '12%',
+                          height: '100%',
+                          borderRadius: 50,
+                          resizeMode: 'cover',
+                          backgroundColor: 'blue',
+                          marginRight: '2%',
+                        }}
+                      />
+                    ) : (
+                      <View
+                        style={{
+                          width: '12%',
+                          height: '100%',
+                          borderRadius: 100,
+                          marginRight: '2%',
+                          alignContent: 'center',
+                          alignItems: 'center',
+                          marginTop: '1.3%',
+                        }}>
+                        <UserMissing
+                          height={RFPercentage(3.8)}
+                          width={RFPercentage(3.8)}
+                        />
+                      </View>
+                    )}
                     {/* sustituir texto de abajo por el que sea */}
                     <View
                       style={{
@@ -1784,7 +1821,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                         onPress={() => moveItemToSuggestions(index)}
                         backgroundColor="transparen"
                         fontColor="red"
-                        label="Eliminar"
+                        label={fontLanguage.global[0].delete_button}
                         outlineColor="red"
                         fontSize={RFPercentage(1.2)}
                         height={RFPercentage(3)}
@@ -1830,7 +1867,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                   marginVertical: RFPercentage(1),
                 }}>
                 <Text style={{color: 'black'}}>
-                  Privacidad base de datos del proyecto
+                {fontLanguage.create_project[0].second_screen.privacy_data_base_project}
                 </Text>
                 <Switch
                   value={isSwitchOnDataBaseProject}
@@ -1846,8 +1883,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                   marginLeft: '3%',
                   //   backgroundColor:'green'
                 }}>
-                Si lo activas, la base de datos de tu proyecto no podrá ser
-                descargada por ningún usuario y pasará a estar oculta.
+                {fontLanguage.create_project[0].second_screen.privacy_info_data_base_project}
               </Text>
               <View
                 style={{
@@ -1857,7 +1893,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                   alignItems: 'center',
                   marginVertical: RFPercentage(1),
                 }}>
-                <Text style={{color: 'black'}}>Privacidad del proyecto</Text>
+                <Text style={{color: 'black'}}>{fontLanguage.create_project[0].second_screen.privacy_project}</Text>
                 <Switch
                   value={isSwitchOnProject}
                   onValueChange={onToggleSwitchProject}
@@ -1873,8 +1909,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                   marginLeft: '3%',
                   //   backgroundColor:'green'
                 }}>
-                Si lo activas, tu proyecto pasará a ser privado. Solamente se
-                podrá participar a través de una contraseña.
+                {fontLanguage.create_project[0].second_screen.privacy_info_project}
               </Text>
             </View>
           </View>
@@ -1929,7 +1964,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                       }}>
                       <InputText
                         // isInputText={() => setIsInputText(!isInputText)}
-                        label={'Escriba la contraseña'}
+                        label={fontLanguage.create_project[0].second_screen.write_pass_label}
                         inputType={true}
                         multiline={false}
                         numOfLines={1}
@@ -1973,7 +2008,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                     </View>
                     <InputText
                       // isInputText={() => setIsInputText(!isInputText)}
-                      label={'Confirma la contraseña'}
+                      label={fontLanguage.create_project[0].second_screen.confirm_pass_label}
                       inputType={true}
                       multiline={false}
                       numOfLines={1}
@@ -2063,11 +2098,11 @@ export const CreateProject = ({navigation, route}: Props) => {
     >
       <SafeAreaView style={{flexGrow: 1}}>
         <HeaderComponent
-          title={isEdit ? 'Editar proyecto' : 'Crear un nuevo proyecto'}
+          title={isEdit ? fontLanguage.create_project[0].title_edit : fontLanguage.create_project[0].title_create}
           onPressLeft={() => navigation.goBack()}
           rightIcon={true}
           renderRight={() => {
-            if (isEdit) {
+            if (isEdit && canDelete) {
               return (
                 <TouchableOpacity
                   activeOpacity={0.5}
@@ -2129,14 +2164,14 @@ export const CreateProject = ({navigation, route}: Props) => {
                   backgroundColor={'white'}
                   outlineColor={'black'}
                   fontColor="black"
-                  label={'Volver'}
+                  label={fontLanguage.global[0].back_button}
                   onPress={handlePrevStep}
                 />
               )}
               {currentStep < totalSteps && (
                 <CustomButton
                   backgroundColor={Colors.primaryLigth}
-                  label={'Continuar'}
+                  label={fontLanguage.global[0].continue_button}
                   onPress={handleNextStep}
                 />
               )}
@@ -2145,13 +2180,13 @@ export const CreateProject = ({navigation, route}: Props) => {
                   {isEdit == true ? (
                     <CustomButton
                       backgroundColor={Colors.primaryLigth}
-                      label={'Guardar cambios'}
+                      label={fontLanguage.create_project[0].save_changes}
                       onPress={() => editData()}
                     />
                   ) : (
                     <CustomButton
                       backgroundColor={Colors.primaryLigth}
-                      label={'Crear y continuar'}
+                      label={fontLanguage.create_project[0].create_continue}
                       onPress={() => showData()}
                     />
                   )}
@@ -2165,7 +2200,7 @@ export const CreateProject = ({navigation, route}: Props) => {
               onPress={hideModalSave}
               size={RFPercentage(4)}
               color={Colors.semanticWarningDark}
-              label="Ha surgido un problema, vuelva a intentarlo."
+              label={fontLanguage.create_project[0].modals.save_problem_label}
               helper={false}
             />
             <SaveProyectModal
@@ -2174,7 +2209,7 @@ export const CreateProject = ({navigation, route}: Props) => {
               onPress={hideModalErrorPass}
               size={RFPercentage(4)}
               color={Colors.semanticWarningDark}
-              label="La contraseña no coincide"
+              label={fontLanguage.create_project[0].modals.pass_problem_label}
               helper={false}
             />
             <InfoModal
@@ -2183,11 +2218,8 @@ export const CreateProject = ({navigation, route}: Props) => {
               onPress={hideModalInfo}
               size={RFPercentage(4)}
               color={Colors.primaryLigth}
-              label="¿Cómo añadir organizaciones?"
-              subLabel="Debes de escribir el nombre de la organización que quieres añadir al proyecto, automáticamente se le enviará una
-              solicitud al administrador.
-              Una vez el administrador acepte, se agregará la organización al proyecto
-              "
+              label={fontLanguage.create_project[0].modals.how_to_add_organizations_label}
+              subLabel={fontLanguage.create_project[0].modals.how_to_add_organizations_sublabel}
               helper={false}
             />
 
@@ -2199,8 +2231,8 @@ export const CreateProject = ({navigation, route}: Props) => {
               }}
               size={RFPercentage(4)}
               color={Colors.semanticWarningDark}
-              label="¿Desea borrar el proyecto?"
-              subLabel=" Una vez borrado no podrá recuperarse"
+              label={fontLanguage.create_project[0].modals.delete_proyect_label}
+              subLabel={fontLanguage.create_project[0].modals.delete_proyect_sublabel}
               helper={false}
             />
           </ScrollView>
@@ -2236,12 +2268,12 @@ export const CreateProject = ({navigation, route}: Props) => {
                       fontFamily: FontFamily.NotoSansDisplaySemiBold,
                       color: 'black',
                     }}>
-                    Categorías
+                    {fontLanguage.create_project[0].categories}
                   </Text>
                 </View>
                 <View>
                   <TouchableOpacity onPress={() => setShowCategoryList(false)}>
-                    <Text style={{color: Colors.primaryLigth}}>Cerrar</Text>
+                    <Text style={{color: Colors.primaryLigth}}>{fontLanguage.global[0].close_button}</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -2292,12 +2324,12 @@ export const CreateProject = ({navigation, route}: Props) => {
                   onPress={() => {
                     setUserCategories([]);
                   }}>
-                  <Text style={{color: Colors.primaryLigth}}>Limpiar todo</Text>
+                  <Text style={{color: Colors.primaryLigth}}>{fontLanguage.global[0].clean_all_button}</Text>
                 </TouchableOpacity>
                 <View style={{width: widthPercentageToDP(20)}}>
                   <CustomButton
                     backgroundColor={Colors.primaryLigth}
-                    label={'Aplicar'}
+                    label={fontLanguage.create_project[0].apply}
                     onPress={() => setShowCategoryList(false)}
                   />
                 </View>
@@ -2336,7 +2368,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                       fontWeight: 'bold',
                       color: 'black',
                     }}>
-                    Tipo de respuesta
+                    {fontLanguage.create_project[0].response_type}
                   </Text>
                 </View>
                 <View>
@@ -2349,7 +2381,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                           answer_type: '',
                         });
                     }}>
-                    <Text style={{color: Colors.lightblue}}>Cerrar</Text>
+                    <Text style={{color: Colors.lightblue}}>{fontLanguage.global[0].close_button}</Text>
                   </TouchableOpacity>
                 </View>
               </View>

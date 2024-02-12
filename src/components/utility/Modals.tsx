@@ -9,7 +9,14 @@ import {
   ScrollView,
   Linking,
 } from 'react-native';
-import {Button, Divider, List, Portal, Provider} from 'react-native-paper';
+import {
+  Button,
+  Checkbox,
+  Divider,
+  List,
+  Portal,
+  Provider,
+} from 'react-native-paper';
 import Animales from '../../assets/icons/category/Animales.svg';
 import CheckCircle from '../../assets/icons/general/check-circle-fill.svg';
 import Xcircle from '../../assets/icons/general/x-circle.svg';
@@ -27,6 +34,7 @@ import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from 'react-native-responsive-screen';
+import {useLanguage} from '../../hooks/useLanguage';
 
 interface Props {
   label?: string;
@@ -44,6 +52,8 @@ interface Props {
   size?: number;
   color?: string;
 }
+
+const {fontLanguage} = useLanguage();
 
 export const GenderSelectorModal = ({
   onPress,
@@ -490,9 +500,9 @@ export const SaveProyectModal = ({
                   ...styles.modalContent,
                   alignItems: 'center',
                   height: '35%',
-                  width: '60%',
+                  width: '65%',
                   justifyContent: 'center',
-                  paddingHorizontal: '11%',
+                  paddingHorizontal: '7%',
                 }}>
                 {helper === true ? (
                   <>
@@ -520,18 +530,6 @@ export const SaveProyectModal = ({
                   </>
                 ) : (
                   <>
-                    <Text
-                      style={{
-                        fontSize: FontSize.fontSizeText18,
-                        color: 'black',
-                        marginVertical: '4%',
-                        fontWeight: '600',
-                        textAlign: 'center',
-                        fontFamily: FontFamily.NotoSansDisplayRegular,
-                      }}>
-                      {label}
-                    </Text>
-
                     <View style={{marginTop: RFPercentage(4)}}>
                       <Xcircle
                         width={RFPercentage(8)}
@@ -539,6 +537,18 @@ export const SaveProyectModal = ({
                         fill={color}
                       />
                     </View>
+                    <Text
+                      style={{
+                        fontSize: FontSize.fontSizeText18,
+                        color: 'black',
+                        marginVertical: '8%',
+                        fontWeight: '600',
+                        textAlign: 'center',
+                        fontFamily: FontFamily.NotoSansDisplayRegular,
+                        marginBottom: RFPercentage(4),
+                      }}>
+                      {label}
+                    </Text>
                   </>
                 )}
 
@@ -637,7 +647,7 @@ export const InfoModal = ({
                         justifyContent: 'center',
                         fontFamily: FontFamily.NotoSansDisplayRegular,
                       }}>
-                      Aceptar
+                      {fontLanguage.modals[0].accept_button_text}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -707,23 +717,20 @@ export const InfoModalMap = ({
                     justifyContent: 'flex-start',
                   }}>
                   <Text style={{marginTop: '5%', alignSelf: 'flex-start'}}>
-                    Tienes dos opciones:
+                  {fontLanguage.modals[0].map.text_1}
                   </Text>
                   <Text style={{marginTop: '5%'}}>
                     1.{' '}
                     <Text style={{fontWeight: 'bold'}}>
-                      Mantener presionada{' '}
+                    {fontLanguage.modals[0].map.text_2}{' '}
                     </Text>
-                    la pantalla en el punto exacto del mapa donde se quiera
-                    colocar el marcador
+                    {fontLanguage.modals[0].map.text_3}
                     {'\n\n'}
                     2.{' '}
                     <Text style={{fontWeight: 'bold'}}>
-                      Presiona el botón "+"{' '}
+                    {fontLanguage.modals[0].map.text_4}{' '}
                     </Text>
-                    se añadirá automáticamente un marcador vinculado a tu
-                    posición actual. (El botón está situado en la parte inferior
-                    derecha del mapa).
+                    {fontLanguage.modals[0].map.text_5}
                   </Text>
                 </View>
 
@@ -745,7 +752,7 @@ export const InfoModalMap = ({
                       justifyContent: 'center',
                       fontFamily: FontFamily.NotoSansDisplayRegular,
                     }}>
-                    Aceptar
+                    {fontLanguage.modals[0].accept_button_text}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -913,11 +920,11 @@ export const PassModal = ({
                       width: '100%',
                       marginVertical: RFPercentage(1),
                     }}>
-                    <Text style={{color: 'black'}}>Password </Text>
+                    <Text style={{color: 'black'}}>{fontLanguage.modals[0].password_text} </Text>
                     <InputText
                       // isInputText={() => setIsInputText(!isInputText)}
                       isValid={helper}
-                      label={'Escriba la contraseña'}
+                      label={fontLanguage.modals[0].password_text_label}
                       inputType={true}
                       multiline={false}
                       numOfLines={1}
@@ -945,7 +952,7 @@ export const PassModal = ({
                         justifyContent: 'center',
                         fontFamily: FontFamily.NotoSansDisplayRegular,
                       }}>
-                      Aceptar
+                      {fontLanguage.modals[0].accept_button_text}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -1032,14 +1039,14 @@ export const DeleteModal = ({
                         ...styles.textButton,
                         color: Colors.semanticDangerLight,
                       }}>
-                      Borrar
+                      {fontLanguage.modals[0].delete_button_text}
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     activeOpacity={0.9}
                     style={{...styles.button}}
                     onPress={() => hideModal()}>
-                    <Text style={styles.textButton}>Cancelar</Text>
+                    <Text style={styles.textButton}>{fontLanguage.modals[0].cancel_button_text}</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -1089,7 +1096,7 @@ export const PoliciesModal = ({
                     color: Colors.textColorPrimary,
                     fontFamily: FontFamily.NotoSansDisplaySemiBold,
                   }}>
-                  {'Política de Privacidad'}
+                  {fontLanguage.modals[0].policies.title}
                 </Text>
 
                 <ScrollView
@@ -1110,9 +1117,7 @@ export const PoliciesModal = ({
                       // fontWeight: '600',
                       textAlign: 'left',
                     }}>
-                    {
-                      'Al registrarse en Geonity, usted acepta que la Fundación Ibercivis recopile y procese su información personal de acuerdo con nuestra Política de Privacidad.'
-                    }
+                    {fontLanguage.modals[0].policies.text_1}
                   </Text>
                   <Text
                     style={{
@@ -1124,9 +1129,7 @@ export const PoliciesModal = ({
                       // fontWeight: '600',
                       textAlign: 'left',
                     }}>
-                    {
-                      'Nos comprometemos a proteger su privacidad y a usar su información exclusivamente para mejorar su experiencia con la aplicación y para proporcionarle los servicios solicitados.'
-                    }
+                    {fontLanguage.modals[0].policies.text_2}
                   </Text>
                   <Text
                     style={{
@@ -1138,9 +1141,7 @@ export const PoliciesModal = ({
                       // fontWeight: '600',
                       textAlign: 'left',
                     }}>
-                    {
-                      'No compartiremos su información personal con terceros sin su consentimiento explícito, excepto cuando sea requerido por ley.'
-                    }
+                    {fontLanguage.modals[0].policies.text_3}
                   </Text>
                   <View>
                     <Text
@@ -1153,9 +1154,7 @@ export const PoliciesModal = ({
                         // fontWeight: '600',
                         textAlign: 'left',
                       }}>
-                      {
-                        'Para más información sobre cómo recopilamos, usamos y protegemos su información, por favor, consulte nuestra Política de Privacidad completa en '
-                      }
+                      {fontLanguage.modals[0].policies.text_4}
                       <Text
                         onPress={handleLinkPress}
                         style={{
@@ -1205,9 +1204,7 @@ export const PoliciesModal = ({
                       fontSize: FontSize.fontSizeText14,
                       fontFamily: FontFamily.NotoSansDisplayLight,
                     }}>
-                    {
-                      'Al pulsar el botón de “Aceptar”, usted confirma que ha leído y entendido nuestra Política de Privacidad y da su consentimiento para el tratamiento de sus datos personales según se describe.'
-                    }
+                    {fontLanguage.modals[0].policies.accept_text}
                   </Text>
                 </View>
                 <View
@@ -1226,7 +1223,9 @@ export const PoliciesModal = ({
                       marginHorizontal: '4%',
                     }}
                     onPress={() => hideModal()}>
-                    <Text style={styles.textButton}>Cancelar</Text>
+                    <Text style={styles.textButton}>
+                      {fontLanguage.modals[0].cancel_button_text}
+                    </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     activeOpacity={0.9}
@@ -1243,7 +1242,7 @@ export const PoliciesModal = ({
                         ...styles.textButton,
                         color: 'white',
                       }}>
-                      Aceptar
+                      {fontLanguage.modals[0].accept_button_text}
                     </Text>
                   </TouchableOpacity>
                 </View>

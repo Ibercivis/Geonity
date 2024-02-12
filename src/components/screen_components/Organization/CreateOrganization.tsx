@@ -40,10 +40,14 @@ import {CommonActions} from '@react-navigation/native';
 import {Spinner} from '../../utility/Spinner';
 import Toast from 'react-native-toast-message';
 import { widthPercentageToDP } from 'react-native-responsive-screen';
+import { useLanguage } from '../../../hooks/useLanguage';
 
 interface Props extends StackScreenProps<StackParams, 'CreateOrganization'> {}
 
 export const CreateOrganization = ({navigation, route}: Props) => {
+
+  const {fontLanguage} = useLanguage();
+
   // variables de las imagenes
   const MAX_CHARACTERS = 500;
   const [profileImage, setProfileImage] = useState<any>();
@@ -303,7 +307,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
               type: 'error',
               text1: 'Image',
               // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-              text2: 'La imagen pesa demasiado. Peso máximo, 4MB',
+              text2: fontLanguage.organization[0].image_weight,
             });
           }
         } else {
@@ -311,7 +315,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
             type: 'info',
             text1: 'Image',
             // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-            text2: 'Imagen no seleccionada',
+            text2: fontLanguage.organization[0].image_not_selected,
           });
         }
       })
@@ -320,7 +324,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
           type: 'info',
           text1: 'Image',
           // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-          text2: 'Imagen no seleccionada',
+          text2: fontLanguage.organization[0].image_not_selected,
         });
       });
   };
@@ -353,7 +357,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
               type: 'error',
               text1: 'Image',
               // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-              text2: 'La imagen pesa demasiado. Peso máximo, 4MB',
+              text2: fontLanguage.organization[0].image_weight,
             });
           }
         }
@@ -363,7 +367,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
           type: 'info',
           text1: 'Image',
           // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-          text2: 'Imagen no seleccionada',
+          text2: fontLanguage.organization[0].image_not_selected,
         });
       });
   };
@@ -764,10 +768,9 @@ export const CreateOrganization = ({navigation, route}: Props) => {
           Authorization: token,
         },
       });
-      console.log(JSON.stringify(resp.data, null, 2));
       Toast.show({
         type: 'success',
-        text1: 'Proyecto borrado con éxito.',
+        text1: fontLanguage.organization[0].project_deleted_success,
       });
       hideModalDelete();
       navigation.dispatch(
@@ -783,7 +786,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
     } catch (err) {
       Toast.show({
         type: 'error',
-        text1: 'Error en el borrado.',
+        text1: fontLanguage.organization[0].project_deleted_error,
       });
     }
   };
@@ -803,7 +806,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
           }}>
           <HeaderComponent
             title={
-              isEdit ? 'Editar organización' : 'Crear organización'
+              isEdit ? fontLanguage.organization[0].title_edit : fontLanguage.organization[0].title_create
             }
             onPressLeft={() => navigation.goBack()}
             rightIcon={true}
@@ -866,7 +869,6 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                       marginTop: '5%',
                       //   marginHorizontal: RFPercentage(1),
                       width: '42%',
-                      // backgroundColor:'red'
                     }}>
                     <Text
                       style={{
@@ -877,7 +879,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                       }}
                       minimumFontScale={0.5}
                       adjustsFontSizeToFit={true}>
-                      Imagenes del perfil
+                      {fontLanguage.organization[0].profile_images}
                     </Text>
                     {!profileImage && (
                       <View
@@ -993,7 +995,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                         flexWrap: 'wrap',
                         fontSize: FontSize.fontSizeText13,
                       }}>
-                      Imagenes de portada
+                      {fontLanguage.organization[0].front_page_image}
                     </Text>
                     {!organizationImage && (
                       <View
@@ -1102,12 +1104,12 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                     marginVertical: RFPercentage(1),
                   }}>
                   <Text style={{color: 'black'}}>
-                    Nombre de la organización
+                  {fontLanguage.organization[0].organization_name}
                   </Text>
                   <InputText
                     // isInputText={() => setIsInputText(!isInputText)}
                     isValid={nameValidate}
-                    label={'Escribe el nombre de la organización...'}
+                    label={fontLanguage.organization[0].organization_name_label}
                     keyboardType="default"
                     multiline={false}
                     numOfLines={1}
@@ -1123,11 +1125,11 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                     width: '100%',
                     marginVertical: RFPercentage(1),
                   }}>
-                  <Text style={{color: 'black'}}>Email de contacto</Text>
+                  <Text style={{color: 'black'}}>{fontLanguage.organization[0].contact_mail}</Text>
                   <InputText
                     // isInputText={() => setIsInputText(!isInputText)}
                     isValid={mailValidate}
-                    label={'Mail de contacto'}
+                    label={fontLanguage.organization[0].contact_mail}
                     keyboardType="email-address"
                     multiline={false}
                     numOfLines={1}
@@ -1147,7 +1149,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                   <InputText
                     // isInputText={() => setIsInputText(!isInputText)}
                     isValid={descriptionValidate}
-                    label={'Presenta tu organización en la biografia'}
+                    label={fontLanguage.organization[0].biography_label}
                     keyboardType="default"
                     multiline={true}
                     maxLength={MAX_CHARACTERS}
@@ -1188,7 +1190,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                     marginVertical: RFPercentage(1),
                   }}>
                   <Text style={{color: 'black', marginBottom: '2%'}}>
-                    Añadir integrantes
+                  {fontLanguage.organization[0].add_members}
                   </Text>
                   <View
                     style={{
@@ -1196,7 +1198,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                       marginBottom: RFPercentage(4),
                     }}>
                     <TextInput
-                      placeholder="Buscar integrantes..."
+                      placeholder={fontLanguage.organization[0].search_members}
                       value={inputValueUser}
                       onChangeText={text => {
                         handleInputChangeUser(text);
@@ -1212,7 +1214,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                             marginHorizontal: '2%',
                             marginTop: '1%',
                           }}>
-                          ¿Cómo añadir integrantes?
+                          {fontLanguage.organization[0].how_to_add_members}
                         </Text>
                       </TouchableOpacity>
                     ) : (
@@ -1244,7 +1246,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                           marginTop: '10%',
                           marginBottom: '3%',
                         }}>
-                        Lista de integrantes
+                        {fontLanguage.organization[0].members_list}
                       </Text>
                     )}
                     {suggestionsSelected.length > 0 &&
@@ -1309,8 +1311,8 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                                     color: Colors.contentQuaternaryLight,
                                   }}>
                                   {isAdmin === true
-                                    ? 'Administrador'
-                                    : 'Miembro'}
+                                    ? fontLanguage.organization[0].administrator
+                                    : fontLanguage.organization[0].member}
                                 </Text>
                               </TouchableOpacity>
                             </View>
@@ -1320,7 +1322,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                                 onPress={() => moveItemToSuggestions(index)}
                                 backgroundColor="transparen"
                                 fontColor="red"
-                                label="Eliminar"
+                                label={fontLanguage.global[0].delete_button}
                                 outlineColor="red"
                               />
                             </View>
@@ -1335,13 +1337,13 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                 {isEdit ? (
                   <CustomButton
                     backgroundColor={Colors.primaryLigth}
-                    label={'Guardar cambios'}
+                    label={fontLanguage.organization[0].save_changes}
                     onPress={() => onEdit()}
                   />
                 ) : (
                   <CustomButton
                     backgroundColor={Colors.primaryLigth}
-                    label={'Crear organización'}
+                    label={fontLanguage.organization[0].create_organization}
                     onPress={() => onCreate()}
                   />
                 )}
@@ -1354,7 +1356,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                 onPress={hideModalSave}
                 size={RFPercentage(8)}
                 color={Colors.semanticWarningDark}
-                label="Ha surgido un problema, vuelva a intentarlo."
+                label={fontLanguage.organization[0].save_modal_label}
                 helper={false}
               />
               <SaveProyectModal
@@ -1363,7 +1365,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                 onPress={hideModalControlSizeImage}
                 size={RFPercentage(8)}
                 color={Colors.semanticWarningDark}
-                label="La imagen no puede pesar mas de 4 Mb"
+                label={fontLanguage.organization[0].save_modal_image_label}
                 helper={false}
               />
               <InfoModal
@@ -1372,10 +1374,8 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                 onPress={hideModalInfo}
                 size={RFPercentage(4)}
                 color={Colors.primaryLigth}
-                label="¿Cómo añadir integrantes?"
-                subLabel="Debes de escribir el nombre de usuario del integrante al que quieres añadir,
-                automáticamente se le enviará una solicitud para unirse a la organización.
-                Una vez el usuario la acepte, pasará a ser integrante de la organización."
+                label={fontLanguage.organization[0].how_to_add_members}
+                subLabel={fontLanguage.organization[0].info_modal_sublabel}
                 helper={false}
               />
                <DeleteModal
@@ -1386,8 +1386,8 @@ export const CreateOrganization = ({navigation, route}: Props) => {
               }}
               size={RFPercentage(4)}
               color={Colors.semanticWarningDark}
-              label="¿Desea borrar la organización?"
-              subLabel=" Una vez borrada no podrá recuperarse"
+              label={fontLanguage.organization[0].delete_modal_label}
+              subLabel={fontLanguage.organization[0].delete_modal_sublabel}
               helper={false}
             />
             </ScrollView>

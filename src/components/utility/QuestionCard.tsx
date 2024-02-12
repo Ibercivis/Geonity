@@ -19,6 +19,7 @@ import {useForm} from '../../hooks/useForm';
 import {Question} from '../../interfaces/interfaces';
 import { Size } from '../../theme/size';
 import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen';
+import { useLanguage } from '../../hooks/useLanguage';
 
 interface Props {
   index: number;
@@ -50,6 +51,7 @@ export const QuestionCard = ({
   form,
   onChangeText = (fieldName: string, value: string) => {},
 }: Props) => {
+  const {fontLanguage} = useLanguage();
   const questionText = form.question_text;
   const [localResponseType, setLocalResponseType] = useState(responseType);
   const [localResponseTypeText, setLocalResponseTypeText] = useState(responseType);
@@ -65,16 +67,16 @@ export const QuestionCard = ({
   const onSelectResponseTypeModal = () => {
     switch (localResponseType.toUpperCase()) {
       case 'STR': //STRING
-      setLocalResponseTypeText('Tipo texto');
+      setLocalResponseTypeText(fontLanguage.question_card[0].text_type);
         break;
       case 'NUM': // NUM
-      setLocalResponseTypeText('Tipo numérico');
+      setLocalResponseTypeText(fontLanguage.question_card[0].number_type);
         break;
       case 'IMG': // IMG
-      setLocalResponseTypeText('Tipo imagen');
+      setLocalResponseTypeText(fontLanguage.question_card[0].image_type);
         break;
       default:
-        setLocalResponseTypeText('Tipo de respuesta');
+        setLocalResponseTypeText(fontLanguage.question_card[0].response_type);
         break;
     }
   };
@@ -94,7 +96,7 @@ export const QuestionCard = ({
               ...styles.input,
               borderColor: selected ? 'black' : '#c9c4c4',
             }}
-            placeholder="Escribe tu pregunta"
+            placeholder={fontLanguage.question_card[0].write_answer}
             value={questionText}
             onChangeText={text => onChangeText('question_text', text)}
             textAlignVertical='center'
@@ -158,7 +160,7 @@ export const QuestionCard = ({
               <Text style={{
                   alignSelf: 'center',
                   fontSize: RFPercentage(1.2),
-                }}>Obligatorio</Text>
+                }}>{fontLanguage.question_card[0].obligatory}</Text>
               <Switch style={{transform:[{scaleX: .7},{scaleY:.7}]}} value={checkbox} onValueChange={onCheck} />
             </View>
           </View>

@@ -21,10 +21,15 @@ import FrontPage from '../../assets/icons/project/image.svg';
 import {Size} from '../../theme/size';
 import {Colors} from '../../theme/colors';
 import {useDateTime} from '../../hooks/useDateTime';
-import { PermissionsContext } from '../../context/PermissionsContext';
+import {PermissionsContext} from '../../context/PermissionsContext';
 import Toast from 'react-native-toast-message';
-import { launchCamera } from 'react-native-image-picker';
-import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen';
+import {
+  heightPercentageToDP,
+  widthPercentageToDP,
+} from 'react-native-responsive-screen';
+import {launchCamera} from 'react-native-image-picker';
+import {baseURL} from '../../api/citmapApi';
+import { useLanguage } from '../../hooks/useLanguage';
 
 interface Props {
   //   onChangeText?: (fieldName: string, value: any) => void;
@@ -51,32 +56,30 @@ export const CardAnswerMap = ({
   // useEffect(() => {
   //     card(question, index)
   //   }, []);
-
+  const {fontLanguage} = useLanguage();
   const [images, setImages] = useState<any>();
   const [imageBlob, setImageBlob] = useState<any>();
 
-  const [imageType, setImageType] = useState(false);
   const [imageTypeNumber, setImageTypeNumber] = useState(0);
+  const [imageType, setImageType] = useState(false);
   const showModalImageType = () => setImageType(true);
   const hideModalImageType = () => setImageType(false);
 
   const {getFormattedDateTime} = useDateTime();
 
-  const {permissions} =
-    useContext(PermissionsContext);
+  const {permissions} = useContext(PermissionsContext);
 
   const selectImage = (type: number) => {
     setImageBlob({});
-    setImages({});
+    setImages(undefined);
     if (permissions.camera !== 'granted') {
       Toast.show({
         type: 'error',
-        text1: 'Sin permisos',
-        text2: 'No se concedieron los permisos para acceder a la camara',
+        text1: fontLanguage.map[0].cards.permission_text1,
+        text2: fontLanguage.map[0].cards.permission_text2,
       });
       return;
     }
-    
     switch (type) {
       case 1: //openPicker
       setImageTypeNumber(1)
@@ -89,12 +92,14 @@ export const CardAnswerMap = ({
           includeBase64: true,
         })
           .then(response => {
-              
             if (response && response.data) {
               if (response.size < 4 * 1024 * 1024) {
                 const newImage = response;
+                // console.log(JSON.stringify(newImage, null, 2));
                 setImages(newImage);
                 const texto: string = getFormattedDateTime();
+                console.log(JSON.stringify(newImage.path, null, 2));
+                console.log(JSON.stringify(newImage.mime, null, 2));
                 onChangeText({
                   uri: newImage.path, // Debes ajustar esto según la estructura de response
                   type: newImage.mime, // Tipo MIME de la imagen
@@ -105,16 +110,15 @@ export const CardAnswerMap = ({
                 setImages(undefined);
               }
             }
-            hideModalImageType();
+hideModalImageType();
           })
           .catch(err => {
-            hideModalImageType();
+hideModalImageType();
             console.log(`@CameraModal - handleGALLERY: ${err}`)
             setImageBlob({});
             setImages(null);
             showModal(true);
           });
-          // hideModalImageType();
         break;
       case 2:
         setImageTypeNumber(2)
@@ -124,40 +128,47 @@ export const CardAnswerMap = ({
           maxHeight: 2000,
           maxWidth: 2000,
         };
-      
-        launchCamera({
-          mediaType: 'photo',
-          includeBase64: true,
-          maxWidth: 300,
-          maxHeight: 300,
-        }, response => {
-          if (response.didCancel) {
-            console.log('User cancelled camera');
-            hideModalImageType();
-          } else if (response.errorCode) {
-            console.log('Camera Error: ', response.errorMessage);
-            hideModalImageType();
-          } else {
-            if(response && response.assets){
-              if (response.assets[0].fileSize && response.assets[0].fileSize < 4 * 1024 * 1024 ) {
-              const newImage = response.assets;
-              console.log(JSON.stringify(newImage, null, 2))
-              setImages(newImage);
-              const texto: string = getFormattedDateTime();
-              onChangeText({
-                uri: newImage[0].uri, // Debes ajustar esto según la estructura de response
-                type: newImage[0].type, // Tipo MIME de la imagen
-                name: texto + 'cover.jpg', // Nombre de archivo de la imagen (puedes cambiarlo)
-              });
+
+        launchCamera(
+          {
+            mediaType: 'photo',
+            includeBase64: true,
+            maxWidth: 300,
+            maxHeight: 300,
+          },
+          response => {
+            if (response.didCancel) {
+              console.log('User cancelled camera');
+              hideModalImageType();
+            } else if (response.errorCode) {
+              console.log('Camera Error: ', response.errorMessage);
+              hideModalImageType();
             } else {
-              showModal(true);
-              setImages(undefined);
+              if (response && response.assets) {
+                if (
+                  response.assets[0].fileSize &&
+                  response.assets[0].fileSize < 4 * 1024 * 1024
+                ) {
+                  const newImage = response.assets;
+                  console.log(JSON.stringify(newImage, null, 2));
+                  setImages(newImage);
+                  console.log(JSON.stringify(newImage[0].uri, null, 2));
+                  console.log(JSON.stringify(newImage[0].type, null, 2));
+                  const texto: string = getFormattedDateTime();
+                  onChangeText({
+                    uri: newImage[0].uri, // Debes ajustar esto según la estructura de response
+                    type: newImage[0].type, // Tipo MIME de la imagen
+                    name: texto + 'cover.jpg', // Nombre de archivo de la imagen (puedes cambiarlo)
+                  });
+                } else {
+                  showModal(true);
+                  setImages(undefined);
+                }
+                hideModalImageType();
+              }
             }
-            hideModalImageType();
-            }
-            
-          }
-        });
+          },
+        );
         break;
       case 3: //openCamera
         ImagePicker.openCamera({
@@ -169,12 +180,14 @@ export const CardAnswerMap = ({
           includeBase64: true,
         })
           .then(response => {
-              
+            //   console.log(JSON.stringify(response[0].sourceURL));
             if (response && response.data) {
               if (response.size < 4 * 1024 * 1024) {
                 const newImage = response;
                 setImages(newImage);
                 const texto: string = getFormattedDateTime();
+                console.log(JSON.stringify(newImage.path, null, 2));
+                console.log(JSON.stringify(newImage.mime, null, 2));
                 onChangeText({
                   uri: newImage.path, // Debes ajustar esto según la estructura de response
                   type: newImage.mime, // Tipo MIME de la imagen
@@ -184,21 +197,20 @@ export const CardAnswerMap = ({
                 showModal(true);
                 setImages(undefined);
               }
-              hideModalImageType();
+hideModalImageType();
             }
           })
           .catch(err => {
-            hideModalImageType();
+hideModalImageType();
             console.log(`@CameraModal - handleTakeAPhoto: ${err}`)
             setImageBlob({});
             setImages(null);
             showModal(true);
           });
-          // hideModalImageType();
         break;
     }
 
-    
+    hideModalImageType();
   };
 
   //#region SECCIÓN RENDERS
@@ -216,7 +228,7 @@ export const CardAnswerMap = ({
         return (
           <>
             <View style={{flexDirection: 'column'}}>
-              <View style={{flexDirection: 'row',}}>
+              <View style={{flexDirection: 'row'}}>
                 <View style={{marginHorizontal: '2%', marginRight: '5%'}}>
                   <Text
                     style={{
@@ -275,7 +287,7 @@ export const CardAnswerMap = ({
                   </Text>
                 </View>
               )} */}
-              <View style={{marginTop: '0%',}}>
+              <View style={{marginTop: '0%'}}>
                 <View
                   style={{
                     width: '100%',
@@ -305,7 +317,7 @@ export const CardAnswerMap = ({
                       ]}
                       multiline={true}
                       contentStyle={{bottom: heightPercentageToDP(-0.4)}}
-                      placeholder={value || 'Pregunta de texto'}
+                      placeholder={value || fontLanguage.map[0].cards.text_answer}
                       placeholderTextColor={value ? '#000000' : '#949494'}
                       onChangeText={value => onChangeText(value)}
                       underlineColorAndroid="transparent"
@@ -402,7 +414,7 @@ export const CardAnswerMap = ({
                       multiline={true}
                       contentStyle={{bottom: heightPercentageToDP(-0.4)}}
                       keyboardType="number-pad"
-                      placeholder={value || 'Pregunta numérica'}
+                      placeholder={value || fontLanguage.map[0].cards.number_answer}
                       placeholderTextColor={value ? '#000000' : '#bab9b9'}
                       onChangeText={value => onChangeText(value)}
                       underlineColorAndroid="transparent"
@@ -753,14 +765,14 @@ export const CardAnswerMap = ({
                         style={{
                           ...stylesModal.textButton,
                         }}>
-                        Galería
+                        {fontLanguage.map[0].cards.galery}
                       </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       activeOpacity={0.9}
                       style={{...stylesModal.button}}
                       onPress={() => selectImage(2)}>
-                      <Text style={stylesModal.textButton}>Cámara</Text>
+                      <Text style={stylesModal.textButton}>{fontLanguage.map[0].cards.camera}</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -769,7 +781,8 @@ export const CardAnswerMap = ({
           </Modal>
         </Portal>
       </Provider>
-      <Toast position='bottom' />
+      
+      <Toast position="bottom" />
     </View>
   );
 };

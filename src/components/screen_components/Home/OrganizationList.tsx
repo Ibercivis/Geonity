@@ -12,12 +12,13 @@ import {HeaderComponent} from '../../HeaderComponent';
 import {useNavigation} from '@react-navigation/native';
 import {StackParams} from '../../../navigation/HomeNavigator';
 import {StackScreenProps} from '@react-navigation/stack';
+import { useLanguage } from '../../../hooks/useLanguage';
 
 interface Props extends StackScreenProps<StackParams, 'OrganizationList'> {}
 
 export const OrganizationList = (props: Props) => {
   const [organization, setOrganization] = useState<Organization[]>([]); // partir la lista en 2
-
+  const {fontLanguage} = useLanguage();
   useEffect(() => {
     organizationListApi();
   }, []);
@@ -36,7 +37,7 @@ export const OrganizationList = (props: Props) => {
   return (
     <View style={{flex: 1, padding: RFPercentage(2)}}>
       <HeaderComponent
-        title={'Organizaciones destacadas'}
+        title={fontLanguage.organization[0].title_list}
         onPressLeft={() => props.navigation.goBack()}
         onPressRight={() => console.log('jaja')}
         rightIcon={false}

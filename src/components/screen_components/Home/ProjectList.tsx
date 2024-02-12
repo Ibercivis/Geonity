@@ -24,12 +24,13 @@ import {StackScreenProps} from '@react-navigation/stack';
 import {HasTag, Topic} from '../../../interfaces/appInterfaces';
 import {FontFamily, FontSize} from '../../../theme/fonts';
 import {widthPercentageToDP} from 'react-native-responsive-screen';
+import { useLanguage } from '../../../hooks/useLanguage';
 
 interface Props extends StackScreenProps<StackParams, 'ProjectList'> {}
 
 export const ProjectList = (props: Props) => {
   const [projectList, setProjectList] = useState<ShowProject[]>([]); // partir la lista en 2
-
+  const {fontLanguage} = useLanguage();
   const [topic, setTopic] = useState<Topic[]>([]);
 
   useEffect(() => {
@@ -83,9 +84,9 @@ export const ProjectList = (props: Props) => {
   return (
     <View style={{flex: 1, padding: RFPercentage(2)}}>
       <HeaderComponent
-        title={props.route.params?.title ? props.route.params.title : 'Listado'}
+        title={props.route.params?.title ? props.route.params.title : fontLanguage.project[0].title_list}
         onPressLeft={() => props.navigation.goBack()}
-        onPressRight={() => console.log('jaja')}
+        onPressRight={() => console.log('data')}
         rightIcon={false}
       />
       <FlatList
