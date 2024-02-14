@@ -31,8 +31,12 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Se necesita acceso al sistema de archivos para guardar archivos descargados en la aplicación.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Se requiere el uso de la camara para poder tomar fotografías en algunas observaciones</string>
+	<key>NSFileUsageDescription</key>
+	<string>Se necesita acceso al sistema de archivos para guardar archivos descargados en la aplicación.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Se necesita saber tu ubicación para mostrar el mapa</string>
 	<key>NSLocationAlwaysUsageDescription</key>

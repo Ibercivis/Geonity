@@ -982,6 +982,21 @@ export const ParticipateMap = ({navigation, route}: Props) => {
   };
   //#endregion
 
+  //#region UPDATE MAP
+  const [mapUpdateFlag, setMapUpdateFlag] = useState(true);
+  // Ejemplo de cómo actualizar el estado cuando ocurra algún evento
+  const updateMap = () => {
+    // Realiza las operaciones necesarias...
+    // setMapUpdateFlag(prevFlag => !prevFlag); // Cambia el estado para forzar la actualización
+    // setObservationList([])
+    // setObservationList(observationListcopy)
+    // getProjectApi()
+    mapViewRef.current?.forceUpdate();
+    console.log('entra en el touch end para hacer force update');
+  };
+
+  //#endregion
+
   if (!hasLocation) {
     // return <LoadingScreen />;
     return (
@@ -1023,18 +1038,21 @@ export const ParticipateMap = ({navigation, route}: Props) => {
       {chargedData ? (
         <>
           {showMap ? (
-            <View style={{flex: 1}}>
+            <View style={{flex: 1}} onTouchEnd={() => {
+              updateMap();
+            }}>
               <MapView
                 ref={element => (mapViewRef.current = element!)}
+                key={mapUpdateFlag ? 'mapUpdate' : 'mapNoUpdate'}
                 style={{flex: 1}}
                 logoEnabled={false}
                 scaleBarEnabled={false}
                 compassEnabled={false}
                 collapsable={true}
-                zoomEnabled={true}
-                onTouchStart={() =>
-                  setSelectedObservation(clearSelectedObservation())
-                }
+                onTouchStart={() => {
+                  setSelectedObservation(clearSelectedObservation());
+                  // if (!mapUpdateFlag) setMapUpdateFlag(true);
+                }}
                 onLongPress={data => {
                   addMarkLongPress(data);
                 }}>
@@ -1057,8 +1075,9 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                     if (x.geoposition.point) {
                       if (selectedObservation.id !== x.id) {
                         return (
-                          <View key={index}>
+                          // <View key={index}>
                             <MarkerView
+                            key={index}
                               // coordinate={[-6.300905, 36.53777]}
                               onTouchStart={() =>
                                 console.log('aprieta la marca')
@@ -1091,7 +1110,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                                 </View>
                               </TouchableOpacity>
                             </MarkerView>
-                          </View>
+                          // </View>
                         );
                       } else {
                         return <View key={index}></View>;

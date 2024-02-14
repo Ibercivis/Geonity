@@ -11,7 +11,9 @@ export const useLanguage = () => {
         NativeModules.SettingsManager.settings.AppleLanguages[0] //iOS 13
       : NativeModules.I18nManager.localeIdentifier;
   
-  const fontLanguage = NativeModules.I18nManager.localeIdentifier === 'es_ES' ? translateES.strings : translateEN.strings;
+  
+
+  const fontLanguage = deviceLanguage === 'es_ES' ? translateES.strings : translateEN.strings;
 
   return {deviceLanguage, fontLanguage};
 };

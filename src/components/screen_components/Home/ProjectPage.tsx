@@ -351,7 +351,13 @@ export const ProjectPage = (props: Props) => {
   };
 
   const saveFile = async (fileBlob: any, filename: any) => {
-    const path = `${RNFS.DownloadDirectoryPath}/${filename}`;
+    let path: any;
+    if(Platform.OS === 'ios'){
+      path = `${RNFS.DocumentDirectoryPath}/${filename}`;
+    }else{
+      path = `${RNFS.DownloadDirectoryPath}/${filename}`;
+    }
+    
 
     const file = new Blob([fileBlob], {
       type: 'text/csv',
