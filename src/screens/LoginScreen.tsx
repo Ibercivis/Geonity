@@ -421,7 +421,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
       case 'register':
         return (
           // <ScrollView style={{width: '100%', flexGrow: 1}}>
-          <View style={{marginHorizontal: '3%'}}>
+          <View style={{marginHorizontal: '3%',}}>
             <View style={{}}>
               {/* contenedor de los inputs */}
               <View
@@ -492,7 +492,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                 {/* email */}
                 <View
                   style={{
-                    width: '100%',
+                    // width: '100%',
                     height: 'auto',
                     flexDirection: 'row',
                   }}>
@@ -547,7 +547,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                 {/* password */}
                 <View
                   style={{
-                    width: '100%',
+                    // width: '100%',
                     height: 'auto',
                     flexDirection: 'row',
                   }}>
@@ -604,7 +604,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                 {/*confirm password */}
                 <View
                   style={{
-                    width: '100%',
+                    // width: '100%',
                     height: 'auto',
                     flexDirection: 'row',
                   }}>
@@ -670,7 +670,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
               <View
                 style={{
                   flexDirection: 'row',
-                  width: '100%',
+                  // width: '100%',
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   marginTop: '10%',
@@ -715,7 +715,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                 </View> */}
 
               {/* back */}
-              <View style={{marginHorizontal: '26%', marginTop: '10%'}}>
+              <View style={{marginHorizontal: '20%', marginTop: '10%'}}>
                 <TouchableOpacity
                   activeOpacity={1}
                   style={{
@@ -1188,7 +1188,9 @@ export const LoginScreen = ({navigation, route}: Props) => {
                       alignContent: 'center',
                       alignItems: 'center',
                       alignSelf: 'center',
-                      marginLeft:widthPercentageToDP(11)
+                      marginLeft:widthPercentageToDP(13),
+                      width:widthPercentageToDP(85),
+                      // backgroundColor:'yellow'
                     }}>
                     {screenHorizontal()}
                   </View>
