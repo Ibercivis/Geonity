@@ -39,13 +39,12 @@ import {useForm} from '../../../hooks/useForm';
 import {CommonActions} from '@react-navigation/native';
 import {Spinner} from '../../utility/Spinner';
 import Toast from 'react-native-toast-message';
-import { widthPercentageToDP } from 'react-native-responsive-screen';
-import { useLanguage } from '../../../hooks/useLanguage';
+import {heightPercentageToDP, widthPercentageToDP} from 'react-native-responsive-screen';
+import {useLanguage} from '../../../hooks/useLanguage';
 
 interface Props extends StackScreenProps<StackParams, 'CreateOrganization'> {}
 
 export const CreateOrganization = ({navigation, route}: Props) => {
-
   const {fontLanguage} = useLanguage();
 
   // variables de las imagenes
@@ -806,7 +805,9 @@ export const CreateOrganization = ({navigation, route}: Props) => {
           }}>
           <HeaderComponent
             title={
-              isEdit ? fontLanguage.organization[0].title_edit : fontLanguage.organization[0].title_create
+              isEdit
+                ? fontLanguage.organization[0].title_edit
+                : fontLanguage.organization[0].title_create
             }
             onPressLeft={() => navigation.goBack()}
             rightIcon={true}
@@ -858,7 +859,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                   style={{
                     flexDirection: 'row',
                     // justifyContent: 'space-between',
-                    width: '100%',
+                    width: RFPercentage(41),
                     height: RFPercentage(22),
                   }}>
                   {/* perfil */}
@@ -884,7 +885,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                     {!profileImage && (
                       <View
                         style={{
-                          width: '60%',
+                          width: '73%',
                           height: '62%',
                           marginTop: '4%',
                           justifyContent: 'center',
@@ -924,7 +925,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                     {profileImage && (
                       <View
                         style={{
-                          width: '60%',
+                          width: '73%',
                           height: '62%',
                           marginTop: '4%',
                           justifyContent: 'center',
@@ -1018,7 +1019,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                           />
                         </TouchableOpacity>
                         <TouchableOpacity
-                        onPress={() => openPortadaPhoto()}
+                          onPress={() => openPortadaPhoto()}
                           style={{
                             width: RFPercentage(4),
                             position: 'absolute',
@@ -1104,7 +1105,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                     marginVertical: RFPercentage(1),
                   }}>
                   <Text style={{color: 'black'}}>
-                  {fontLanguage.organization[0].organization_name}
+                    {fontLanguage.organization[0].organization_name}
                   </Text>
                   <InputText
                     // isInputText={() => setIsInputText(!isInputText)}
@@ -1125,7 +1126,9 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                     width: '100%',
                     marginVertical: RFPercentage(1),
                   }}>
-                  <Text style={{color: 'black'}}>{fontLanguage.organization[0].contact_mail}</Text>
+                  <Text style={{color: 'black'}}>
+                    {fontLanguage.organization[0].contact_mail}
+                  </Text>
                   <InputText
                     // isInputText={() => setIsInputText(!isInputText)}
                     isValid={mailValidate}
@@ -1145,7 +1148,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                     width: '100%',
                     marginVertical: RFPercentage(1),
                   }}>
-                  <Text style={{color: 'black'}}>{fontLanguage.organization[0].biography}</Text>
+                  <Text style={{color: 'black'}}>Biografía</Text>
                   <InputText
                     // isInputText={() => setIsInputText(!isInputText)}
                     isValid={descriptionValidate}
@@ -1190,7 +1193,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                     marginVertical: RFPercentage(1),
                   }}>
                   <Text style={{color: 'black', marginBottom: '2%'}}>
-                  {fontLanguage.organization[0].add_members}
+                    {fontLanguage.organization[0].add_members}
                   </Text>
                   <View
                     style={{
@@ -1231,8 +1234,43 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                               index === suggestions.length - 1 ? 10 : 0,
                             borderBottomRightRadius:
                               index === suggestions.length - 1 ? 10 : 0,
+                            borderBottomWidth:
+                              index === suggestions.length - 1 ? 1 : 0,
                           }}
                           onPress={() => setUsersSelected(item, index)}>
+                          {item.profile.cover ? (
+                            <Image
+                              source={{
+                                uri: item.profile.cover,
+                              }}
+                              style={{
+                                width: '12%',
+                                height: '65%',
+                                borderRadius: 50,
+                                resizeMode: 'cover',
+                                backgroundColor: 'blue',
+                                marginHorizontal: '4%',
+                                marginVertical:'2%'
+                              }}
+                            />
+                          ) : (
+                            <View
+                              style={{
+                                width: '12%',
+                                // height: '65%',
+                                borderRadius: 100,
+                                marginHorizontal: '4%',
+                                marginVertical: '2%',
+                                alignContent: 'center',
+                                alignItems: 'center',
+                                // marginTop: '1.3%',
+                              }}>
+                              <UserMissing
+                                height={RFPercentage(2.5)}
+                                width={RFPercentage(2.5)}
+                              />
+                            </View>
+                          )}
                           <Text style={styles.suggestionItem}>
                             {item.username}
                           </Text>
@@ -1269,7 +1307,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                                 }}
                                 style={{
                                   width: '12%',
-                                  height: '100%',
+                                  height: '110%',
                                   borderRadius: 50,
                                   resizeMode: 'cover',
                                   backgroundColor: 'blue',
@@ -1283,11 +1321,14 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                                   height: '100%',
                                   borderRadius: 100,
                                   marginRight: '2%',
-                                  alignContent:'center',
-                                  alignItems:'center',
-                                  marginTop:'1.3%'
+                                  alignContent: 'center',
+                                  alignItems: 'center',
+                                  marginTop: '1.3%',
                                 }}>
-                                <UserMissing height={RFPercentage(3.8)} width={RFPercentage(3.8)} />
+                                <UserMissing
+                                  height={RFPercentage(3.8)}
+                                  width={RFPercentage(3.8)}
+                                />
                               </View>
                             )}
                             <View
@@ -1317,13 +1358,21 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                               </TouchableOpacity>
                             </View>
                             {/* que elimine de la lista */}
-                            <View style={{width: '20%', marginLeft: '2%'}}>
+                            <View
+                              style={{
+                                width: widthPercentageToDP(14),
+                                marginLeft: '10%',
+                                alignContent: 'center',
+                                justifyContent: 'center',
+                              }}>
                               <CustomButton
                                 onPress={() => moveItemToSuggestions(index)}
                                 backgroundColor="transparen"
                                 fontColor="red"
                                 label={fontLanguage.global[0].delete_button}
                                 outlineColor="red"
+                                fontSize={RFPercentage(1.5)}
+                                height={RFPercentage(4)}
                               />
                             </View>
                           </View>
@@ -1378,18 +1427,18 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                 subLabel={fontLanguage.organization[0].info_modal_sublabel}
                 helper={false}
               />
-               <DeleteModal
-              visible={deleteModal}
-              hideModal={hideModalDelete}
-              onPress={() => {
-                onDelete();
-              }}
-              size={RFPercentage(4)}
-              color={Colors.semanticWarningDark}
-              label={fontLanguage.organization[0].delete_modal_label}
-              subLabel={fontLanguage.organization[0].delete_modal_sublabel}
-              helper={false}
-            />
+              <DeleteModal
+                visible={deleteModal}
+                hideModal={hideModalDelete}
+                onPress={() => {
+                  onDelete();
+                }}
+                size={RFPercentage(4)}
+                color={Colors.semanticWarningDark}
+                label={fontLanguage.organization[0].delete_modal_label}
+                subLabel={fontLanguage.organization[0].delete_modal_sublabel}
+                helper={false}
+              />
             </ScrollView>
           </View>
           <Spinner visible={waitingData} />
@@ -1408,7 +1457,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'column',
     justifyContent: 'space-between',
-    width: widthPercentageToDP(41),
+    width: widthPercentageToDP(85),
     marginVertical: '5%',
     alignSelf: 'center',
   },
@@ -1427,13 +1476,27 @@ const styles = StyleSheet.create({
     position: 'relative',
     top: 0,
     backgroundColor: 'white',
-    borderWidth: 1,
-    borderColor: 'gray',
+    // borderWidth: 1,
+    borderColor: Colors.contentSecondaryDark,
     // borderBottomLeftRadius: 10,
     // borderBottomRightRadius: 10,
     // zIndex: 999,
-    width: RFPercentage(39),
+    width: widthPercentageToDP(80),
+    height: heightPercentageToDP(7),
     alignSelf: 'center',
+    flexDirection:'row',
+    alignContent:'center',
+    alignItems:'center',
+    borderTopWidth:0,
+    borderBottomWidth:0,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 0.1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
   },
   suggestionItem: {
     padding: 10,

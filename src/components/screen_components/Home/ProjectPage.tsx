@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   StatusBar,
   Platform,
-  PermissionsAndroid,
   Alert,
 } from 'react-native';
 import {Text} from 'react-native-paper';
@@ -58,7 +57,6 @@ import Toast from 'react-native-toast-message';
 import RNFS from 'react-native-fs';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
 import {useLanguage} from '../../../hooks/useLanguage';
-import RNFetchBlob from 'rn-fetch-blob';
 
 const data = [
   require('../../../assets/backgrounds/login-background.jpg'),
@@ -212,16 +210,23 @@ export const ProjectPage = (props: Props) => {
     //     }),
     //   );
     // }
-    props.navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [
-          {
-            name: 'HomeNavigator',
-          },
-        ],
-      }),
-    );
+
+
+    // props.navigation.dispatch(
+    //   CommonActions.reset({
+    //     index: 0,
+    //     routes: [
+    //       {
+    //         name: 'HomeNavigator',
+    //       },
+    //     ],
+    //   }),
+    // );
+    if(props.route.params.isNew){
+      props.navigation.navigate('HomeScreen' as never)
+    }else{
+      props.navigation.goBack();
+    }
   };
 
   /**
@@ -318,6 +323,7 @@ export const ProjectPage = (props: Props) => {
       );
 
       const hasPermission = await requestStoragePermission();
+      console.log(hasPermission);
       if (hasPermission !== 'granted') {
         Alert.alert(
           'Permission Denied',
@@ -325,7 +331,7 @@ export const ProjectPage = (props: Props) => {
           [
             {
               text: 'OK',
-              onPress: () => console.log('OK Pressed'),
+              onPress: () => openSettings(),
             },
           ],
           {cancelable: false},
@@ -339,8 +345,9 @@ export const ProjectPage = (props: Props) => {
       }
 
       // console.log(JSON.stringify(download.data, null, 2));
-
-      await saveFile(download.data, `observations${Date.now()}.csv`);
+      if (hasPermission === 'granted') {
+        await saveFile(download.data, `observations${Date.now()}.csv`);
+      }
     } catch (error) {
       console.log(error);
       Toast.show({
@@ -349,45 +356,22 @@ export const ProjectPage = (props: Props) => {
         text2: fontLanguage.project[0].toast_err_download_text1,
       });
     }
-    // let token;
-
-    // while (!token) {
-    //   token = await AsyncStorage.getItem('token');
-    // }
-    // let dirs = RNFetchBlob.fs.dirs;
-    // RNFetchBlob.config({
-    //   // response data will be saved to this path if it has access right.
-    //   // path: dirs.DocumentDir + '/' + Date.now() + '.csv',
-    //   fileCache: true,
-    //   // by adding this option, the temp files will have a file extension
-    //   appendExt: 'csv',
-    // })
-    //   .fetch('GET', `/project/${project?.id}/download_observations/`, {
-    //     //some headers ..
-    //     Authorization: token,
-    //   })
-    //   .then(res => {
-    //     // the path should be dirs.DocumentDir + 'path-to-file.anything'
-    //     console.log('The file saved to ', res.path());
-    //   })
-    //   .catch(err => {
-    //     console.log(JSON.stringify(err, null, 2));
-    //   });
   };
 
   const saveFile = async (fileBlob: any, filename: any) => {
     let path: any;
     if (Platform.OS === 'ios') {
-      path = `${RNFS.DocumentDirectoryPath}/${filename}`;
+      path = `${RNFS.ExternalStorageDirectoryPath}/${filename}`;
     } else {
       path = `${RNFS.DownloadDirectoryPath}/${filename}`;
     }
-
     const file = new Blob([fileBlob], {
       type: 'text/csv',
       lastModified: Date.now(),
     });
     const reader = new FileReader();
+
+    console.log(JSON.stringify(file, null, 2));
     reader.onload = () => {
       RNFS.writeFile(path, reader.result as string, 'utf8')
         .then(() => {
@@ -407,26 +391,27 @@ export const ProjectPage = (props: Props) => {
   };
 
   const requestStoragePermission = async () => {
+    // let granted: PermissionStatus;
     // if (Platform.OS === 'android') {
     //   try {
-    //     console.log('pide el permiso')
-    //     const granted = await PermissionsAndroid.request(
-    //       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-    //       {
+    //     console.log('pide el permiso');
+    //     const temp = await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
+    //     if (temp === 'granted') {
+    //       granted = await request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE, {
     //         title: fontLanguage.project[0].title_permission,
-    //         message:fontLanguage.project[0].menssage,
+    //         message: fontLanguage.project[0].menssage,
     //         buttonNeutral: fontLanguage.project[0].neutral_button,
     //         buttonNegative: fontLanguage.global[0].cancel_button,
     //         buttonPositive: fontLanguage.global[0].acept_button,
-    //       },
-    //     );
-
-    //     return granted === PermissionsAndroid.RESULTS.GRANTED;
+    //       });
+    //       return granted;
+    //     }
     //   } catch (err) {
     //     console.warn(err);
-    //     return false;
+    //     return (granted = 'denied');
     //   }
     // }
+    // return (granted = 'unavailable');
     let permissionStatus: PermissionStatus;
 
     if (Platform.OS === 'ios') {
@@ -535,7 +520,7 @@ export const ProjectPage = (props: Props) => {
       //   resp.data?.organizations_write?.length > 0
       // ) {
       //   const newListOrga = organiza.data.filter(x =>
-      //     resp.data.organizations_write.includes(x.id),∫
+      //     resp.data.organizations_write.includes(x.id),
       //   );
       //   setOrganization(newListOrga);
       // } else {
@@ -1010,7 +995,7 @@ export const ProjectPage = (props: Props) => {
           </ScrollView>
         </SafeAreaView>
       )}
-      <Toast position="bottom" />
+      <Toast position="top" />
     </>
   );
 };
@@ -1032,7 +1017,7 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     position: 'absolute',
     // top: heightPercentageToDP(50),
-    marginTop: heightPercentageToDP(43),
+    top: heightPercentageToDP(40),
     marginLeft: RFPercentage(2),
     // left: RFPercentage(2),
     // right: RFPercentage(5),

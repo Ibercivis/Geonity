@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -25,7 +25,6 @@ import {
 } from 'react-native-responsive-screen';
 import {Topic} from '../../interfaces/appInterfaces';
 import { useLanguage } from '../../hooks/useLanguage';
-import { AuthContext } from '../../context/AuthContext';
 
 // const categoryIcons = [
 //   require('../../assets/icons/category/Group-6.png'),
@@ -75,9 +74,6 @@ export const Card = ({
   styleProp,
   list = [],
 }: Props) => {
-
-  const {isGuest} = useContext(AuthContext)
-
   const cardType = () => {
     switch (type) {
       case 'category':
@@ -197,7 +193,7 @@ export const Card = ({
                       color: 'black',
                       fontFamily: FontFamily.NotoSansDisplayMedium,
                     }}>
-                    {title.length > 20 ? title.slice(0, 20) + '...' : title}
+                    {title.length > 35 ? title.slice(0, 35) + '...' : title}
                   </Text>
                 </View>
               </ImageBackground>
@@ -287,7 +283,7 @@ export const Card = ({
                     color: 'black',
                     fontFamily: FontFamily.NotoSansDisplayMedium,
                   }}>
-                  {title.length > 25 ? title.slice(0, 25) + '...' : title}
+                  {title.length > 20 ? title.slice(0, 20) + '...' : title}
                 </Text>
                 <Text
                   style={{
@@ -323,8 +319,6 @@ export const Card = ({
                       {contribution}
                     </Text>
                   </View>
-{
-                    !isGuest && (
                   <TouchableOpacity
                     activeOpacity={1}
                     onPress={onLike}
@@ -352,9 +346,6 @@ export const Card = ({
                       {totalLikes}
                     </Text>
                   </TouchableOpacity>
-)
-                  }
-                  
                 </View>
               </View>
             </View>
@@ -1047,7 +1038,7 @@ const style = StyleSheet.create({
     elevation: 2,
   },
   imageBackgroundImportants: {
-    height: '68%',
+    height: heightPercentageToDP(25),
     // borderRadius: 10,
   },
 
@@ -1083,12 +1074,12 @@ const style = StyleSheet.create({
     backgroundColor: 'white',
     shadowColor: '#000000',
     shadowOffset: {
-      width: 3,
-      height: 3.1,
+      width: 0,
+      height: 0.1,
     },
     shadowOpacity: 0.2,
     shadowRadius: 1.41,
-    elevation: 1,
+    elevation: 4,
   },
   touchableOrganization: {
     // height: '100%',

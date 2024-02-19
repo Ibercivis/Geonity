@@ -15,7 +15,7 @@ import {
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {ProfileScreen} from '../screens/ProfileScreen';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 // import Plus from '../assets/icons/general/plus-lg1.svg';
@@ -23,6 +23,7 @@ import {Colors} from '../theme/colors';
 import {FontSize} from '../theme/fonts';
 import PlusSquare from '../assets/icons/general/plus-square.svg';
 import { useLanguage } from '../hooks/useLanguage';
+import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen';
 
 const Tab = createBottomTabNavigator<StackParams>();
 const {fontLanguage} = useLanguage();
@@ -31,9 +32,7 @@ export type StackParams = {
   // NavigatorMap: undefined;
   // NavigatorMapBox: undefined;
   ProfileScreen: undefined;
-  LoginScreen: undefined;
   HomeNavigator: undefined;
-  SelectorTab: undefined;
   CenterButtonTab: undefined;
 };
 
@@ -63,6 +62,7 @@ const CenterButtonTab = () => {
         alignItems: 'center',
         justifyContent: 'center',
         alignSelf: 'center',
+        marginTop: RFPercentage(4),
         // width: RFPercentage(5),
         // height: RFPercentage(5),
         // borderRadius: 35,
@@ -190,8 +190,8 @@ export const BottomTabNavigation = () => {
   const {permissions} = useContext(PermissionsContext);
 
   //si no está logged, se le redirigirá hasta la pantalla de login
-  const {status, isGuest} = useContext(AuthContext);
-
+  const {status} = useContext(AuthContext);
+  // const actualRoute = useRoute();
   if (status === 'checking') {
     return <LoadingScreen />;
   }
@@ -203,36 +203,43 @@ export const BottomTabNavigation = () => {
           headerShown: false,
           tabBarShowLabel: false,
           tabBarStyle: {backgroundColor: 'transparent'},
-          tabBarBackground() {
-            return (
-              <View style={{flex: 1, backgroundColor: 'white'}}>
-                <LinearGradient
-                  colors={['transparent', '#fff']}
-                  style={{flex: 1}}
-                  start={{x: 0, y: 0}}
-                  end={{x: 0, y: 1}}
-                />
-              </View>
-            );
-          },
+          // tabBarBackground() {
+          //   return (
+          //     <View style={{flex: 1, backgroundColor: 'white'}}>
+          //       <LinearGradient
+          //         colors={['transparent', '#fff']}
+          //         style={{flex: 1}}
+          //         start={{x: 0, y: 0}}
+          //         end={{x: 0, y: 1}}
+          //       />
+          //     </View>
+          //   );
+          // },
         }}
         tabBar={({state, descriptors, navigation}) => (
-          <View style={styles.tabBarContainer}>
+          // <View style={styles.tabBarContainer}>
+            <LinearGradient
+                  colors={['transparent', '#d3d3d3',  '#ffffff']}
+                  style={styles.tabBarContainer}
+                  start={{x: 0, y: 0}}
+                  end={{x: 0, y: 1}}
+                  
+                >
+
+                
             {state.routes.map((route, index) => {
               const {options} = descriptors[route.key];
 
-if (isGuest) {
-                return null; // No renderizar el CenterButtonTab si isGuest es verdadero
-              }
               if (route.name === 'CenterButtonTab') {
                 return <CenterButtonTab key={route.key} />;
               }
-
               const label =
-                route.name === 'HomeNavigator' ? 'Home' : fontLanguage.modals[0].bottom_tab_nav.profile;
+                route.name === 'HomeNavigator' ? fontLanguage.global[0].home : fontLanguage.modals[0].bottom_tab_nav.profile;
 
               return (
-                <CustomTab
+              <>{
+                false ? (<></>) : (
+                  <CustomTab
                   key={route.key}
                   label={label.toString()}
                   icon={route.name === 'HomeNavigator' ? 'home' : fontLanguage.modals[0].bottom_tab_nav.settings}
@@ -249,17 +256,23 @@ if (isGuest) {
                       navigation.navigate(route.name);
                     }
                   }}
-                  // Add other CustomTab props as needed
                 />
+                )
+              }
+              
+              </>
+                
               );
             })}
-          </View>
+            </LinearGradient>
+          // </View>
         )}>
         {/* esto sería cambiarlo a que lleve a homeScreem o a otro donde se incluya para ver los proyectos */}
         <Tab.Screen
           name="HomeNavigator"
           component={HomeNavigator}
           options={{
+            headerShown:false,
             tabBarIcon: ({focused}) => (
               <CustomTab
                 label="Home"
@@ -300,6 +313,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     backgroundColor: 'transparent', // Customize the tab bar background color
+    borderTopWidth: 0,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: heightPercentageToDP(10)
   },
   container: {
     flex: 1,
@@ -309,7 +328,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 100,
+    width: widthPercentageToDP(10),
     height: 40,
     borderRadius: 20,
     backgroundColor: 'blue',

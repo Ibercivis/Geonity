@@ -1020,28 +1020,29 @@ export const Profile = ({navigation}: Props) => {
 
   //metodo para poder navegar entre
   const navigateTo = (projectId: number) => {
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [
-          {
-            name: 'HomeNavigator',
-            state: {
-              routes: [
-                {
-                  name: 'ProjectPage',
-                  params: {
-                    id: projectId,
-                    isNew: false,
-                    fromProfile: true,
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      }),
-    );
+    // navigation.dispatch(
+    //   CommonActions.reset({
+    //     index: 0,
+    //     routes: [
+    //       {
+    //         name: 'HomeNavigator',
+    //         state: {
+    //           routes: [
+    //             {
+    //               name: 'ProjectPage',
+    //               params: {
+    //                 id: projectId,
+    //                 isNew: false,
+    //                 fromProfile: true,
+    //               },
+    //             },
+    //           ],
+    //         },
+    //       },
+    //     ],
+    //   }),
+    // );
+    navigation.navigate('ProjectPage', {id: projectId, isNew: false, fromProfile: true})
   };
 
   const openProfilePhoto = () => {

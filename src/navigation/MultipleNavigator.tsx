@@ -3,7 +3,11 @@ import React, {useContext, useEffect} from 'react';
 import {BottomTabNavigation} from './BottomTabNavigation';
 import {CreateProject} from '../components/screen_components/Project/CreateProject';
 import {CreateOrganization} from '../components/screen_components/Organization/CreateOrganization';
-
+import { ProjectPage } from '../components/screen_components/Home/ProjectPage';
+import { ParticipateMap } from '../components/screen_components/Project/ParticipateMap';
+import { OrganizationPage } from '../components/screen_components/Home/OrganizationPage';
+import { ProjectList } from '../components/screen_components/Home/ProjectList';
+import { OrganizationList } from '../components/screen_components/Home/OrganizationList';
 export type StackParams = {
   BottomTabNavigation: undefined;
   ModalScreen: undefined;
@@ -13,7 +17,26 @@ export type StackParams = {
   CreateOrganization: {
     id?: number;
   };
-  
+  ProjectPage: {
+    id: number;
+    isNew?: boolean;
+    fromProfile?: boolean;
+  };
+  OrganizationPage: {
+    id: number;
+    isNew?: boolean;
+  };
+  ParticipateMap: {
+    id: number;
+  };
+  ProjectList: {
+    id?: number;
+    title?: string
+  };
+  OrganizationList: {
+    id?: number;
+    // dashboard?: boolean;
+  };
 };
 const Stack = createStackNavigator<StackParams>();
 
@@ -24,7 +47,10 @@ export function MultipleNavigator() {
       screenOptions={{
         headerShown: false,
         headerStyle: {
-          // zIndex: -999,
+          zIndex: -999,
+        },
+        cardStyle:{
+          backgroundColor:'transparent'
         },
       }}>
       <Stack.Screen
@@ -33,8 +59,17 @@ export function MultipleNavigator() {
       />
       <Stack.Screen name="CreateProject" component={CreateProject} />
       <Stack.Screen name="CreateOrganization" component={CreateOrganization} />
-
-      
+      <Stack.Screen name="ProjectPage" component={ProjectPage} />
+      <Stack.Screen name="OrganizationPage" component={OrganizationPage} />
+      <Stack.Screen name="ProjectList" component={ProjectList} />
+      <Stack.Screen name="OrganizationList" component={OrganizationList} />
+      <Stack.Screen
+        name="ParticipateMap"
+        component={ParticipateMap}
+        options={({navigation}) => ({
+         
+        })}
+      />
     </Stack.Navigator>
   );
 }

@@ -24,7 +24,7 @@ import {StackScreenProps} from '@react-navigation/stack';
 import {HasTag, Topic} from '../../../interfaces/appInterfaces';
 import {FontFamily, FontSize} from '../../../theme/fonts';
 import {widthPercentageToDP} from 'react-native-responsive-screen';
-import { useLanguage } from '../../../hooks/useLanguage';
+import {useLanguage} from '../../../hooks/useLanguage';
 
 interface Props extends StackScreenProps<StackParams, 'ProjectList'> {}
 
@@ -84,7 +84,11 @@ export const ProjectList = (props: Props) => {
   return (
     <View style={{flex: 1, padding: RFPercentage(2)}}>
       <HeaderComponent
-        title={props.route.params?.title ? props.route.params.title : fontLanguage.project[0].title_list}
+        title={
+          props.route.params?.title
+            ? props.route.params.title
+            : fontLanguage.project[0].title_list
+        }
         onPressLeft={() => props.navigation.goBack()}
         onPressRight={() => console.log('data')}
         rightIcon={false}
@@ -162,14 +166,14 @@ export const ProjectList = (props: Props) => {
                         marginBottom: '2%',
                       }}>
                       {item.description.length > 150
-                    ? item.description.slice(0, 150) + '...'
-                    : item.description}
+                        ? item.description.slice(0, 150) + '...'
+                        : item.description}
                     </Text>
                   </View>
                 </View>
                 <ImageBackground
-                borderBottomLeftRadius={10}
-                borderBottomRightRadius={10}
+                  borderBottomLeftRadius={10}
+                  borderBottomRightRadius={10}
                   source={
                     item.cover && item.cover[0]
                       ? {uri: imageUrl + item.cover[0].image}
@@ -211,11 +215,20 @@ export const ProjectList = (props: Props) => {
                         }}>
                         {item.contributions}
                       </Text>
-                      {true ? (
-                        <HeartFill width={16} height={16} color={'#ff0000'} />
-                      ) : (
-                        <Heart width={16} height={16} color={'#000000'} />
-                      )}
+                      <TouchableOpacity
+                        activeOpacity={1}
+                        onPress={() => toggleLike(item.id)}
+                        style={{
+                          flexDirection: 'row',
+                          backgroundColor: 'transparent',
+                          marginLeft: RFPercentage(2),
+                        }}>
+                        {item.is_liked_by_user ? (
+                          <HeartFill width={16} height={16} color={'#ff0000'} />
+                        ) : (
+                          <Heart width={16} height={16} color={'#000000'} />
+                        )}
+                      </TouchableOpacity>
                       <Text
                         style={{
                           fontSize: FontSize.fontSizeText13,

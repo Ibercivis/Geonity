@@ -12,7 +12,8 @@
         "delete_button": "Delete",
         "continue_button": "Continue",
         "confirm_button": "Confirm",
-        "apply": "Apply"
+        "apply": "Apply",
+        "home":"Home"
       }
     ],
     "login_screen": [

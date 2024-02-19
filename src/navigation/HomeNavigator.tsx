@@ -5,10 +5,8 @@ import {ProjectList} from '../components/screen_components/Home/ProjectList';
 import {ProjectPage} from '../components/screen_components/Home/ProjectPage';
 import {OrganizationList} from '../components/screen_components/Home/OrganizationList';
 import {OrganizationPage} from '../components/screen_components/Home/OrganizationPage';
-import {CreateProject} from '../components/screen_components/Project/CreateProject';
 import {useContext, useEffect} from 'react';
 import {PermissionsContext} from '../context/PermissionsContext';
-import {LoadingScreen} from '../screens/LoadingScreen';
 import {ParticipateMap} from '../components/screen_components/Project/ParticipateMap';
 import {PermissionsScreen} from '../screens/PermissionsScreen';
 
@@ -18,7 +16,7 @@ export type StackParams = {
   };
   ProjectList: {
     id?: number;
-    title?: string;
+    title?: string
   };
   OrganizationList: {
     id?: number;
@@ -85,8 +83,8 @@ export function HomeNavigator() {
       screenOptions={{
         headerShown: false,
         headerStyle: {
-          backgroundColor: 'transparent',
-          // zIndex: -9,
+          // backgroundColor: 'transparent',
+          zIndex: -999,
         },
       }}>
       <Stack.Screen
@@ -94,11 +92,17 @@ export function HomeNavigator() {
         component={HomeScreen}
         initialParams={{dashboard: true}}
       />
-      <Stack.Screen name="ProjectList" component={ProjectList} />
-      <Stack.Screen name="OrganizationList" component={OrganizationList} />
-      <Stack.Screen name="ProjectPage" component={ProjectPage} />
-      <Stack.Screen name="OrganizationPage" component={OrganizationPage} />
-      <Stack.Screen name="ParticipateMap" component={ParticipateMap} />
+      {/* <Stack.Screen name="ProjectList" component={ProjectList} />
+      <Stack.Screen name="OrganizationList" component={OrganizationList} /> */}
+      {/* <Stack.Screen name="ProjectPage" component={ProjectPage} /> */}
+      {/* <Stack.Screen name="OrganizationPage" component={OrganizationPage} />
+      <Stack.Screen
+        name="ParticipateMap"
+        component={ParticipateMap}
+        options={({navigation}) => ({
+         
+        })}
+      /> */}
       <Stack.Screen name="PermissionsScreen" component={PermissionsScreen} />
 
       {/* {permissions.locationStatus === 'granted' ? (

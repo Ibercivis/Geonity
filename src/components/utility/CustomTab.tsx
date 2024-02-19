@@ -40,9 +40,17 @@ const CustomTab = ({
     borderRadius: 20,
     padding: RFPercentage(1.5),
     height: RFPercentage(5),
-    marginTop: RFPercentage(0.4),
+    marginTop: RFPercentage(4),
     marginBottom: RFPercentage(0.4),
-    width: RFPercentage(15)
+    width: RFPercentage(15),
+    // shadowColor: '#000',
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 0.1,
+    // },
+    // shadowOpacity: 0.2,
+    // shadowRadius: 1.41,
+    // elevation: 2,
   };
 
   const textStyle = {
@@ -75,7 +83,7 @@ const CustomTab = ({
             <>
               <View
                 style={{
-                  marginHorizontal: '10%',
+                  marginHorizontal: '5%',
                   justifyContent: 'center',
                   // top: RFPercentage(0.18),
                   alignSelf: 'center',
