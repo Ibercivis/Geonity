@@ -15,8 +15,8 @@ import {
 } from 'react-native';
 import {Size} from '../theme/size';
 // import {
-  //   GoogleSignin,
-  //   statusCodes,
+//   GoogleSignin,
+//   statusCodes,
 // } from '@react-native-google-signin/google-signin';
 import {useState, useContext, useRef, useEffect} from 'react';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -156,13 +156,13 @@ export const LoginScreen = ({navigation, route}: Props) => {
 
   useEffect(() => {
     setIsGuest(false);
-    console.log(isGuest)
+    console.log(isGuest);
     // GoogleSignin.configure({
-      //   offlineAccess: true,
-      //   iosClientId:
-        //     '235777853257-djkpgca69noinapgft2ua7vgq2bcieg3.apps.googleusercontent.com',
-      //   webClientId:
-        //     '235777853257-rnbdsrqchtl76jq0givh1h6l7u47rs4k.apps.googleusercontent.com',
+    //   offlineAccess: true,
+    //   iosClientId:
+    //     '235777853257-djkpgca69noinapgft2ua7vgq2bcieg3.apps.googleusercontent.com',
+    //   webClientId:
+    //     '235777853257-rnbdsrqchtl76jq0givh1h6l7u47rs4k.apps.googleusercontent.com',
     // });
   }, []);
 
@@ -188,10 +188,11 @@ export const LoginScreen = ({navigation, route}: Props) => {
     setLoading(true);
     Keyboard.dismiss();
     // console.log(JSON.stringify(form, null, 2));
-    const state = await signIn({
-      correo: form.userName,
-      password: form.password,
-    },
+    const state = await signIn(
+      {
+        correo: form.userName,
+        password: form.password,
+      },
       false,
     );
     setLoading(false);
@@ -202,38 +203,38 @@ export const LoginScreen = ({navigation, route}: Props) => {
     console.log('isGuest en login');
     const state = await setIsGuest(true);
     // console.log(state)
-    console.log(isGuest)
+    console.log(isGuest);
     setLoading(false);
   };
 
   //TODO mover todo esto a un contexto para que se pueda controlar el logout desde cualquier lado
   // const logginGoogle = async () => {
-    //   try {
-      //     setIsLoading(true);
-      //     await GoogleSignin.hasPlayServices();
-      //     const userInfo = await GoogleSignin.signIn();
-      //     setIsLoading(false);
-      //     // signIn();
-    //   } catch (error: any) {
-      //     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        //       // user cancelled the login flow
-        //       console.log('SIGN IN CANCELLED');
-        //       console.log(error.code);
-      //     } else if (error.code === statusCodes.IN_PROGRESS) {
-        //       // operation (e.g. sign in) is in progress already
-        //       console.log('IN PROGRESS');
-        //       console.log(error.code);
-      //     } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        //       // play services not available or outdated
-        //       console.log('PLAY SERVICES NOT AVAILABLE');
-        //       console.log(error.code);
-      //     } else {
-        //       // some other error happened
-        //       console.log('OTRO');
-        //       console.log(error);
-      //     }
+  //   try {
+  //     setIsLoading(true);
+  //     await GoogleSignin.hasPlayServices();
+  //     const userInfo = await GoogleSignin.signIn();
   //     setIsLoading(false);
-    //   }
+  //     // signIn();
+  //   } catch (error: any) {
+  //     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+  //       // user cancelled the login flow
+  //       console.log('SIGN IN CANCELLED');
+  //       console.log(error.code);
+  //     } else if (error.code === statusCodes.IN_PROGRESS) {
+  //       // operation (e.g. sign in) is in progress already
+  //       console.log('IN PROGRESS');
+  //       console.log(error.code);
+  //     } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+  //       // play services not available or outdated
+  //       console.log('PLAY SERVICES NOT AVAILABLE');
+  //       console.log(error.code);
+  //     } else {
+  //       // some other error happened
+  //       console.log('OTRO');
+  //       console.log(error);
+  //     }
+  //     setIsLoading(false);
+  //   }
   // };
 
   //#endregion
@@ -420,12 +421,12 @@ export const LoginScreen = ({navigation, route}: Props) => {
       case 'register':
         return (
           // <ScrollView style={{width: '100%', flexGrow: 1}}>
-          <View style={{marginHorizontal: '9%', left: '6%'}}>
+          <View style={{marginHorizontal: '3%'}}>
             <View style={{}}>
               {/* contenedor de los inputs */}
               <View
                 style={{
-                  width: '100%',
+                  // width: '100%',
                   height: 'auto',
                   alignSelf: 'center',
                   justifyContent: 'center',
@@ -433,7 +434,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                 {/* name */}
                 <View
                   style={{
-                    width: '100%',
+                    // width: '100%',
                     height: 'auto',
                     flexDirection: 'row',
                     // flex: 1
@@ -751,7 +752,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
         );
       case 'forgot':
         return (
-          <View style={{marginHorizontal: '9%', left: '6%'}}>
+          <View style={{marginHorizontal: '1%'}}>
             {/* info */}
             <View
               style={{
@@ -846,7 +847,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
               style={{
                 marginHorizontal: '26%',
                 marginTop: '2%',
-                zIndex: 1
+                zIndex: 1,
               }}>
               <CustomButton
                 backgroundColor={Colors.primaryDark}
@@ -857,7 +858,8 @@ export const LoginScreen = ({navigation, route}: Props) => {
             </View>
 
             {/* back */}
-            <View style={{marginHorizontal: '26%', marginTop: '15%', zIndex: 2}}>
+            <View
+              style={{marginHorizontal: '26%', marginTop: '15%', zIndex: 2}}>
               <TouchableOpacity
                 activeOpacity={1}
                 style={{
@@ -1007,10 +1009,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                           right: '3%',
                           fontWeight: '600',
                         }}>
-                        {
-                          fontLanguage.new_project_screen[0]
-                            .project_name_helper
-                        }
+                        {fontLanguage.new_project_screen[0].project_name_helper}
                       </HelperText>
                     ) : (
                       <></>
@@ -1036,10 +1035,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                           right: '3%',
                           fontWeight: '600',
                         }}>
-                        {
-                          fontLanguage.new_project_screen[0]
-                            .project_name_helper
-                        }
+                        {fontLanguage.new_project_screen[0].project_name_helper}
                       </HelperText>
                     ) : (
                       <></>
@@ -1111,45 +1107,45 @@ export const LoginScreen = ({navigation, route}: Props) => {
                   </View> */}
 
                   {/* divider */}
-<View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      width: '100%',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginTop: '14%',
-                    }}>
-                    <Divider style={{borderWidth: 0.6, width: '45%'}} />
-                    <Text
+                  <View>
+                    <View
                       style={{
+                        flexDirection: 'row',
+                        width: '100%',
+                        justifyContent: 'space-between',
                         alignItems: 'center',
-                        fontWeight: 'bold',
-                        color: 'black',
+                        marginTop: '14%',
                       }}>
-                      o
-                    </Text>
-                    <Divider style={{borderWidth: 0.6, width: '45%'}} />
+                      <Divider style={{borderWidth: 0.6, width: '45%'}} />
+                      <Text
+                        style={{
+                          alignItems: 'center',
+                          fontWeight: 'bold',
+                          color: 'black',
+                        }}>
+                        o
+                      </Text>
+                      <Divider style={{borderWidth: 0.6, width: '45%'}} />
+                    </View>
+                    <View
+                      style={{
+                        marginHorizontal: '26%',
+                        marginTop: '14%',
+                        marginBottom: '10%',
+                      }}>
+                      <CustomButton
+                        backgroundColor={Colors.primaryDark}
+                        fontFamily={FontFamily.NotoSansDisplayRegular}
+                        label={fontLanguage.login_screen[0].register}
+                        onPress={() =>
+                          // navigation.replace('RegisterScreen')
+                          onTouchRegister()
+                        }
+                      />
+                    </View>
                   </View>
-                  <View
-                    style={{
-                      marginHorizontal: '26%',
-                      marginTop: '14%',
-                      marginBottom: '10%',
-                    }}>
-                    <CustomButton
-                      backgroundColor={Colors.primaryDark}
-                      fontFamily={FontFamily.NotoSansDisplayRegular}
-                      label={fontLanguage.login_screen[0].register}
-                      onPress={() =>
-                        // navigation.replace('RegisterScreen')
-                        onTouchRegister()
-                      }
-                    />
-                  </View>
-</View>
                   {/* invitado */}
-                  
+
                   <TouchableOpacity
                     activeOpacity={0.4}
                     style={{
@@ -1169,26 +1165,34 @@ export const LoginScreen = ({navigation, route}: Props) => {
                       shadowRadius: 1.41,
                       // width: '100%',
                       // elevation: 1,
-    
                     }}
                     onPress={() => onGuest()}>
-                    
-                      <Text
-                        style={{
-                          color: 'black',
-                          fontWeight: '400',
-                          fontFamily: FontFamily.NotoSansDisplayRegular,
-                          fontSize: FontSize.fontSizeText15,
-                          marginHorizontal: '3%',
-                          marginVertical: ' 1%',
-                        }}>
-                        {fontLanguage.login_screen[0].guest}
-                      </Text>
+                    <Text
+                      style={{
+                        color: 'black',
+                        fontWeight: '400',
+                        fontFamily: FontFamily.NotoSansDisplayRegular,
+                        fontSize: FontSize.fontSizeText15,
+                        marginHorizontal: '3%',
+                        marginVertical: ' 1%',
+                      }}>
+                      {fontLanguage.login_screen[0].guest}
+                    </Text>
                   </TouchableOpacity>
-                  <View  style={{marginTop:'20%'}}></View>
+                  <View style={{marginTop: '20%'}}></View>
                 </View>
                 {/* <View style={{width: '25.4%', backgroundColor: 'blue'}}></View> */}
-                <SafeAreaView>{screenHorizontal()}</SafeAreaView>
+                <SafeAreaView>
+                  <View
+                    style={{
+                      alignContent: 'center',
+                      alignItems: 'center',
+                      alignSelf: 'center',
+                      marginLeft:widthPercentageToDP(11)
+                    }}>
+                    {screenHorizontal()}
+                  </View>
+                </SafeAreaView>
               </Animated.View>
             </View>
           </View>
@@ -1235,7 +1239,7 @@ const styles = StyleSheet.create({
     // marginHorizontal: '9%',
     marginTop: '5%',
     marginBottom: '17%',
-    right: '1%',
+    // right: '1%',
   },
   loginButtonsContainer: {
     marginHorizontal: '17%',

@@ -190,7 +190,7 @@ export const BottomTabNavigation = () => {
   const {permissions} = useContext(PermissionsContext);
 
   //si no está logged, se le redirigirá hasta la pantalla de login
-  const {status} = useContext(AuthContext);
+  const {status, isGuest} = useContext(AuthContext);
   // const actualRoute = useRoute();
   if (status === 'checking') {
     return <LoadingScreen />;
@@ -219,16 +219,21 @@ export const BottomTabNavigation = () => {
         tabBar={({state, descriptors, navigation}) => (
           // <View style={styles.tabBarContainer}>
             <LinearGradient
-                  colors={['transparent', '#d3d3d3',  '#ffffff']}
+                  colors={['white', '#ffffff']}
                   style={styles.tabBarContainer}
                   start={{x: 0, y: 0}}
                   end={{x: 0, y: 1}}
                   
                 >
+                  
 
                 
             {state.routes.map((route, index) => {
               const {options} = descriptors[route.key];
+
+              if(isGuest){
+                return null;
+              }
 
               if (route.name === 'CenterButtonTab') {
                 return <CenterButtonTab key={route.key} />;
