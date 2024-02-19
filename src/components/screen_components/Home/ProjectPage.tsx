@@ -58,6 +58,7 @@ import Toast from 'react-native-toast-message';
 import RNFS from 'react-native-fs';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
 import {useLanguage} from '../../../hooks/useLanguage';
+import RNFetchBlob from 'rn-fetch-blob';
 
 const data = [
   require('../../../assets/backgrounds/login-background.jpg'),
@@ -348,16 +349,39 @@ export const ProjectPage = (props: Props) => {
         text2: fontLanguage.project[0].toast_err_download_text1,
       });
     }
+    // let token;
+
+    // while (!token) {
+    //   token = await AsyncStorage.getItem('token');
+    // }
+    // let dirs = RNFetchBlob.fs.dirs;
+    // RNFetchBlob.config({
+    //   // response data will be saved to this path if it has access right.
+    //   // path: dirs.DocumentDir + '/' + Date.now() + '.csv',
+    //   fileCache: true,
+    //   // by adding this option, the temp files will have a file extension
+    //   appendExt: 'csv',
+    // })
+    //   .fetch('GET', `/project/${project?.id}/download_observations/`, {
+    //     //some headers ..
+    //     Authorization: token,
+    //   })
+    //   .then(res => {
+    //     // the path should be dirs.DocumentDir + 'path-to-file.anything'
+    //     console.log('The file saved to ', res.path());
+    //   })
+    //   .catch(err => {
+    //     console.log(JSON.stringify(err, null, 2));
+    //   });
   };
 
   const saveFile = async (fileBlob: any, filename: any) => {
     let path: any;
-    if(Platform.OS === 'ios'){
+    if (Platform.OS === 'ios') {
       path = `${RNFS.DocumentDirectoryPath}/${filename}`;
-    }else{
+    } else {
       path = `${RNFS.DownloadDirectoryPath}/${filename}`;
     }
-    
 
     const file = new Blob([fileBlob], {
       type: 'text/csv',
@@ -477,10 +501,11 @@ export const ProjectPage = (props: Props) => {
 
       setCreator(creatoruser.data.username);
       // recorrer resp.administrator.map y comparar si coincide el id con el user
-      let isAdmin = resp.data.administrators.find(x => x === userInfo.data.pk)
+      let isAdmin = resp.data.administrators.find(x => x === userInfo.data.pk);
       if (
-        userInfo.data != undefined &&
-        userInfo.data.pk === resp.data.creator || isAdmin !== undefined
+        (userInfo.data != undefined &&
+          userInfo.data.pk === resp.data.creator) ||
+        isAdmin !== undefined
       ) {
         setCanEdit(true);
       } else {
