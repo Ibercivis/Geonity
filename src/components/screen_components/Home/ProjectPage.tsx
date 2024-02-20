@@ -5,11 +5,11 @@ import {
   Image,
   ImageBackground,
   SafeAreaView,
-  Share,
   TouchableOpacity,
   StatusBar,
   Platform,
   Alert,
+  Share,
 } from 'react-native';
 import {Text} from 'react-native-paper';
 import {RFPercentage} from 'react-native-responsive-fontsize';
@@ -57,6 +57,7 @@ import Toast from 'react-native-toast-message';
 import RNFS from 'react-native-fs';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
 import {useLanguage} from '../../../hooks/useLanguage';
+import ShareComponent from 'react-native-share';
 
 const data = [
   require('../../../assets/backgrounds/login-background.jpg'),
@@ -412,11 +413,31 @@ export const ProjectPage = (props: Props) => {
       });
   
       console.log(JSON.stringify(response, null, 2))
+      if (response) {
+        console.log('Archivo descargado correctamente en:', filePath);
+        await shareFile(filePath); // Llamada a la función shareFile después de descargar el archivo
+      } else {
+        console.error('Error al descargar el archivo');
+      }
       
     } catch (error) {
       console.error('Error:', error);
     }
     
+  };
+
+  const shareFile = async (filePath: any) => {
+    try {
+      const options = {
+        title: 'Compartir archivo',
+        url: `file://${filePath}`, // URL del archivo
+        type: 'text/csv', // Tipo MIME del archivo
+      };
+  
+      await ShareComponent.open(options);
+    } catch (error) {
+      console.error('Error al compartir el archivo:', error);
+    }
   };
 
   const requestStoragePermission = async () => {
