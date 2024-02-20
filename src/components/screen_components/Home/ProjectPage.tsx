@@ -359,35 +359,64 @@ export const ProjectPage = (props: Props) => {
   };
 
   const saveFile = async (fileBlob: any, filename: any) => {
-    let path: any;
-    if (Platform.OS === 'ios') {
-      path = `${RNFS.ExternalStorageDirectoryPath}/${filename}`;
-    } else {
-      path = `${RNFS.DownloadDirectoryPath}/${filename}`;
-    }
-    const file = new Blob([fileBlob], {
-      type: 'text/csv',
-      lastModified: Date.now(),
-    });
-    const reader = new FileReader();
+    // let path: any;
+    // if (Platform.OS === 'ios') {
+    //   path = `${RNFS.ExternalStorageDirectoryPath}/${filename}`;
+    // } else {
+    //   path = `${RNFS.DownloadDirectoryPath}/${filename}`;
+    // }
+    // const file = new Blob([fileBlob], {
+    //   type: 'text/csv',
+    //   lastModified: Date.now(),
+    // });
+    // const reader = new FileReader();
 
-    console.log(JSON.stringify(file, null, 2));
-    reader.onload = () => {
-      RNFS.writeFile(path, reader.result as string, 'utf8')
-        .then(() => {
-          console.log(`Archivo guardado en: ${path}`);
-          Toast.show({
-            type: 'info',
-            text1: fontLanguage.project[0].toast_download_completed_text1,
-            text2: `${fontLanguage.project[0].toast_download_completed_text2} ${path}`,
-          });
-        })
-        .catch(error => {
-          console.error('Error al guardar el archivo:', error);
-        });
-    };
-    reader.onerror = error => console.error('Error al leer el archivo:', error);
-    reader.readAsText(file);
+    // console.log(JSON.stringify(file, null, 2));
+    // reader.onload = () => {
+    //   RNFS.writeFile(path, reader.result as string, 'utf8')
+    //     .then(() => {
+    //       console.log(`Archivo guardado en: ${path}`);
+    //       Toast.show({
+    //         type: 'info',
+    //         text1: fontLanguage.project[0].toast_download_completed_text1,
+    //         text2: `${fontLanguage.project[0].toast_download_completed_text2} ${path}`,
+    //       });
+    //     })
+    //     .catch(error => {
+    //       console.error('Error al guardar el archivo:', error);
+    //     });
+    // };
+    // reader.onerror = error => console.error('Error al leer el archivo:', error);
+    // reader.readAsText(file);
+    let token;
+
+    while (!token) {
+      token = await AsyncStorage.getItem('token');
+    }
+    // console.log(JSON.stringify(fileBlob, null,2))
+    try {
+      const downloadUrl = 'https://geonity.ibercivis.es/api'+`/project/${project?.id}/download_observations/`; // Agrega el token a la URL
+      const filePath = RNFS.DocumentDirectoryPath + `/observations${Date.now()}.csv`;
+  
+      const options = {
+        headers: {
+          Authorization:  `${token}`, // Agrega el token de autorización al encabezado
+        },
+      };
+      console.log(JSON.stringify(filePath))
+      const response = await RNFS.downloadFile({
+        fromUrl: downloadUrl,
+        toFile: filePath,
+        headers: options.headers, // Pasa los encabezados a la solicitud de descarga
+        // connectionTimeout: 1000
+      });
+  
+      console.log(JSON.stringify(response, null, 2))
+      
+    } catch (error) {
+      console.error('Error:', error);
+    }
+    
   };
 
   const requestStoragePermission = async () => {
