@@ -56,7 +56,7 @@ import NotCreated from '../../../assets/icons/profile/No hay creados.svg';
 import Geonity from '../../../assets/icons/general/Geonity-Tittle.svg';
 import {CustomButton} from '../../utility/CustomButton';
 import {InfoModal, InfoModalGuest} from '../../utility/Modals';
-import { useLanguage } from '../../../hooks/useLanguage';
+import {useLanguage} from '../../../hooks/useLanguage';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -102,7 +102,7 @@ export const Home = ({navigation}: Props) => {
     useContext(AuthContext);
 
   const [menuVisible, setMenuVisible] = useState(false);
-const [guestModal, setGuestModal] = useState(false);
+  const [guestModal, setGuestModal] = useState(false);
 
   const mostrarMenu = () => {
     setMenuVisible(true);
@@ -305,24 +305,21 @@ const [guestModal, setGuestModal] = useState(false);
 
   const categoryListApi = async () => {
     let token;
-if (!isGuest) {
-    while (!token) {
-      token = await AsyncStorage.getItem('token');
-}
+    if (!isGuest) {
+      while (!token) {
+        token = await AsyncStorage.getItem('token');
+      }
     }
 
     let retries = 0;
     let success = false;
 
     try {
-      const resp = await citmapApi.get<Topic[]>(
-        '/project/topics/',
-         {
+      const resp = await citmapApi.get<Topic[]>('/project/topics/', {
         headers: {
           Authorization: token,
         },
-      }
-      );
+      });
       //TODO ORDENAR
       setCategoryList(resp.data);
 
@@ -348,11 +345,11 @@ if (!isGuest) {
 
   const projectListApi = async () => {
     let token;
-if (!isGuest) {
-    while (!token) {
-      token = await AsyncStorage.getItem('token');
+    if (!isGuest) {
+      while (!token) {
+        token = await AsyncStorage.getItem('token');
+      }
     }
-}
 
     try {
       const resp = await citmapApi.get<ShowProject[]>('/project/', {
@@ -374,20 +371,17 @@ if (!isGuest) {
 
   const organizationListApi = async () => {
     let token;
-if (!isGuest) {
-    while (!token) {
-      token = await AsyncStorage.getItem('token');
-}
+    if (!isGuest) {
+      while (!token) {
+        token = await AsyncStorage.getItem('token');
+      }
     }
     try {
-      const resp = await citmapApi.get<Organization[]>(
-        '/organization/'
-        , {
+      const resp = await citmapApi.get<Organization[]>('/organization/', {
         headers: {
           Authorization: token,
         },
-      }
-      );
+      });
       setOrganizationList(resp.data);
       setLoading(false);
     } catch {
@@ -528,7 +522,7 @@ if (!isGuest) {
               fontFamily: FontFamily.NotoSansDisplayRegular,
               fontWeight: '700',
             }}>
-           {fontLanguage.Home[0].no_observations_text_1}
+            {fontLanguage.Home[0].no_observations_text_1}
           </Text>
           <Text
             style={{
@@ -770,11 +764,12 @@ if (!isGuest) {
                                     type="newProjectsPlus"
                                     categoryImage={index}
                                     onPress={() => {
-if (!isGuest) {
-                                      navigation.navigate('ProjectList', {
-                                        title: fontLanguage.Home[0].new_project,
-                                      });
-} else {
+                                      if (!isGuest) {
+                                        navigation.navigate('ProjectList', {
+                                          title:
+                                            fontLanguage.Home[0].new_project,
+                                        });
+                                      } else {
                                         toastInfoGuest();
                                         // signOut();
                                       }
@@ -889,11 +884,13 @@ if (!isGuest) {
                                       : ''
                                   }
                                   onPress={() => {
-if (!isGuest) {
-                                    navigation.navigate('ProjectList', {
-                                      title: fontLanguage.Home[0].important_projects,
-                                    });
-} else {
+                                    if (!isGuest) {
+                                      navigation.navigate('ProjectList', {
+                                        title:
+                                          fontLanguage.Home[0]
+                                            .important_projects,
+                                      });
+                                    } else {
                                       toastInfoGuest();
                                       // signOut();
                                     }
@@ -920,9 +917,9 @@ if (!isGuest) {
                                       : ''
                                   }
                                   onPress={() => {
-if (!isGuest) {
-                                    onProjectPress(item.id);
-} else {
+                                    if (!isGuest) {
+                                      onProjectPress(item.id);
+                                    } else {
                                       toastInfoGuest();
                                       // signOut();
                                     }
@@ -1014,11 +1011,11 @@ if (!isGuest) {
                                   type="interestingPlus"
                                   categoryImage={index}
                                   onPress={() => {
-if (!isGuest) {
-                                    navigation.navigate('ProjectList', {
-                                      title: fontLanguage.Home[0].interesting,
-                                    });
-} else {
+                                    if (!isGuest) {
+                                      navigation.navigate('ProjectList', {
+                                        title: fontLanguage.Home[0].interesting,
+                                      });
+                                    } else {
                                       toastInfoGuest();
                                       // signOut();
                                     }
@@ -1040,9 +1037,9 @@ if (!isGuest) {
                                   type="interesting"
                                   categoryImage={index}
                                   onPress={() => {
-if (!isGuest) {
-                                    onProjectPress(x.id);
-} else {
+                                    if (!isGuest) {
+                                      onProjectPress(x.id);
+                                    } else {
                                       toastInfoGuest();
                                       // signOut();
                                     }
@@ -1131,12 +1128,12 @@ if (!isGuest) {
                                   categoryImage={index}
                                   onPress={() => {
                                     if (!isGuest) {
-                                    navigation.navigate('OrganizationList');
+                                      navigation.navigate('OrganizationList');
                                     } else {
                                       toastInfoGuest();
                                       // signOut();
-                                  }
-}}
+                                    }
+                                  }}
                                 />
                               </View>
                             );
@@ -1158,14 +1155,14 @@ if (!isGuest) {
                                   description={x.description}
                                   onPress={() => {
                                     if (!isGuest) {
-                                    navigation.navigate('OrganizationPage', {
-                                      id: x.id,
-                                    });
+                                      navigation.navigate('OrganizationPage', {
+                                        id: x.id,
+                                      });
                                     } else {
                                       toastInfoGuest();
                                       // signOut();
-                                  }
-}}
+                                    }
+                                  }}
                                 />
                               </View>
                             );
@@ -1311,7 +1308,9 @@ if (!isGuest) {
                 </View>
                 <View>
                   <TouchableOpacity onPress={() => setShowCategoryList(false)}>
-                    <Text style={{color: Colors.primaryLigth}}>{fontLanguage.global[0].close_button}</Text>
+                    <Text style={{color: Colors.primaryLigth}}>
+                      {fontLanguage.global[0].close_button}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -1329,7 +1328,10 @@ if (!isGuest) {
                 renderItem={({item, index}) => {
                   const isChecked = categoriesSelected.includes(item);
                   return (
-                    <View
+                    <TouchableOpacity
+                      onPress={() => {
+                        setCheckCategories(item);
+                      }}
                       style={{
                         width: RFPercentage(42),
                         flexDirection: 'row',
@@ -1345,7 +1347,7 @@ if (!isGuest) {
                         }}
                       />
                       <Text style={{color: 'black'}}>{item.topic}</Text>
-                    </View>
+                    </TouchableOpacity>
                   ); //aquí poner el plus
                 }}
               />
@@ -1363,7 +1365,9 @@ if (!isGuest) {
                     setCategorySelectedId([]);
                     setCategoriesSelected([]);
                   }}>
-                  <Text style={{color: Colors.primaryLigth}}>{fontLanguage.global[0].clean_all_button}</Text>
+                  <Text style={{color: Colors.primaryLigth}}>
+                    {fontLanguage.global[0].clean_all_button}
+                  </Text>
                 </TouchableOpacity>
                 <View style={{width: widthPercentageToDP(20)}}>
                   <CustomButton
@@ -1396,42 +1400,48 @@ if (!isGuest) {
                   paddingRight: widthPercentageToDP(11), // Ajustar según sea necesario
                 }}>
                 <TouchableWithoutFeedback>
+                  <View
+                    style={{
+                      position: 'relative',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      backgroundColor: 'white',
+                      width: widthPercentageToDP(27),
+                      borderRadius: 10,
+                      shadowColor: '#000',
+                      shadowOffset: {
+                        width: 0,
+                        height: 0.1,
+                      },
+                      shadowOpacity: 0.2,
+                      shadowRadius: 1.41,
+                      elevation: 5,
+                    }}>
                     <View
                       style={{
-                        position: 'relative',
-                        justifyContent: 'center',
-                        alignItems: 'center',
                         backgroundColor: 'white',
-                        width: widthPercentageToDP(27),
+                        paddingHorizontal: widthPercentageToDP(2),
                         borderRadius: 10,
-                        shadowColor: '#000',
-                        shadowOffset: {
-                          width: 0,
-                          height: 0.1,
-                        },
-                        shadowOpacity: 0.2,
-                        shadowRadius: 1.41,
-                        elevation: 5,
                       }}>
-                      <View
+                      <TouchableOpacity
                         style={{
-                          backgroundColor: 'white',
-                          paddingHorizontal: widthPercentageToDP(2),
-                          borderRadius: 10,
-                        }}>
-                        <TouchableOpacity
-                          style={{marginTop: heightPercentageToDP(1), marginBottom: heightPercentageToDP(0.7)}}
-                          onPress={signOut}>
-                          <Text>{fontLanguage.Home[0].logout}</Text>
-                        </TouchableOpacity>
-                        {/* Otras opciones de menú aquí */}
-                        <TouchableOpacity
-                          style={{marginBottom: heightPercentageToDP(1),marginTop: heightPercentageToDP(0.7)}}
-                          onPress={ocultarMenu}>
-                          <Text>{fontLanguage.global[0].cancel_button}</Text>
-                        </TouchableOpacity>
-                      </View>
+                          marginTop: heightPercentageToDP(1),
+                          marginBottom: heightPercentageToDP(0.7),
+                        }}
+                        onPress={signOut}>
+                        <Text>{fontLanguage.Home[0].logout}</Text>
+                      </TouchableOpacity>
+                      {/* Otras opciones de menú aquí */}
+                      <TouchableOpacity
+                        style={{
+                          marginBottom: heightPercentageToDP(1),
+                          marginTop: heightPercentageToDP(0.7),
+                        }}
+                        onPress={ocultarMenu}>
+                        <Text>{fontLanguage.global[0].cancel_button}</Text>
+                      </TouchableOpacity>
                     </View>
+                  </View>
                 </TouchableWithoutFeedback>
               </View>
             </TouchableWithoutFeedback>
@@ -1443,7 +1453,7 @@ if (!isGuest) {
               onPress={toLogginIfGuest}
               label={fontLanguage.modals[0].guest_label_1}
               subLabel={fontLanguage.modals[0].guest_label_2}
-               />
+            />
           </View>
         </SafeAreaView>
       </KeyboardAvoidingView>
