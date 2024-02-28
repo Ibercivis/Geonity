@@ -512,7 +512,7 @@ export const ProjectPage = (props: Props) => {
       );
 
       const resp = await citmapApi.get<ShowProject>(
-        `/project/${props.route.params.id}`,
+        `/project/${props.route.params.id}/`,
         {
           headers: {
             Authorization: token,
@@ -529,11 +529,11 @@ export const ProjectPage = (props: Props) => {
         },
       );
 
-      const organiza = await citmapApi.get<Organization[]>(`/organization/`, {
-        headers: {
-          Authorization: token,
-        },
-      });
+      // const organiza = await citmapApi.get<Organization[]>(`/organization/`, {
+      //   headers: {
+      //     Authorization: token,
+      //   },
+      // });
 
       setCreator(creatoruser.data.username);
       // recorrer resp.administrator.map y comparar si coincide el id con el user
