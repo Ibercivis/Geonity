@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22155" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
-    <device id="retina6_72" orientation="portrait" appearance="light"/>
+    <device id="retina6_5" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22131"/>
@@ -14,21 +14,21 @@
             <objects>
                 <viewController id="01J-lp-oVM" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="z6r-r6-Ddi">
-                        <rect key="frame" x="0.0" y="0.0" width="430" height="932"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Udh-HU-aV4">
-                                <rect key="frame" x="0.0" y="59" width="430" height="839"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" ambiguous="YES" image="LaunchScreen" translatesAutoresizingMaskIntoConstraints="NO" id="0jh-7N-7qo">
-                                        <rect key="frame" x="0.0" y="0.0" width="430" height="790.33333333333337"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="769.33333333333337"/>
                                         <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="default"/>
                                     </imageView>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" ambiguous="YES" image="geonity" translatesAutoresizingMaskIntoConstraints="NO" id="OPO-Aw-ixz">
-                                        <rect key="frame" x="0.0" y="790.33333333333337" width="430" height="27.666666666666629"/>
+                                        <rect key="frame" x="0.0" y="769.33333333333337" width="414" height="27.666666666666629"/>
                                     </imageView>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" ambiguous="YES" image="byibercivis" translatesAutoresizingMaskIntoConstraints="NO" id="3Rg-Ad-yZY">
-                                        <rect key="frame" x="0.0" y="818" width="430" height="21"/>
+                                        <rect key="frame" x="0.0" y="797" width="414" height="21"/>
                                     </imageView>
                                 </subviews>
                             </stackView>

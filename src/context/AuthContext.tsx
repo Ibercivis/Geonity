@@ -103,6 +103,7 @@ export const AuthProvider = ({children}: any) => {
         username: loginData.correo,
         password: loginData.password,
       });
+      console.log(resp);
       if (resp.data) {
         action({
           type: 'signIn',
@@ -127,7 +128,25 @@ export const AuthProvider = ({children}: any) => {
       return true;
     } catch (err: any) {
       //TODO arreglar para que capture los errores bien
-      console.log(err);
+      console.log('Error completo:');
+      console.log(JSON.stringify(err, null, 2));
+
+      console.log('Mensaje de error:');
+      console.log(JSON.stringify(err.message, null, 2));
+
+      if (err.response) {
+        console.log('Código de estado de la respuesta:');
+        console.log(JSON.stringify(err.response.status, null, 2));
+        console.log('Datos de respuesta del servidor:');
+        console.log(JSON.stringify(err.response.data, null, 2));
+      } else if (err.request) {
+        console.log('No se recibió respuesta del servidor');
+        console.log('Solicitud:');
+        console.log(JSON.stringify(err.request, null, 2));
+      } else {
+        console.log('Error al realizar la solicitud:');
+        console.log(JSON.stringify(err.message, null, 2));
+      }
       // return false;
 
       let textError = '';
@@ -242,7 +261,7 @@ export const AuthProvider = ({children}: any) => {
       payload: {isGuest: setGuest},
     });
     return true;
-  }
+  };
 
   return (
     <AuthContext.Provider

@@ -500,6 +500,7 @@ export const ProjectPage = (props: Props) => {
     while (!token) {
       token = await AsyncStorage.getItem('token');
     }
+    console.log(token)
     try {
       const userInfo = await citmapApi.get<User>(
         '/users/authentication/user/',
@@ -554,7 +555,7 @@ export const ProjectPage = (props: Props) => {
       setProject(resp.data);
       if (resp.data.is_liked_by_user) setLike(resp.data.is_liked_by_user);
       if (resp.data.total_likes) setNumlike(resp.data.total_likes);
-      // console.log(JSON.stringify(resp.data, null, 2));
+      console.log(JSON.stringify(resp.data, null, 2));
       if (resp.data.cover) {
         setImagesCharged(resp.data.cover);
       }
@@ -585,6 +586,7 @@ export const ProjectPage = (props: Props) => {
       console.log(err.response.data);
     }
   };
+
 
   const getHastagApi = async () => {
     let token;
