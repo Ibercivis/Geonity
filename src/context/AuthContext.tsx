@@ -103,8 +103,8 @@ export const AuthProvider = ({children}: any) => {
         username: loginData.correo,
         password: loginData.password,
       });
-      console.log('LOGGED');
-      console.log(JSON.stringify(resp, null, 2));
+      // console.log('LOGGED');
+      // console.log(JSON.stringify(resp, null, 2));
       if (resp.data) {
         action({
           type: 'signIn',

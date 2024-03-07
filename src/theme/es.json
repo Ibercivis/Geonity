@@ -278,7 +278,11 @@
         "without_organizations": "Sin organizaciones",
         "without_location": "Sin localización",
         "without_description": "No hay ninguna descripción",
-        "edit_profile": "Editar perfil"
+        "edit_profile": "Editar perfil",
+        "delete_user": "Borrar usuario",
+        "delete_modal_label": "¿Desea borrar el usuario?",
+        "delete_modal_sublabel": "Una vez borrada no podrá recuperarse",
+        "user_deleted_success": "Usuario borrado"
       }
     ],
     "modals": [
@@ -289,6 +293,7 @@
         "password_text": "Contraseña",
         "password_text_label": "Escriba la contraseña",
         "save_project_login_err": "No pudo registrarse. Compruebe que los datos son correctos e intentelo de nuevo",
+        "singup_message": "Recuerde: has de activar la cuenta para poder acceder a la aplicación",
         "policies": {
           "title": "Política de Privacidad",
           "text_1": "Al registrarse en Geonity, usted acepta que la Fundación Ibercivis recopile y procese su información personal de acuerdo con nuestra Política de Privacidad.",

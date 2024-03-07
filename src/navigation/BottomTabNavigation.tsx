@@ -62,7 +62,7 @@ const CenterButtonTab = () => {
         alignItems: 'center',
         justifyContent: 'center',
         alignSelf: 'center',
-        marginTop: RFPercentage(4),
+        marginTop: RFPercentage(1),
         // width: RFPercentage(5),
         // height: RFPercentage(5),
         // borderRadius: 35,
@@ -319,11 +319,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'transparent', // Customize the tab bar background color
     borderTopWidth: 0,
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: heightPercentageToDP(10)
+    // position: 'absolute',
+    // left: 0,
+    // right: 0,
+    // bottom: 0,
+    // height: heightPercentageToDP(10)
   },
   container: {
     flex: 1,

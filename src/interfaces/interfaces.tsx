@@ -118,6 +118,7 @@ export interface UserProfile {
     country:               Country;
     cover?:                string;
     created_organizations?: CreatedOrganizationsUserProfile[];
+    created_observations?:  CreatedObservation[];
     participated_projects: CreatedProject[];
     created_projects:      CreatedProject[];
     liked_projects:        CreatedProject[];
@@ -127,6 +128,21 @@ export interface CreatedOrganizationsUserProfile{
     id: number;
     principalName: string;
 }
+export interface CreatedObservation {
+    id:            number;
+    creator:       string;
+    geoposition:   string;
+    updated_at:    Date;
+    id_project:    number;
+    cover_project: CoverProject;
+    name_project:  string;
+    is_private_project: boolean;
+}
+
+export interface CoverProject {
+    image: string;
+}
+
 
 export interface Country {
     code: string;

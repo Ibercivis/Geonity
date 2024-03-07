@@ -1,5 +1,5 @@
 import {StackScreenProps} from '@react-navigation/stack';
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   Animated,
   FlatList,
@@ -34,7 +34,7 @@ import People from '../../../assets/icons/general/people.svg';
 import Heart from '../../../assets/icons/general/heart.svg';
 import HeartFill from '../../../assets/icons/general/heart-fill.svg';
 import PencilSquare from '../../../assets/icons/general/pencil-square-1.svg';
-import {HasTag} from '../../../interfaces/appInterfaces';
+import {HasTag, Location} from '../../../interfaces/appInterfaces';
 import {LoadingScreen} from '../../../screens/LoadingScreen';
 import {FontFamily, FontSize, fonts} from '../../../theme/fonts';
 import {Switch} from 'react-native-paper';
@@ -48,8 +48,10 @@ import PlusImg from '../../../assets/icons/general/Plus-img.svg';
 import Person from '../../../assets/icons/general/person.svg';
 import ImagePicker from 'react-native-image-crop-picker';
 import {
+  DeleteModal,
   GenderSelectorModal,
   InfoModal,
+  PassModal,
   SaveProyectModal,
   VisibilityBirthday,
   VisibilityOrganizationModal,
@@ -68,7 +70,10 @@ import {
 } from 'react-native-responsive-screen';
 import {Spinner} from '../../utility/Spinner';
 import Toast from 'react-native-toast-message';
-import { useLanguage } from '../../../hooks/useLanguage';
+import {useLanguage} from '../../../hooks/useLanguage';
+import {CustomButton} from '../../utility/CustomButton';
+import {AuthContext} from '../../../context/AuthContext';
+import { PermissionsContext } from '../../../context/PermissionsContext';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -146,12 +151,171 @@ export const Profile = ({navigation}: Props) => {
   const showModalInfo = () => setInfoModal(true);
   const hideModalInfo = () => setInfoModal(false);
 
+  const [deleteModal, setDelete] = useState(false);
+  const showModalDelete = () => setDelete(true);
+  const hideModalDelete = () => setDelete(false);
+
   const [selectedCountry, setSelectedCountry] = useState([]);
+
+  const {signOut} = useContext(AuthContext);
+
+  const [passModal, setPassModal] = useState(false);
+  const showModalPass = () => setPassModal(true);
+  const hideModalPass = () => setPassModal(false);
+
+  const [isValidPass, setIsValidPass] = useState(true);
+  const {permissions, checkLocationPErmission, askLocationPermission} =
+    useContext(PermissionsContext);
+
+  const [observationSelected, setObservationSelected] = useState<{
+    id: number;
+    is_private: boolean;
+    location: Location;
+  }>({id: 0, is_private: false, location: {latitude: 0, longitude: 0}});
+
 
   //#endregion
 
   //#region tabs
+
   const Contribution = () => (
+    <>
+      {contributionProject && contributionProject.length <= 0 ? (
+        <>
+          <View
+            style={{
+              alignItems: 'center',
+              marginTop: '7%',
+              paddingBottom: '5%',
+            }}>
+            <Text
+              style={{
+                color: 'black',
+                fontSize: FontSize.fontSizeText20,
+                fontFamily: FontFamily.NotoSansDisplayRegular,
+                fontWeight: '700',
+              }}>
+              {fontLanguage.profile[0].contribution_not_participate}
+            </Text>
+            <Text
+              style={{
+                width: '65%',
+                textAlign: 'center',
+                color: 'black',
+                fontSize: FontSize.fontSizeText13,
+                fontFamily: FontFamily.NotoSansDisplayMedium,
+                fontWeight: '600',
+                marginTop: '3%',
+              }}>
+              {fontLanguage.profile[0].contribution_participate}
+            </Text>
+            <View style={{alignItems: 'center'}}>
+              <NotContribution
+                width={RFPercentage(28)}
+                height={RFPercentage(28)}
+              />
+            </View>
+          </View>
+        </>
+      ) : (
+        <FlatList
+          style={{flex: 1}}
+          contentContainerStyle={{
+            alignItems: 'center',
+            marginBottom: '20%',
+            backgroundColor: 'transparent',
+            paddingBottom: '5%',
+          }}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          data={userProfile.created_observations}
+          renderItem={({item, index}) => {
+            return (
+              <TouchableOpacity
+                key={index}
+                activeOpacity={0.5}
+                style={style.projectFound}
+                onPress={() => {
+                  navigateToMap(
+                    item.id_project,
+                    item.geoposition,
+                    item.is_private_project,
+                  );
+                }}>
+                <View style={{flexDirection: 'row'}}>
+                  <View style={{width: '30%'}}>
+                    {item.cover_project ? (
+                      <Image
+                        source={{
+                          uri: imageUrl + item.cover_project.image,
+                        }}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          borderTopLeftRadius: 10,
+                          borderBottomLeftRadius: 10,
+                          resizeMode: 'cover',
+                          backgroundColor: 'transparent',
+                          marginRight: '2%',
+                        }}
+                      />
+                    ) : (
+                      <Image
+                        source={{
+                          uri: require('../../../assets/backgrounds/nuevoproyecto.jpg'),
+                        }}
+                        style={{
+                          width: '12%',
+                          height: '110%',
+                          borderRadius: 50,
+                          resizeMode: 'cover',
+                          backgroundColor: 'blue',
+                          marginRight: '2%',
+                        }}
+                      />
+                    )}
+                  </View>
+                  <View
+                    style={{
+                      paddingHorizontal: RFPercentage(2),
+                      width: '70%',
+                      marginTop: RFPercentage(2),
+                      marginBottom: 6,
+                    }}>
+                    <Text
+                      style={{
+                        // backgroundColor: 'blue',
+                        fontSize: FontSize.fontSizeText17,
+                        fontWeight: '600',
+                        color: 'black',
+                        fontFamily: FontFamily.NotoSansDisplaySemiBold,
+                        marginBottom: '1%',
+                        alignSelf: 'flex-start',
+                      }}>
+                      {item.name_project}
+                    </Text>
+
+                    <View style={{flexWrap: 'wrap'}}>
+                      <Text
+                        style={{
+                          alignSelf: 'flex-start',
+                          flexWrap: 'wrap',
+                          marginBottom: '2%',
+                        }}>
+                        {formatDate(item.updated_at)}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            );
+          }}
+        />
+      )}
+    </>
+  );
+
+  const Contribution2 = () => (
     <>
       {contributionProject && contributionProject.length <= 0 ? (
         <>
@@ -886,7 +1050,7 @@ export const Profile = ({navigation}: Props) => {
       }
       setIsSwitchOn(profile.data.profile.visibility);
       getCountriesApi();
-      console.log(JSON.stringify(profile.data.profile, null, 2))
+      console.log(JSON.stringify(profile.data.profile, null, 2));
     } catch {}
   };
 
@@ -939,6 +1103,16 @@ export const Profile = ({navigation}: Props) => {
 
   //#region Methods
 
+  const formatDate = (updated_at: any) => {
+    const date = new Date(updated_at);
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    return `${day}/${month}/${year} - ${hours}:${minutes}`;
+  };
+
   const writeForm = () => {
     setObject(userProfile);
   };
@@ -954,7 +1128,9 @@ export const Profile = ({navigation}: Props) => {
             marginTop: RFPercentage(0.5),
           }}>
           <TouchableOpacity onPress={() => saveProfile()}>
-            <Text style={{color: 'blue'}}>{fontLanguage.global[0].save_button}</Text>
+            <Text style={{color: 'blue'}}>
+              {fontLanguage.global[0].save_button}
+            </Text>
           </TouchableOpacity>
         </View>
       );
@@ -1042,7 +1218,58 @@ export const Profile = ({navigation}: Props) => {
     //     ],
     //   }),
     // );
-    navigation.navigate('ProjectPage', {id: projectId, isNew: false, fromProfile: true})
+    navigation.navigate('ProjectPage', {
+      id: projectId,
+      isNew: false,
+      fromProfile: true,
+    });
+  };
+
+  const navigateToMap = (id: number, coords: string, is_private: boolean) => {
+    const location = parseGeoposition(coords);
+    if (location) setObservationSelected({id, is_private, location});
+
+    if (is_private) {
+      showModalPass();
+    } else {
+      if (permissions.locationStatus === 'granted') {
+        navigation.navigate('ParticipateMap', {id: id, coords: location});
+      }
+    }
+  };
+
+  const navigateToMapPass = async (value1?: string) => {
+    if (observationSelected.is_private) {
+      if (value1) {
+        try {
+          const token = await AsyncStorage.getItem('token');
+          const isValid = await citmapApi.post(
+            `/projects/${observationSelected.id}/validate-password/`,
+            {password: value1},
+            {
+              headers: {
+                Authorization: token,
+              },
+            },
+          );
+          if (isValid.data) {
+            setIsValidPass(true);
+            hideModalPass();
+            if (permissions.locationStatus === 'granted') {
+              navigation.navigate('ParticipateMap', {
+                id: observationSelected.id,
+                coords: observationSelected.location,
+              });
+            }
+          }
+        } catch (err) {
+          console.log('password erronea');
+          setIsValidPass(false);
+        }
+      }
+    }else{
+      console.log('no es privado')
+    }
   };
 
   const openProfilePhoto = () => {
@@ -1232,12 +1459,68 @@ export const Profile = ({navigation}: Props) => {
     }
   };
 
+  const onDelete = async () => {
+    try {
+      let token;
+      while (!token) {
+        token = await AsyncStorage.getItem('token');
+      }
+      const resp = await citmapApi.delete(`/users/delete/`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      Toast.show({
+        type: 'success',
+        text1: fontLanguage.profile[0].user_deleted_success,
+      });
+      hideModalDelete();
+      // logaut
+      signOut();
+    } catch (err) {
+      Toast.show({
+        type: 'error',
+        text1: fontLanguage.organization[0].project_deleted_error,
+      });
+    }
+  };
+
   const changeCountry = (code: string) => {
     const newCountry = countries.find(x => x[0] === code);
     const newCountryValue = newCountry
       ? {code: newCountry[0], name: newCountry[1]}
       : {code: 'ES', name: 'ESPAÑA'};
     onChange(newCountryValue, 'country');
+  };
+
+  const parseGeoposition = (geopositionStr: string) => {
+    // Verificamos si la cadena contiene 'POINT ('
+    if (geopositionStr.includes('POINT (')) {
+      // Extraemos las coordenadas de la cadena usando una expresión regular
+      const match = /POINT \(([^ ]+) ([^)]+)\)/.exec(geopositionStr);
+
+      if (match && match.length === 3) {
+        // Obtenemos las coordenadas de la expresión regular
+        const longitudeStr = match[1];
+        const latitudeStr = match[2];
+
+        // Convertimos las cadenas a números
+        const longitude = parseFloat(longitudeStr);
+        const latitude = parseFloat(latitudeStr);
+
+        // Obtenemos el SRID de la cadena
+        const sridMatch = /SRID=([^;]+)/.exec(geopositionStr);
+        const srid = sridMatch ? sridMatch[1] : '';
+
+        // Creamos una instancia de GeoPosition con los valores obtenidos
+        const geoPosition: Location = {
+          longitude,
+          latitude,
+        };
+
+        return geoPosition;
+      }
+    }
   };
 
   //#endregion
@@ -1453,12 +1736,15 @@ export const Profile = ({navigation}: Props) => {
                     <Text
                       style={{
                         color:
-                          form.biography &&form.biography.length <= MAX_CHARACTERS
+                          form.biography &&
+                          form.biography.length <= MAX_CHARACTERS
                             ? 'black'
                             : 'red',
                         fontSize: FontSize.fontSizeText13,
                       }}>
-                      {form.biography && form.biography.length ? form.biography.length : 0}
+                      {form.biography && form.biography.length
+                        ? form.biography.length
+                        : 0}
                     </Text>
                     <Text style={{fontSize: FontSize.fontSizeText13}}>
                       /{MAX_CHARACTERS}
@@ -1593,8 +1879,11 @@ export const Profile = ({navigation}: Props) => {
                           textAlignVertical: 'center',
                           alignItems: 'center',
                           alignContent: 'center',
-                          textAlign: userProfile.created_organizations &&
-                          userProfile.created_organizations.length > 0 ? 'center':'left',
+                          textAlign:
+                            userProfile.created_organizations &&
+                            userProfile.created_organizations.length > 0
+                              ? 'center'
+                              : 'left',
                           height: Size.window.height * 0.04,
                           paddingTop:
                             Platform.OS === 'ios' ? RFPercentage(0.9) : 0,
@@ -1715,6 +2004,18 @@ export const Profile = ({navigation}: Props) => {
                   </View> */}
                 </View>
 
+                <View
+                  style={{
+                    width: '70%',
+                    marginHorizontal: RFPercentage(1),
+                    marginBottom: '5%',
+                  }}>
+                  <CustomButton
+                    onPress={() => showModalDelete()}
+                    label={fontLanguage.profile[0].delete_user}
+                    backgroundColor={Colors.semanticDangerLight}
+                  />
+                </View>
                 {/* fecha nacimiento */}
                 {/* <View
                   style={{
@@ -1861,6 +2162,18 @@ export const Profile = ({navigation}: Props) => {
                 selected={visibilityBirth}
                 label="¿Quién puede ver tu fecha de nacimiento?"
               />
+              <DeleteModal
+                visible={deleteModal}
+                hideModal={hideModalDelete}
+                onPress={() => {
+                  onDelete();
+                }}
+                size={RFPercentage(4)}
+                color={Colors.semanticWarningDark}
+                label={fontLanguage.profile[0].delete_modal_label}
+                subLabel={fontLanguage.profile[0].delete_modal_sublabel}
+                helper={false}
+              />
             </ScrollView>
             <InfoModal
               visible={infoModal}
@@ -1921,7 +2234,7 @@ export const Profile = ({navigation}: Props) => {
                       }}
                       style={{
                         height: '100%',
-                        maxHeight:heightPercentageToDP(14),
+                        maxHeight: heightPercentageToDP(14),
                         maxWidth: RFPercentage(14),
                         // borderRadius: 10,
                         borderRadius: 10,
@@ -1938,7 +2251,7 @@ export const Profile = ({navigation}: Props) => {
                       }}
                       style={{
                         height: '100%',
-                        maxHeight:heightPercentageToDP(14),
+                        maxHeight: heightPercentageToDP(14),
                         maxWidth: RFPercentage(14),
                         // borderRadius: 10,
                         borderRadius: 10,
@@ -1955,7 +2268,7 @@ export const Profile = ({navigation}: Props) => {
                       source={require('../../../assets/icons/profile/Profile.jpg')}
                       style={{
                         // height: '100%',
-                        maxHeight:heightPercentageToDP(14),
+                        maxHeight: heightPercentageToDP(14),
                         maxWidth: RFPercentage(14),
                         borderRadius: 10,
                       }}
@@ -2116,13 +2429,25 @@ export const Profile = ({navigation}: Props) => {
                   fontFamily: FontFamily.NotoSansDisplayLight,
                   textAlign: 'left',
                 }}>
-                {userProfile.biography && userProfile.biography.length > 0 && 
-                userProfile.biography != null && userProfile.biography !=  undefined && 
+                {userProfile.biography &&
+                userProfile.biography.length > 0 &&
+                userProfile.biography != null &&
+                userProfile.biography != undefined &&
                 userProfile.biography != 'null'
                   ? userProfile.biography
                   : fontLanguage.profile[0].without_description}
               </Text>
             </View>
+            <PassModal
+              visible={passModal}
+              hideModal={hideModalPass}
+              onPress={hideModalPass}
+              size={RFPercentage(6)}
+              helper={isValidPass}
+              color={Colors.semanticSuccessLight}
+              label={fontLanguage.project[0].modal_pass_label}
+              setPass={value => navigateToMapPass(value)}
+            />
           </View>
           <TabView
             key={index}

@@ -40,7 +40,7 @@ const CustomTab = ({
     borderRadius: 20,
     padding: RFPercentage(1.5),
     height: RFPercentage(5),
-    marginTop: RFPercentage(4),
+    marginTop: RFPercentage(1),
     marginBottom: RFPercentage(0.4),
     width: RFPercentage(15),
     // shadowColor: '#000',

@@ -119,6 +119,10 @@ export const LoginScreen = ({navigation, route}: Props) => {
   const showModalSave = () => setSaveModal(true);
   const hideModalSave = () => setSaveModal(false);
 
+  const [singUpModal, setSingUpModal] = useState(false);
+  const showModalSingUp = () => setSingUpModal(true);
+  const hideModalSingUp = () => setSingUpModal(false);
+
   const [policiesModal, setPoliciesModal] = useState(false);
   const showModalPolicies = () => setPoliciesModal(true);
   const hideModalPolicies = () => setPoliciesModal(false);
@@ -177,6 +181,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
       text2: errorMessage,
     });
     removeError();
+    hideModalSingUp()
   }, [errorMessage]);
 
   //#endregion
@@ -296,6 +301,8 @@ export const LoginScreen = ({navigation, route}: Props) => {
         password1: password1,
         password2: password2,
       });
+      showModalSingUp()
+      onTouchLogin()
     } else {
       showModalSave();
     }
@@ -1210,6 +1217,16 @@ export const LoginScreen = ({navigation, route}: Props) => {
             helper={false}
           />
 
+
+          <SaveProyectModal
+            visible={singUpModal}
+            hideModal={hideModalSingUp}
+            onPress={hideModalSingUp}
+            size={RFPercentage(8)}
+            color={Colors.semanticSuccessLight}
+            label={fontLanguage.modals[0].singup_message}
+            helper={true}
+            />
           <PoliciesModal
             visible={policiesModal}
             hideModal={hideModalPolicies}

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -24,7 +24,8 @@ import {
   widthPercentageToDP,
 } from 'react-native-responsive-screen';
 import {Topic} from '../../interfaces/appInterfaces';
-import { useLanguage } from '../../hooks/useLanguage';
+import {useLanguage} from '../../hooks/useLanguage';
+import {AuthContext} from '../../context/AuthContext';
 
 // const categoryIcons = [
 //   require('../../assets/icons/category/Group-6.png'),
@@ -74,6 +75,7 @@ export const Card = ({
   styleProp,
   list = [],
 }: Props) => {
+  const {isGuest} = useContext(AuthContext);
   const cardType = () => {
     switch (type) {
       case 'category':
@@ -232,7 +234,7 @@ export const Card = ({
                     color: 'black',
                     fontFamily: FontFamily.NotoSansDisplayMedium,
                   }}>
-                 {fontLanguage.cards[0].more}
+                  {fontLanguage.cards[0].more}
                 </Text>
               </View>
             </View>
@@ -328,23 +330,33 @@ export const Card = ({
                       marginLeft: RFPercentage(2),
                     }}>
                     {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
-                    {boolHelper ? (
-                      <View style={{top: 1}}>
-                        <HeartFill width={16} height={16} color={'#ff0000'} />
-                      </View>
+                    {!isGuest ? (
+                      <>
+                        {boolHelper ? (
+                          <View style={{top: 1}}>
+                            <HeartFill
+                              width={16}
+                              height={16}
+                              color={'#ff0000'}
+                            />
+                          </View>
+                        ) : (
+                          <View style={{top: 1}}>
+                            <Heart width={16} height={16} color={'#000000'} />
+                          </View>
+                        )}
+                        <Text
+                          style={{
+                            fontSize: FontSize.fontSizeText13,
+                            marginHorizontal: RFPercentage(1),
+                            color: 'black',
+                          }}>
+                          {totalLikes}
+                        </Text>
+                      </>
                     ) : (
-                      <View style={{top: 1}}>
-                        <Heart width={16} height={16} color={'#000000'} />
-                      </View>
+                      <></>
                     )}
-                    <Text
-                      style={{
-                        fontSize: FontSize.fontSizeText13,
-                        marginHorizontal: RFPercentage(1),
-                        color: 'black',
-                      }}>
-                      {totalLikes}
-                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>

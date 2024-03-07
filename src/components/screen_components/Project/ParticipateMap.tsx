@@ -27,7 +27,6 @@ import Back from '../../../assets/icons/map/chevron-left-map.svg';
 import MarkEnabled from '../../../assets/icons/map/mark-asset.svg';
 import MarkDisabled from '../../../assets/icons/map/mark-disabled.svg';
 import Target from '../../../assets/icons/map/target-map.svg';
-import {StackParams} from '../../../navigation/HomeNavigator';
 import {StackScreenProps} from '@react-navigation/stack';
 import {HeaderComponent} from '../../HeaderComponent';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -53,6 +52,8 @@ import Toast from 'react-native-toast-message';
 import {project} from '../../../../react-native.config';
 import {useNavigation} from '@react-navigation/native';
 import { useLanguage } from '../../../hooks/useLanguage';
+import {StackParams} from '../../../navigation/MultipleNavigator';
+import {Location} from '../../../interfaces/appInterfaces';
 
 Mapbox.setWellKnownTileServer('mapbox');
 Mapbox.setAccessToken(
@@ -268,6 +269,16 @@ export const ParticipateMap = ({navigation, route}: Props) => {
   useEffect(() => {
     followUserLocation();
     showModalInfo();
+    if (route.params.coords) {
+      // centerPositionToMark(route.params.coords);
+      cameraRef.current?.setCamera({
+        centerCoordinate: [route.params.coords.latitude, route.params.coords.longitude],
+      });
+    } else {
+      cameraRef.current?.setCamera({
+        centerCoordinate: [userLocation.longitude, userLocation.latitude],
+      });
+    }
     return () => {
       //cancelar el seguimiento
       stopFollowUserLocation();
@@ -290,9 +301,9 @@ export const ParticipateMap = ({navigation, route}: Props) => {
   }, [showSelectedObservation]);
 
   useEffect(() => {
-    cameraRef.current?.setCamera({
-      centerCoordinate: [userLocation.longitude, userLocation.latitude],
-    });
+    // cameraRef.current?.setCamera({
+    //   centerCoordinate: [userLocation.longitude, userLocation.latitude],
+    // });
   }, []);
 
   /**
@@ -980,6 +991,19 @@ export const ParticipateMap = ({navigation, route}: Props) => {
       zoomLevel: 16,
     });
   };
+
+  const centerPositionToMark = async (location: Location) => {
+    // const location = await getCurrentLocation();
+    // setFollowUser(true);
+    // followView.current = true;
+    const posi: Position = [location.longitude, location.latitude];
+    cameraRef.current?.flyTo(posi, 200);
+    // followView.current = false;
+    cameraRef.current?.setCamera({
+      centerCoordinate: posi,
+      zoomLevel: 16,
+    });
+  };
   //#endregion
 
   //#region UPDATE MAP
@@ -1061,7 +1085,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                   zoomLevel={15}
                   maxZoomLevel={2000}
                   followZoomLevel={2000}
-                  centerCoordinate={initialPositionArray}
+                  centerCoordinate={route.params.coords ? [route.params.coords.latitude, route.params.coords.longitude] : initialPositionArray}
                   followUserLocation={followView.current}
                   followUserMode={UserTrackingMode.FollowWithHeading}
                   minZoomLevel={4}
@@ -1297,7 +1321,11 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                   top: '5%',
                 }}
                 onPress={() => {
-                  navigation.replace('ProjectPage', {id: route.params.id});
+                  if (route.params.coords) {
+                    navigation.goBack();
+                  } else {
+                    navigation.navigate('ProjectPage', {id: route.params.id});
+                  }
                 }}>
                 <Back height={RFPercentage(6)} />
               </TouchableOpacity>

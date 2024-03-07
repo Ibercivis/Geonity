@@ -313,7 +313,7 @@ export const Home = ({navigation}: Props) => {
 
     let retries = 0;
     let success = false;
-
+    console.log('Entra en category list api '+ token);
     try {
       const resp = await citmapApi.get<Topic[]>('/project/topics/', {
         headers: {
@@ -326,6 +326,7 @@ export const Home = ({navigation}: Props) => {
       success = true;
       projectListApi();
     } catch (err: any) {
+      console.log('Error en category list')
       console.log(err.response.data);
       setErrorMessage(err);
       retries++;
@@ -364,6 +365,7 @@ export const Home = ({navigation}: Props) => {
       organizationListApi();
       // console.log(JSON.stringify(resp.data, null, 2))
     } catch (err: any) {
+      console.log('Error en project list')
       console.log(err.response.data);
     } finally {
     }

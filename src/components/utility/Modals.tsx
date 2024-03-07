@@ -524,7 +524,7 @@ export const SaveProyectModal = ({
                       }}>
                       {subLabel}
                     </Text>
-                    <View style={{marginTop: RFPercentage(4)}}>
+                    <View style={{marginTop: RFPercentage(1)}}>
                       <CheckCircle width={size} height={size} fill={color} />
                     </View>
                   </>

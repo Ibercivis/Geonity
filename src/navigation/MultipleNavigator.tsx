@@ -8,6 +8,7 @@ import { ParticipateMap } from '../components/screen_components/Project/Particip
 import { OrganizationPage } from '../components/screen_components/Home/OrganizationPage';
 import { ProjectList } from '../components/screen_components/Home/ProjectList';
 import { OrganizationList } from '../components/screen_components/Home/OrganizationList';
+import { Location } from '../interfaces/appInterfaces';
 export type StackParams = {
   BottomTabNavigation: undefined;
   ModalScreen: undefined;
@@ -28,6 +29,7 @@ export type StackParams = {
   };
   ParticipateMap: {
     id: number;
+    coords?: Location;
   };
   ProjectList: {
     id?: number;

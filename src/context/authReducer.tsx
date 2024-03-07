@@ -31,8 +31,10 @@ export const authReducer = (
       return {
         ...state,
         errorMessage: '',
-        status: 'authenticated',
-        token: action.payload.token,
+        status: 'not-authenticated',
+        // token: action.payload.token,
+        token: null,
+        isGuest: false,
       };
 
     case 'signIn':
