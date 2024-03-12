@@ -794,7 +794,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
   return (
     <>
       <KeyboardAvoidingView
-        keyboardVerticalOffset={RFPercentage(2)}
+        // keyboardVerticalOffset={RFPercentage(2)}
         style={{flex: 1, backgroundColor: 'transparent'}}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Ajusta la vista por encima del teclado
       >

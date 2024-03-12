@@ -1134,6 +1134,7 @@ export const CreateProject = ({navigation, route}: Props) => {
             alignItems: 'center',
             // width: widthPercentageToDP(85)
             width: '85%',
+            // height:'90%'
           }}>
           {/* imagenes */}
           <Text style={{color: 'black', alignSelf: 'flex-start'}}>
@@ -1207,7 +1208,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                     zIndex: 999,
                     backgroundColor: 'white',
                     borderRadius: 50,
-                    left:widthPercentageToDP(40)
+                    left: widthPercentageToDP(40),
                   }}>
                   <PlusImg
                     width={RFPercentage(4)}
@@ -1377,7 +1378,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                     bottom: RFPercentage(0),
                     // left: RFPercentage(18),
                     // alignSelf: 'center',
-                    left:widthPercentageToDP(55),
+                    left: widthPercentageToDP(55),
                     zIndex: 999,
                     backgroundColor: 'white',
                     borderRadius: 50,
@@ -1578,7 +1579,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                     bottom: RFPercentage(0),
                     // left: RFPercentage(18),
                     // alignSelf: 'center',
-                    left:widthPercentageToDP(55),
+                    left: widthPercentageToDP(55),
                     zIndex: 999,
                     backgroundColor: 'white',
                     borderRadius: 50,
@@ -1809,7 +1810,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                         index === suggestions.length - 1 ? 10 : 0,
                     }}
                     onPress={() => handleSuggestionPress(item)}>
-                      {item.logo ? (
+                    {item.logo ? (
                       <Image
                         source={{
                           uri: item.logo,
@@ -1821,7 +1822,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                           resizeMode: 'cover',
                           backgroundColor: 'blue',
                           marginHorizontal: '4%',
-                                marginVertical:'2%'
+                          marginVertical: '2%',
                         }}
                       />
                     ) : (
@@ -1830,10 +1831,10 @@ export const CreateProject = ({navigation, route}: Props) => {
                           width: '12%',
                           // height: '100%',
                           borderRadius: 100,
-                                marginHorizontal: '4%',
-                                marginVertical: '2%',
-                                alignContent: 'center',
-                                alignItems: 'center',
+                          marginHorizontal: '4%',
+                          marginVertical: '2%',
+                          alignContent: 'center',
+                          alignItems: 'center',
                         }}>
                         <UserMissing
                           height={RFPercentage(3.8)}
@@ -2224,7 +2225,7 @@ export const CreateProject = ({navigation, route}: Props) => {
 
   return (
     <KeyboardAvoidingView
-      keyboardVerticalOffset={RFPercentage(2)}
+      // keyboardVerticalOffset={RFPercentage(2)}
       style={{flex: 1, backgroundColor: 'transparent'}}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Ajusta la vista por encima del teclado
     >
@@ -2437,7 +2438,10 @@ export const CreateProject = ({navigation, route}: Props) => {
                 renderItem={({item, index}) => {
                   const isChecked = userCategories.includes(item);
                   return (
-                    <View
+                    <TouchableOpacity
+                      onPress={() => {
+                        setCheckCategories(item);
+                      }}
                       style={{
                         width: RFPercentage(42),
                         flexDirection: 'row',
@@ -2453,7 +2457,7 @@ export const CreateProject = ({navigation, route}: Props) => {
                         }}
                       />
                       <Text>{item.topic}</Text>
-                    </View>
+                    </TouchableOpacity>
                   ); //aquí poner el plus
                 }}
               />
@@ -2703,17 +2707,25 @@ const styles = StyleSheet.create({
   showCategoryView: {
     position: 'absolute',
     backgroundColor: 'white',
-    height: RFPercentage(60),
+    height: RFPercentage(75),
     width: '100%',
     zIndex: 200,
     bottom: 0,
     alignSelf: 'center',
-    borderTopWidth: 1,
-    borderLeftWidth: 1,
-    borderRightWidth: 1,
+    // borderTopWidth: 1,
+    // borderLeftWidth: 1,
+    // borderRightWidth: 1,
     borderTopRightRadius: 34,
     borderTopLeftRadius: 34,
     paddingVertical: '5%',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 0.1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 1,
   },
   buttonContainer: {
     flexDirection: 'column',
@@ -2746,11 +2758,11 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP(80),
     height: heightPercentageToDP(7),
     alignSelf: 'center',
-    flexDirection:'row',
-    alignContent:'center',
-    alignItems:'center',
-    borderTopWidth:0,
-    borderBottomWidth:0,
+    flexDirection: 'row',
+    alignContent: 'center',
+    alignItems: 'center',
+    borderTopWidth: 0,
+    borderBottomWidth: 0,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -2759,7 +2771,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 1.41,
     elevation: 2,
-    
   },
   suggestionItem: {
     padding: 10,

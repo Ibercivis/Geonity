@@ -4,6 +4,7 @@ import {
   Image,
   Keyboard,
   KeyboardAvoidingView,
+  Platform,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -1171,7 +1172,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                       shadowOpacity: 0.2,
                       shadowRadius: 1.41,
                       // width: '100%',
-                      // elevation: 1,
+                      elevation: Platform.OS == 'android' ? 1 : 0,
                     }}
                     onPress={() => onGuest()}>
                     <Text

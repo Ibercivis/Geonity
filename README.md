@@ -82,3 +82,5 @@ To learn more about React Native, take a look at the following resources:
 instalada librería opcional npm install --save rn-fetch-blob para ver si con esto descarga bien en ios, sino, borrar librería
 # Geonity-ios
 iOs version of Geonity app
+ios-deploy - package instalado en ios, eliminar en android
+

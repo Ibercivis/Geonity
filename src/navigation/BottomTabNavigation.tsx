@@ -219,7 +219,7 @@ export const BottomTabNavigation = () => {
         tabBar={({state, descriptors, navigation}) => (
           // <View style={styles.tabBarContainer}>
             <LinearGradient
-                  colors={['white', '#ffffff']}
+                  colors={['transparent', '#fff','#fff' ]}
                   style={styles.tabBarContainer}
                   start={{x: 0, y: 0}}
                   end={{x: 0, y: 1}}
@@ -319,11 +319,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'transparent', // Customize the tab bar background color
     borderTopWidth: 0,
-    // position: 'absolute',
-    // left: 0,
-    // right: 0,
-    // bottom: 0,
-    // height: heightPercentageToDP(10)
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: heightPercentageToDP(6)
   },
   container: {
     flex: 1,

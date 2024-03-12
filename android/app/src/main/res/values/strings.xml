@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Geonity</string>
+    <!-- ReactNativePlantilla <string name="mapbox_access_token">pk.eyJ1IjoiYXBlbmE3IiwiYSI6ImNsYWt0c2p1MTBwc3QzdnBqaWRxa25hOHEifQ.kl5rERboumbTrbhijnaebw</string> -->
 </resources>

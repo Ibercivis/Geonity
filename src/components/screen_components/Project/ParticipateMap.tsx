@@ -55,7 +55,7 @@ import { useLanguage } from '../../../hooks/useLanguage';
 import {StackParams} from '../../../navigation/MultipleNavigator';
 import {Location} from '../../../interfaces/appInterfaces';
 
-Mapbox.setWellKnownTileServer('mapbox');
+// Mapbox.setWellKnownTileServer('mapbox');
 Mapbox.setAccessToken(
   'pk.eyJ1IjoiYXBlbmE3IiwiYSI6ImNsYWt1NHYwNjBxMXYzbnBqN2luamV2ajQifQ.XJQH9SnPmCxVPoDnU0P2KQ',
 );

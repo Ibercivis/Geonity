@@ -195,7 +195,7 @@ export const Card = ({
                       color: 'black',
                       fontFamily: FontFamily.NotoSansDisplayMedium,
                     }}>
-                    {title.length > 35 ? title.slice(0, 35) + '...' : title}
+                    {title.length > 30 ? title.slice(0, 30) + '...' : title}
                   </Text>
                 </View>
               </ImageBackground>
