@@ -61,7 +61,8 @@ import {useLanguage} from '../../../hooks/useLanguage';
 interface Props extends StackScreenProps<any, any> {}
 
 export const Home = ({navigation}: Props) => {
-  //#region Variables/const
+
+  //#region states
   const {isGuest} = useContext(AuthContext);
   let notchHeight = 0;
   const {fontLanguage} = useLanguage();
@@ -131,6 +132,9 @@ export const Home = ({navigation}: Props) => {
     SplashScreen.hide();
   }, []);
 
+  /**
+   * se ejecuta cada vez que el componente recibe el foco
+   */
   useFocusEffect(
     React.useCallback(() => {
       categoryListApi();
@@ -150,6 +154,9 @@ export const Home = ({navigation}: Props) => {
     //aquí estaba el setIsAllCharged(true);
   }, []);
 
+  /**
+   * cuando se recarga el componente
+   */
   useEffect(() => {
     categoryListApi();
     projectListApi();
@@ -305,6 +312,7 @@ export const Home = ({navigation}: Props) => {
 
   const categoryListApi = async () => {
     let token;
+    console.log("Es invitado?" + isGuest);
     if (!isGuest) {
       while (!token) {
         token = await AsyncStorage.getItem('token');
@@ -331,6 +339,7 @@ export const Home = ({navigation}: Props) => {
       setErrorMessage(err);
       retries++;
       await new Promise<void>(resolve => setTimeout(resolve, RETRY_DELAY_MS));
+      categoryListApi();
     }
 
     if (!success) {

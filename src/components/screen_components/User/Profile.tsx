@@ -1,5 +1,5 @@
 import {StackScreenProps} from '@react-navigation/stack';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
   Animated,
   FlatList,
@@ -73,7 +73,7 @@ import Toast from 'react-native-toast-message';
 import {useLanguage} from '../../../hooks/useLanguage';
 import {CustomButton} from '../../utility/CustomButton';
 import {AuthContext} from '../../../context/AuthContext';
-import { PermissionsContext } from '../../../context/PermissionsContext';
+import {PermissionsContext} from '../../../context/PermissionsContext';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -89,6 +89,8 @@ export const Profile = ({navigation}: Props) => {
     {key: 'three', title: fontLanguage.profile[0].title_three},
   ]);
 
+  //controla el estado del scroll
+  const scrollViewRef = useRef<ScrollView | null>(null);
   const [isAllCharged, setIsAllCharged] = useState(false);
   const [userEdit, setUserEdit] = useState(false);
   const [canEdit, setCanEdit] = useState(true);
@@ -172,7 +174,6 @@ export const Profile = ({navigation}: Props) => {
     is_private: boolean;
     location: Location;
   }>({id: 0, is_private: false, location: {latitude: 0, longitude: 0}});
-
 
   //#endregion
 
@@ -1050,7 +1051,7 @@ export const Profile = ({navigation}: Props) => {
       }
       setIsSwitchOn(profile.data.profile.visibility);
       getCountriesApi();
-      console.log(JSON.stringify(profile.data.profile, null, 2));
+      // console.log(JSON.stringify(profile.data.profile, null, 2));
     } catch {}
   };
 
@@ -1267,8 +1268,8 @@ export const Profile = ({navigation}: Props) => {
           setIsValidPass(false);
         }
       }
-    }else{
-      console.log('no es privado')
+    } else {
+      console.log('no es privado');
     }
   };
 
@@ -1465,6 +1466,7 @@ export const Profile = ({navigation}: Props) => {
       while (!token) {
         token = await AsyncStorage.getItem('token');
       }
+      console.log(JSON.stringify(token));
       const resp = await citmapApi.delete(`/users/delete/`, {
         headers: {
           Authorization: token,
@@ -1478,10 +1480,12 @@ export const Profile = ({navigation}: Props) => {
       // logaut
       signOut();
     } catch (err) {
-      Toast.show({
-        type: 'error',
-        text1: fontLanguage.organization[0].project_deleted_error,
-      });
+      signOut();
+      console.log(JSON.stringify(err, null, 2));
+      // Toast.show({
+      //   type: 'error',
+      //   text1: fontLanguage.organization[0].project_deleted_error,
+      // });
     }
   };
 
@@ -1540,10 +1544,11 @@ export const Profile = ({navigation}: Props) => {
       />
       {userEdit ? (
         <>
-          <SafeAreaView style={{flex: 1}}>
+          <SafeAreaView style={{flex: 1, marginBottom: '10%'}}>
             <ScrollView
               style={styles.scrollParent}
               nestedScrollEnabled={true}
+              ref={scrollViewRef}
               contentContainerStyle={{flexGrow: 1}}
               keyboardShouldPersistTaps="handled">
               {/* imagen de perfil */}
@@ -1725,6 +1730,14 @@ export const Profile = ({navigation}: Props) => {
                     numOfLines={5}
                     onChangeText={value => onChange(value, 'biography')}
                     value={form.biography}
+                    onPressIn={() => {
+                      if (scrollViewRef.current) {
+                        scrollViewRef.current.scrollTo({
+                          y: RFPercentage(15),
+                          animated: true,
+                        });
+                      }
+                    }}
                   />
                   <View
                     style={{

@@ -32,8 +32,8 @@ export const authReducer = (
         ...state,
         errorMessage: '',
         status: 'not-authenticated',
-        // token: action.payload.token,
-        token: null,
+        token: action.payload.token,
+        // token: null,
         isGuest: false,
       };
 

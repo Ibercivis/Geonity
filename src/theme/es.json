@@ -223,7 +223,7 @@
         "show_more": "Ver más",
         "want_to_confirm": "¿Quieres confirmar el marcador?",
         "modal": {
-          "info_label": "¿Como participar y añadir un marcador?",
+          "info_label": "¿Cómo participar y añadir un marcador?",
           "info_sublabel": "Si perteneces a una organización existente en Geonity, ponte en contacto con el admin de la organización para que te invite o te añada como integrante.",
           "info_sublabel2": "Una vez hayas aceptado la solicitud, podrás añadir la organzación a tu biografía.",
           "delete_label": "¿Desea borrar la observación?"

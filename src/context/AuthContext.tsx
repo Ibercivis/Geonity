@@ -183,6 +183,10 @@ export const AuthProvider = ({children}: any) => {
           type: 'signUp',
           payload: {token: key},
         });
+        action({
+          type: 'addError',
+          payload: '200',
+        });
       }
     } catch (err: any) {
       console.log(err.response.data);

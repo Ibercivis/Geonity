@@ -173,6 +173,13 @@ export const LoginScreen = ({navigation, route}: Props) => {
 
   useEffect(() => {
     if (errorMessage.length === 0) return;
+    if (errorMessage === '200') {
+      console.log('Sin error');
+      showModalSingUp();
+      //TODO que solo llame al onTouchLogin cuando haya creado correctamente el usuario
+      onTouchLogin();
+      return;
+    }
     setUserError(true);
     setRecoveryPassErr(true);
     Toast.show({
@@ -182,7 +189,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
       text2: errorMessage,
     });
     removeError();
-    hideModalSingUp()
+    hideModalSingUp();
   }, [errorMessage]);
 
   //#endregion
@@ -302,8 +309,6 @@ export const LoginScreen = ({navigation, route}: Props) => {
         password1: password1,
         password2: password2,
       });
-      showModalSingUp()
-      onTouchLogin()
     } else {
       showModalSave();
     }
@@ -429,7 +434,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
       case 'register':
         return (
           // <ScrollView style={{width: '100%', flexGrow: 1}}>
-          <View style={{marginHorizontal: '3%',}}>
+          <View style={{marginHorizontal: '3%'}}>
             <View style={{}}>
               {/* contenedor de los inputs */}
               <View
@@ -851,6 +856,8 @@ export const LoginScreen = ({navigation, route}: Props) => {
               <Divider style={{borderWidth: 0.6, width: '45%'}} />
             </View>
             {/* button create */}
+            {/* 
+            
             <View
               style={{
                 marginHorizontal: '26%',
@@ -864,6 +871,8 @@ export const LoginScreen = ({navigation, route}: Props) => {
                 onPress={() => navigation.replace('LoginScreen')}
               />
             </View>
+            
+            */}
 
             {/* back */}
             <View
@@ -1196,8 +1205,8 @@ export const LoginScreen = ({navigation, route}: Props) => {
                       alignContent: 'center',
                       alignItems: 'center',
                       alignSelf: 'center',
-                      marginLeft:widthPercentageToDP(13),
-                      width:widthPercentageToDP(85),
+                      marginLeft: widthPercentageToDP(13),
+                      width: widthPercentageToDP(85),
                       // backgroundColor:'yellow'
                     }}>
                     {screenHorizontal()}
@@ -1218,7 +1227,6 @@ export const LoginScreen = ({navigation, route}: Props) => {
             helper={false}
           />
 
-
           <SaveProyectModal
             visible={singUpModal}
             hideModal={hideModalSingUp}
@@ -1227,7 +1235,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
             color={Colors.semanticSuccessLight}
             label={fontLanguage.modals[0].singup_message}
             helper={true}
-            />
+          />
           <PoliciesModal
             visible={policiesModal}
             hideModal={hideModalPolicies}
