@@ -1,4 +1,5 @@
-package com.geonity
+//package com.geonity
+package com.reactnativeplantilla
 
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 

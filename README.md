@@ -126,6 +126,12 @@ get ViewPropTypes(): $FlowFixMe {
 - ./gradlew clean 
 ```
 
+```bash
+# limpia el proyecto para sacar a producción
+- npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/
+
+```
+
 ## Login Android
 ```bash
 # datos

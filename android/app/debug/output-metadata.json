@@ -4,15 +4,15 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.geonity",
+  "applicationId": "com.reactnativeplantilla",
   "variantName": "debug",
   "elements": [
     {
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 1,
-      "versionName": "1.0",
+      "versionCode": 6,
+      "versionName": "1.4",
       "outputFile": "app-debug.apk"
     }
   ],

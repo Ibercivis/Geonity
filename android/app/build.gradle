@@ -75,14 +75,17 @@ android {
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
-
-    namespace "com.geonity"
+    // todo lo que era com.geonity se cambia
+    namespace "com.reactnativeplantilla"
     defaultConfig {
-        applicationId "com.geonity"
+        applicationId "com.reactnativeplantilla"
+        // applicationId "com.geonity"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 7
+        versionName "1.4"
+        // resourceConfigurations.addAll(['en', 'es'])
+        resConfigs "en", "es"
     }
     signingConfigs {
         debug {

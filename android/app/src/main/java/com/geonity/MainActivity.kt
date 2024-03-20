@@ -1,4 +1,5 @@
-package com.geonity
+//package com.geonity
+package com.reactnativeplantilla
 
 import android.os.Bundle
 import com.facebook.react.ReactActivity
