@@ -215,6 +215,7 @@
       {
         "toast_err_question": "No se han podido obtener las cuestiones",
         "toast_err_obligatory_fields": "Los campos obligatorios tienen que ser rellenados",
+        "toast_err_numeric_fields": "Ingrese un valor numérico sin comas ni caracteres especiales.",
         "delete_observation": "Marca borrada con éxito",
         "not_delete_observation": "No se pudo borrar la marca",
         "enable_gps": "Habilita el GPS para poder acceder al mapa",
@@ -241,7 +242,8 @@
           "text_answer": "Pregunta de texto",
           "number_answer": "Pregunta numérica",
           "galery": "Galería",
-          "camera": "Cámara"
+          "camera": "Cámara",
+          "close": "Cerrar"
         }
       }
     ],
@@ -308,6 +310,7 @@
           "text_3": "la pantalla en el punto exacto del mapa donde se quiera colocar el marcador",
           "text_4": "Presiona el botón '+' ",
           "text_5": "se añadirá automáticamente un marcador vinculado a tu posición actual. (El botón está situado en la parte inferior derecha del mapa).",
+          "text_6": "No volver a mostrar",
           "accept_text": ""
         },
         "bottom_tab_nav": {

@@ -179,6 +179,7 @@ export interface CreateObservation {
 export interface ImageObservation {
     key: number;
     value: any;
+    // type?: string;
 }
 
 // export interface ObervationDataForm {
@@ -188,6 +189,11 @@ export interface ImageObservation {
 export interface ObservationDataForm{
     key: string;
     value: string;
+    type?: string;
+}
+export interface ObservationDataFormSend{
+    key: string;
+    value: any;
 }
 
 export interface Point {

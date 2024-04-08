@@ -52,7 +52,7 @@ export function MultipleNavigator() {
           zIndex: -999,
         },
         cardStyle:{
-          backgroundColor:'transparent'
+          backgroundColor:'white'
         },
       }}>
       <Stack.Screen

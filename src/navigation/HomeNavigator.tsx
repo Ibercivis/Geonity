@@ -83,7 +83,7 @@ export function HomeNavigator() {
       screenOptions={{
         headerShown: false,
         headerStyle: {
-          // backgroundColor: 'transparent',
+          backgroundColor: 'white',
           zIndex: -999,
         },
       }}>

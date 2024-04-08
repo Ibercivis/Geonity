@@ -215,6 +215,7 @@
       {
         "toast_err_question": "Could not retrieve questions",
         "toast_err_obligatory_fields": "Obligatory fields must be filled",
+        "toast_err_numeric_fields": "Enter a numeric value without commas or special characters.",
         "delete_observation": "Marker successfully deleted",
         "not_delete_observation": "Could not delete the marker",
         "enable_gps": "Enable GPS to access the map",
@@ -241,7 +242,8 @@
           "text_answer": "Text question",
           "number_answer": "Numeric question",
           "galery": "Gallery",
-          "camera": "Camera"
+          "camera": "Camera",
+          "close": "Close"
         }
       }
     ],
@@ -308,6 +310,7 @@
           "text_3": "the screen at the exact point on the map where you want to place the marker",
           "text_4": "Press the '+' button ",
           "text_5": "an automatically linked marker will be added to your current position. (The button is located in the bottom right corner of the map).",
+          "text_6": "Don't show again.",
           "accept_text": ""
         },
         "bottom_tab_nav": {

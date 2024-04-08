@@ -15,8 +15,8 @@ export const FontSize = {
   // Esto se usa para que escale el tamaño de letras con las diferentes pantallas
   // fontSizeText10: 10,
   fontSizeText10: RFPercentage(1.3),
-  fontSizeText13: 13,
-  // fontSizeText13: RFPercentage(1.7),
+  // fontSizeText13: 13,
+  fontSizeText13: RFPercentage(1.7),
   // fontSizeText14: 14,
   fontSizeText14: RFPercentage(1.8),
   fontSizeText15: RFPercentage(2),

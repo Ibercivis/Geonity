@@ -449,4 +449,18 @@ get ViewPropTypes(): $FlowFixMe {
 - npm install react-native-vector-icons@10.0.3
 
 ```
+39. react-native-image-zoom
+
+```bash
+# Este paquete permite establecer una imagen a la que se le puede hacer zoom. NO FUNCIONA
+- npm install @likashefqet/react-native-image-zoom
+
+```
+40. react-native-image-zoom-viewer
+
+```bash
+# Este paquete permite establecer una o varias imagen a la que se le puede hacer zoom.
+- npm i react-native-image-zoom-viewer --save
+
+```
 

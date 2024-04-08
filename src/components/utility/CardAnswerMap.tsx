@@ -8,6 +8,7 @@ import {
   ImageBackground,
   TouchableWithoutFeedback,
   Modal,
+  ScrollView,
 } from 'react-native';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 import {Question} from '../../interfaces/interfaces';
@@ -28,8 +29,10 @@ import {
   widthPercentageToDP,
 } from 'react-native-responsive-screen';
 import {launchCamera} from 'react-native-image-picker';
-import {baseURL} from '../../api/citmapApi';
-import { useLanguage } from '../../hooks/useLanguage';
+import {baseURL, imageUrl} from '../../api/citmapApi';
+import {useLanguage} from '../../hooks/useLanguage';
+import {ImageZoom} from '@likashefqet/react-native-image-zoom';
+import ImageViewer from 'react-native-image-zoom-viewer';
 
 interface Props {
   //   onChangeText?: (fieldName: string, value: any) => void;
@@ -67,7 +70,26 @@ export const CardAnswerMap = ({
 
   const {getFormattedDateTime} = useDateTime();
 
+  const [imageMax, setImageMax] = useState(false);
+  const showModalImageMax = () => setImageMax(true);
+  const hideModalImageMax = () => setImageMax(false);
+
+  const [imageModal, setImageModal] = useState<any>();
+
   const {permissions} = useContext(PermissionsContext);
+
+  const image = [
+    {
+      // Simplest usage.
+      url: imageModal,
+      // Optional, if you know the image size, you can set the optimization performance
+
+      // You can pass props to <Image />.
+      props: {
+        // headers: ...
+      },
+    },
+  ];
 
   const selectImage = (type: number) => {
     setImageBlob({});
@@ -82,7 +104,7 @@ export const CardAnswerMap = ({
     }
     switch (type) {
       case 1: //openPicker
-      setImageTypeNumber(1)
+        setImageTypeNumber(1);
         ImagePicker.openPicker({
           mediaType: 'photo',
           multiple: false,
@@ -110,18 +132,18 @@ export const CardAnswerMap = ({
                 setImages(undefined);
               }
             }
-hideModalImageType();
+            hideModalImageType();
           })
           .catch(err => {
-hideModalImageType();
-            console.log(`@CameraModal - handleGALLERY: ${err}`)
+            hideModalImageType();
+            console.log(`@CameraModal - handleGALLERY: ${err}`);
             setImageBlob({});
             setImages(null);
             showModal(true);
           });
         break;
       case 2:
-        setImageTypeNumber(2)
+        setImageTypeNumber(2);
         const options = {
           mediaType: 'photo',
           includeBase64: false,
@@ -197,12 +219,12 @@ hideModalImageType();
                 showModal(true);
                 setImages(undefined);
               }
-hideModalImageType();
+              hideModalImageType();
             }
           })
           .catch(err => {
-hideModalImageType();
-            console.log(`@CameraModal - handleTakeAPhoto: ${err}`)
+            hideModalImageType();
+            console.log(`@CameraModal - handleTakeAPhoto: ${err}`);
             setImageBlob({});
             setImages(null);
             showModal(true);
@@ -211,6 +233,21 @@ hideModalImageType();
     }
 
     hideModalImageType();
+  };
+
+  const setToZoom = (type: number) => {
+    switch (type) {
+      case 1:
+        setImageModal('data:image/jpeg;base64,' + images.data);
+        break;
+      case 2:
+        setImageModal('data:image/jpeg;base64,' + images[0].base64);
+        break;
+      case 3:
+        setImageModal(value);
+        break;
+    }
+    showModalImageMax();
   };
 
   //#region SECCIÓN RENDERS
@@ -317,7 +354,9 @@ hideModalImageType();
                       ]}
                       multiline={true}
                       contentStyle={{bottom: heightPercentageToDP(-0.4)}}
-                      placeholder={value || fontLanguage.map[0].cards.text_answer}
+                      placeholder={
+                        value || fontLanguage.map[0].cards.text_answer
+                      }
                       placeholderTextColor={value ? '#000000' : '#949494'}
                       onChangeText={value => onChangeText(value)}
                       underlineColorAndroid="transparent"
@@ -414,7 +453,9 @@ hideModalImageType();
                       multiline={true}
                       contentStyle={{bottom: heightPercentageToDP(-0.4)}}
                       keyboardType="number-pad"
-                      placeholder={value || fontLanguage.map[0].cards.number_answer}
+                      placeholder={
+                        value || fontLanguage.map[0].cards.number_answer
+                      }
                       placeholderTextColor={value ? '#000000' : '#bab9b9'}
                       onChangeText={value => onChangeText(value)}
                       underlineColorAndroid="transparent"
@@ -525,6 +566,7 @@ hideModalImageType();
                       </TouchableOpacity>
                     </View>
                   )}
+                  {/* si entra aquí es que está editando y hay foto ya */}
                   {!images && !onlyRead && value && (
                     <View
                       style={{
@@ -540,17 +582,21 @@ hideModalImageType();
                         borderRadius: 10,
                         padding: '2%',
                       }}>
-                      <Image
-                        source={{
-                          uri: value,
-                        }}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          borderRadius: 10,
-                          resizeMode: 'cover',
-                        }}
-                      />
+                      <TouchableOpacity
+                        style={{width: '100%', height: '100%'}}
+                        onPress={() => setToZoom(3)}>
+                        <Image
+                          source={{
+                            uri: value,
+                          }}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            borderRadius: 10,
+                            resizeMode: 'cover',
+                          }}
+                        />
+                      </TouchableOpacity>
 
                       <TouchableOpacity
                         onPress={showModalImageType}
@@ -586,17 +632,21 @@ hideModalImageType();
                         borderRadius: 10,
                         padding: '2%',
                       }}>
-                      <Image
-                        source={{
-                          uri: 'data:image/jpeg;base64,' + images.data,
-                        }}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          borderRadius: 10,
-                          resizeMode: 'cover',
-                        }}
-                      />
+                      <TouchableOpacity
+                        style={{flex: 1, width: '100%', height: '100%'}}
+                        onPress={() => setToZoom(1)}>
+                        <Image
+                          source={{
+                            uri: 'data:image/jpeg;base64,' + images.data,
+                          }}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            borderRadius: 10,
+                            resizeMode: 'cover',
+                          }}
+                        />
+                      </TouchableOpacity>
 
                       <TouchableOpacity
                         onPress={showModalImageType}
@@ -617,54 +667,63 @@ hideModalImageType();
                       </TouchableOpacity>
                     </View>
                   )}
-                  {/* este entra en camera */}
-                  {imageTypeNumber === 2 && images && images[0] && images[0].base64 && !onlyRead && (
-                    <View
-                      style={{
-                        width: '80%',
-                        height: heightPercentageToDP(13),
-                        // marginTop: '3.5%',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        backgroundColor: images
-                          ? 'transparent'
-                          : Colors.secondaryBackground,
-                        borderRadius: 10,
-                        padding: '2%',
-                      }}>
-                      <Image
-                        source={{
-                          uri: 'data:image/jpeg;base64,' + images[0].base64,
-                        }}
+                  {/* este entra en camera si está editando o creando */}
+                  {imageTypeNumber === 2 &&
+                    images &&
+                    images[0] &&
+                    images[0].base64 &&
+                    !onlyRead && (
+                      <View
                         style={{
-                          width: '100%',
-                          height: '100%',
+                          width: '80%',
+                          height: heightPercentageToDP(13),
+                          // marginTop: '3.5%',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          backgroundColor: images
+                            ? 'transparent'
+                            : Colors.secondaryBackground,
                           borderRadius: 10,
-                          resizeMode: 'cover',
-                        }}
-                      />
-
-                      <TouchableOpacity
-                        onPress={showModalImageType}
-                        style={{
-                          width: RFPercentage(4),
-                          position: 'absolute',
-                          bottom: RFPercentage(-1),
-                          left: RFPercentage(17),
-                          zIndex: 999,
-                          backgroundColor: 'white',
-                          borderRadius: 50,
+                          padding: '2%',
                         }}>
-                        <PlusImg
-                          width={RFPercentage(4)}
-                          height={RFPercentage(4)}
-                          fill={'#0059ff'}
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  )}
+                        <TouchableOpacity
+                          style={{flex: 1, width: '100%', height: '100%'}}
+                          onPress={() => setToZoom(2)}>
+                          <Image
+                            source={{
+                              uri: 'data:image/jpeg;base64,' + images[0].base64,
+                            }}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              borderRadius: 10,
+                              resizeMode: 'cover',
+                            }}
+                          />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                          onPress={showModalImageType}
+                          style={{
+                            width: RFPercentage(4),
+                            position: 'absolute',
+                            bottom: RFPercentage(-1),
+                            left: RFPercentage(17),
+                            zIndex: 999,
+                            backgroundColor: 'white',
+                            borderRadius: 50,
+                          }}>
+                          <PlusImg
+                            width={RFPercentage(4)}
+                            height={RFPercentage(4)}
+                            fill={'#0059ff'}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    )}
+                  {/* si entra aquí es que está mirando solo, ya que es solo lectura 3*/}
                   {value && onlyRead && (
-                    <View
+                    <TouchableOpacity
                       style={{
                         width: '95%',
                         height: heightPercentageToDP(13),
@@ -673,8 +732,9 @@ hideModalImageType();
                         alignItems: 'center',
                         borderRadius: 10,
                         padding: '2%',
-                        backgroundColor: value ? 'black' : 'grey',
-                      }}>
+                        backgroundColor: value ? 'white' : 'grey',
+                      }}
+                      onPress={() => setToZoom(3)}>
                       <ImageBackground
                         borderRadius={10}
                         // source={require(urii)}
@@ -690,7 +750,7 @@ hideModalImageType();
                           // resizeMode: 'cover',
                         }}
                       />
-                    </View>
+                    </TouchableOpacity>
                   )}
                   {!value && onlyRead && (
                     <View
@@ -772,7 +832,9 @@ hideModalImageType();
                       activeOpacity={0.9}
                       style={{...stylesModal.button}}
                       onPress={() => selectImage(2)}>
-                      <Text style={stylesModal.textButton}>{fontLanguage.map[0].cards.camera}</Text>
+                      <Text style={stylesModal.textButton}>
+                        {fontLanguage.map[0].cards.camera}
+                      </Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -781,7 +843,84 @@ hideModalImageType();
           </Modal>
         </Portal>
       </Provider>
-      
+      {/* este modal hará un zoom cuando pinches en una imagen */}
+      <Provider>
+        <Portal>
+          <Modal visible={imageMax} transparent={true} animationType="fade">
+            {/* <TouchableWithoutFeedback style={{}} onPress={hideModalImageMax}> */}
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%',
+                height: '50%',
+                alignSelf: 'center',
+                alignContent: 'center',
+                backgroundColor: 'black',
+                // borderRadius: 10,
+                // padding: '2%',
+              }}>
+              {/* <Image
+                    source={{
+                      uri: value,
+                    }}
+                    style={{
+                      width: '100%',
+                      height: '70%',
+                      // borderRadius: 10,
+                      resizeMode: 'contain',
+                    }}
+                  /> */}
+              <TouchableOpacity
+                style={{alignSelf: 'flex-end', margin: '7%'}}
+                onPress={hideModalImageMax}>
+                <Text
+                  style={{color: 'white', fontSize: FontSize.fontSizeText17}}>
+                  {fontLanguage.map[0].cards.close}
+                </Text>
+              </TouchableOpacity>
+              <ImageViewer
+                style={{
+                  width: '100%',
+                  // height: '70%',
+                  // borderRadius: 10,
+                  // resizeMode: 'contain',
+                  // backgroundColor: 'red',
+                  zIndex: 1,
+                }}
+                show={true}
+                useNativeDriver={true}
+                minScale={0.3}
+                maxScale={10}
+                imageUrls={image}
+              />
+              {/* <ImageZoom
+                style={{
+                  width: '100%',
+                  // height: '70%',
+                  // borderRadius: 10,
+                  // resizeMode: 'contain',
+                  // backgroundColor: 'red',
+                  zIndex: 999,
+                }}
+                uri={value}
+                minScale={0.3}
+                maxScale={1.5}
+                onInteractionStart={() => console.log('Interaction started')}
+                onInteractionEnd={() => console.log('Interaction ended')}
+                onPinchStart={() => console.log('Pinch gesture started')}
+                onPinchEnd={() => console.log('Pinch gesture ended')}
+                onPanStart={() => console.log('Pan gesture started')}
+                onPanEnd={() => console.log('Pan gesture ended')}
+                onResetAnimationEnd={() => console.log('Reset animation ended')}
+                resizeMode="contain"
+              /> */}
+            </View>
+            {/* </TouchableWithoutFeedback> */}
+          </Modal>
+        </Portal>
+      </Provider>
       <Toast position="bottom" />
     </View>
   );

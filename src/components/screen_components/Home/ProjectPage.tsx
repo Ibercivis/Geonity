@@ -668,9 +668,9 @@ export const ProjectPage = (props: Props) => {
           </TouchableOpacity>
         </View>
       ) : (
-        <SafeAreaView>
+        <SafeAreaView >
           <ScrollView
-            // contentContainerStyle={{flexGrow: 1}}
+            contentContainerStyle={{ backgroundColor:'white'}}
             onTouchCancel={() => hideModalSave()}
             keyboardShouldPersistTaps="handled">
             {/* Ocultar la barra de estado */}
@@ -679,7 +679,7 @@ export const ProjectPage = (props: Props) => {
               <Text style={styles.title}>{project?.name}</Text>
             </View>
 
-            <View style={{flex: 1}}>
+            <View style={{flex: 1,}}>
               {/* first part */}
               <View
                 style={{
@@ -936,7 +936,7 @@ export const ProjectPage = (props: Props) => {
                                   fontWeight: 'bold',
                                   color: Colors.textColorPrimary,
                                 }}>
-                                {x.principalName}{' '}
+                                {x.principalName}{project.organizations.length >= 1 ? '. ' : ', '}
                               </Text>
                             );
                           })}

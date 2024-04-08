@@ -51,6 +51,8 @@ interface Props {
   icon?: string;
   size?: number;
   color?: string;
+  isChecked?: boolean;
+  onPressDontShowAgain?: () => void;
 }
 
 const {fontLanguage} = useLanguage();
@@ -670,6 +672,8 @@ export const InfoModalMap = ({
   size,
   color,
   helper = true,
+  isChecked = false,
+  onPressDontShowAgain,
 }: Props) => {
   return (
     <Provider>
@@ -681,8 +685,9 @@ export const InfoModalMap = ({
                 style={{
                   ...styles.modalContent,
                   alignItems: 'center',
-                  // height: heightPercentageToDP(50),
-                  width: widthPercentageToDP(75),
+                  width: '75%',
+                  // width: widthPercentageToDP(75),
+                  height: 'auto',
                   // justifyContent: 'center',
                   // paddingHorizontal: '11%',
                 }}>
@@ -717,21 +722,41 @@ export const InfoModalMap = ({
                     justifyContent: 'flex-start',
                   }}>
                   <Text style={{marginTop: '5%', alignSelf: 'flex-start'}}>
-                  {fontLanguage.modals[0].map.text_1}
+                    {fontLanguage.modals[0].map.text_1}
                   </Text>
                   <Text style={{marginTop: '5%'}}>
                     1.{' '}
                     <Text style={{fontWeight: 'bold'}}>
-                    {fontLanguage.modals[0].map.text_2}{' '}
+                      {fontLanguage.modals[0].map.text_2}{' '}
                     </Text>
                     {fontLanguage.modals[0].map.text_3}
                     {'\n\n'}
                     2.{' '}
                     <Text style={{fontWeight: 'bold'}}>
-                    {fontLanguage.modals[0].map.text_4}{' '}
+                      {fontLanguage.modals[0].map.text_4}{' '}
                     </Text>
                     {fontLanguage.modals[0].map.text_5}
                   </Text>
+                  <TouchableOpacity
+                    onPress={onPressDontShowAgain}
+                    style={{
+                      width: '80%',
+                      height: 'auto',
+                      alignItems: 'center',
+                      flexDirection: 'row',
+                      marginTop:'15%',
+                      // justifyContent: 'space-between',
+                    }}>
+                    <Checkbox
+                      uncheckedColor={'#838383'}
+                      color={Colors.primaryLigth}
+                      status={isChecked ? 'checked' : 'unchecked'}
+                      onPress={onPressDontShowAgain}
+                    />
+                    <Text style={{color: 'black'}}>
+                      {fontLanguage.modals[0].map.text_6}
+                    </Text>
+                  </TouchableOpacity>
                 </View>
 
                 <TouchableOpacity
@@ -819,9 +844,14 @@ export const InfoModalGuest = ({
                     alignItems: 'center',
                     // justifyContent: 'flex-start',
                   }}>
-
                   <View style={{width: '80%'}}>
-                    <Text style={{marginTop: '1%', marginBottom: '15%', color:'black', fontSize: FontSize.fontSizeText14,}}>
+                    <Text
+                      style={{
+                        marginTop: '1%',
+                        marginBottom: '15%',
+                        color: 'black',
+                        fontSize: FontSize.fontSizeText14,
+                      }}>
                       {subLabel}
                     </Text>
                   </View>
@@ -920,7 +950,9 @@ export const PassModal = ({
                       width: '100%',
                       marginVertical: RFPercentage(1),
                     }}>
-                    <Text style={{color: 'black'}}>{fontLanguage.modals[0].password_text} </Text>
+                    <Text style={{color: 'black'}}>
+                      {fontLanguage.modals[0].password_text}{' '}
+                    </Text>
                     <InputText
                       // isInputText={() => setIsInputText(!isInputText)}
                       isValid={helper}
@@ -1046,7 +1078,9 @@ export const DeleteModal = ({
                     activeOpacity={0.9}
                     style={{...styles.button}}
                     onPress={() => hideModal()}>
-                    <Text style={styles.textButton}>{fontLanguage.modals[0].cancel_button_text}</Text>
+                    <Text style={styles.textButton}>
+                      {fontLanguage.modals[0].cancel_button_text}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>

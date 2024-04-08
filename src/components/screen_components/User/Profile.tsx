@@ -223,9 +223,7 @@ export const Profile = ({navigation}: Props) => {
           style={{flex: 1}}
           contentContainerStyle={{
             alignItems: 'center',
-            marginBottom: '20%',
-            backgroundColor: 'transparent',
-            paddingBottom: '5%',
+            
           }}
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
@@ -244,38 +242,35 @@ export const Profile = ({navigation}: Props) => {
                   );
                 }}>
                 <View style={{flexDirection: 'row'}}>
-                  <View style={{width: '30%'}}>
-                    {item.cover_project ? (
-                      <Image
-                        source={{
-                          uri: imageUrl + item.cover_project.image,
-                        }}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          borderTopLeftRadius: 10,
-                          borderBottomLeftRadius: 10,
-                          resizeMode: 'cover',
-                          backgroundColor: 'transparent',
-                          marginRight: '2%',
-                        }}
-                      />
-                    ) : (
-                      <Image
-                        source={{
-                          uri: require('../../../assets/backgrounds/nuevoproyecto.jpg'),
-                        }}
-                        style={{
-                          width: '12%',
-                          height: '110%',
-                          borderRadius: 50,
-                          resizeMode: 'cover',
-                          backgroundColor: 'blue',
-                          marginRight: '2%',
-                        }}
-                      />
-                    )}
-                  </View>
+                  {/* <View style={{width: '30%'}}> */}
+                  {item.cover_project ? (
+                    <Image
+                      source={{
+                        uri: imageUrl + item.cover_project.image,
+                      }}
+                      style={{
+                        width: '30%',
+                        height: '100%',
+                        borderTopLeftRadius: 10,
+                        borderBottomLeftRadius: 10,
+                        // resizeMode: 'cover',
+                        backgroundColor: 'transparent',
+                        marginRight: '2%',
+                      }}
+                    />
+                  ) : (
+                    <Image
+                      source={require('../../../assets/backgrounds/nuevoproyecto.jpg')}
+                      style={{
+                        width: '30%',
+                        height: '100%',
+                        borderRadius: 10,
+                        // resizeMode: 'cover',
+                        backgroundColor: 'transparent',
+                        marginRight: '2%',
+                      }}
+                    />
+                  )}
                   <View
                     style={{
                       paddingHorizontal: RFPercentage(2),
@@ -306,6 +301,8 @@ export const Profile = ({navigation}: Props) => {
                         {formatDate(item.updated_at)}
                       </Text>
                     </View>
+
+                    {/* </View> */}
                   </View>
                 </View>
               </TouchableOpacity>
@@ -2469,6 +2466,7 @@ export const Profile = ({navigation}: Props) => {
             onIndexChange={setIndex}
             renderTabBar={_renderTabBar}
             style={{flex: 1}}
+            sceneContainerStyle={{marginBottom: heightPercentageToDP(5)}}
 
             //   initialLayout={{width: RFPercentage(20)}}
           />
