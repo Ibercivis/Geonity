@@ -7,7 +7,7 @@ export const useLocation = () => {
   const [hasLocation, setHasLocation] = useState(false);
   const [routeLines, setRouteLines] = useState<Location[]>([]);
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const [initialPositionArray, setInitialPositionArray] = useState<number[]>(
     [0,0],

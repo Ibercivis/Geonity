@@ -100,18 +100,18 @@ export const ParticipateMap = ({navigation, route}: Props) => {
   //   });
   // }, [navigation]);
 
-  useEffect(() => {
-    nav.getParent()?.setOptions({
-      tabBarStyle: {
-        // display: "none",
-        opacity: 0,
-      },
-    });
-    return () =>
-      nav.getParent()?.setOptions({
-        tabBarStyle: undefined,
-      });
-  }, [nav]);
+  // useEffect(() => {
+  //   nav.getParent()?.setOptions({
+  //     tabBarStyle: {
+  //       // display: "none",
+  //       opacity: 0,
+  //     },
+  //   });
+  //   return () =>
+  //     nav.getParent()?.setOptions({
+  //       tabBarStyle: undefined,
+  //     });
+  // }, [nav]);
 
   //#region VARIABLES
   // map refs
@@ -308,12 +308,6 @@ export const ParticipateMap = ({navigation, route}: Props) => {
       handleEdit();
     }
   }, [showSelectedObservation]);
-
-  useEffect(() => {
-    // cameraRef.current?.setCamera({
-    //   centerCoordinate: [userLocation.longitude, userLocation.latitude],
-    // });
-  }, []);
 
   /**
    * empleado para que cuando cargue el fieldform, se pueda obtener su id
@@ -1175,612 +1169,626 @@ export const ParticipateMap = ({navigation, route}: Props) => {
 
   //#endregion
 
-  if (!hasLocation) {
-    // return <LoadingScreen />;
-    return (
-      <View style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
-        <Text
-          style={{
-            color: Colors.textColorPrimary,
-            marginBottom: RFPercentage(3),
-          }}>
-          {fontLanguage.map[0].enable_gps}
-        </Text>
-        <TouchableOpacity
-          style={{
-            minWidth: RFPercentage(8),
-            marginBottom: RFPercentage(2),
-            marginTop: RFPercentage(2),
-            backgroundColor: 'white',
-            padding: RFPercentage(1),
-            borderRadius: 10,
-            paddingVertical: '5%',
-            shadowColor: '#000',
-            shadowOffset: {
-              width: 0,
-              height: 0.1,
-            },
-            shadowOpacity: 0.2,
-            shadowRadius: 1.41,
-            elevation: 5,
-          }}
-          onPress={getCurrentLocation}>
-          <Text>{fontLanguage.map[0].recharge_screen}</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
+  // if (!hasLocation) {
+  //   return <LoadingScreen />;
+  //   // return (
+  //   //   <View style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
+  //   //     <Text
+  //   //       style={{
+  //   //         color: Colors.textColorPrimary,
+  //   //         marginBottom: RFPercentage(3),
+  //   //       }}>
+  //   //       {fontLanguage.map[0].enable_gps}
+  //   //     </Text>
+  //   //     <TouchableOpacity
+  //   //       style={{
+  //   //         minWidth: RFPercentage(8),
+  //   //         marginBottom: RFPercentage(2),
+  //   //         marginTop: RFPercentage(2),
+  //   //         backgroundColor: 'white',
+  //   //         padding: RFPercentage(1),
+  //   //         borderRadius: 10,
+  //   //         paddingVertical: '5%',
+  //   //         shadowColor: '#000',
+  //   //         shadowOffset: {
+  //   //           width: 0,
+  //   //           height: 0.1,
+  //   //         },
+  //   //         shadowOpacity: 0.2,
+  //   //         shadowRadius: 1.41,
+  //   //         elevation: 5,
+  //   //       }}
+  //   //       onPress={getCurrentLocation}>
+  //   //       <Text>{fontLanguage.map[0].recharge_screen}</Text>
+  //   //     </TouchableOpacity>
+  //   //   </View>
+  //   // );
+  // }
+
+  
 
   return (
     <>
-      {chargedData ? (
+      {hasLocation ? (
         <>
-          {showMap ? (
-            <View
-              style={{flex: 1}}
-              onTouchEnd={() => {
-                updateMap();
-              }}>
-              <MapView
-                ref={element => (mapViewRef.current = element!)}
-                key={mapUpdateFlag ? 'mapUpdate' : 'mapNoUpdate'}
-                style={{flex: 1}}
-                logoEnabled={false}
-                scaleBarEnabled={false}
-                compassEnabled={false}
-                collapsable={true}
-                onTouchStart={() => {
-                  setSelectedObservation(clearSelectedObservation());
-                  // if (!mapUpdateFlag) setMapUpdateFlag(true);
-                }}
-                onLongPress={data => {
-                  addMarkLongPress(data);
-                }}>
-                <Camera
-                  ref={reference => (cameraRef.current = reference!)}
-                  zoomLevel={15}
-                  maxZoomLevel={2000}
-                  followZoomLevel={2000}
-                  centerCoordinate={
-                    route.params.coords
-                      ? [
-                          route.params.coords.latitude,
-                          route.params.coords.longitude,
-                        ]
-                      : initialPositionArray
-                  }
-                  followUserLocation={followView.current}
-                  followUserMode={UserTrackingMode.FollowWithHeading}
-                  minZoomLevel={4}
-                  animationMode="flyTo"
-                  animationDuration={1000}
-                  allowUpdates={true}
-                />
-                <Mapbox.UserLocation visible animated />
-                {observationList.length > 0 &&
-                  observationList.map((x, index) => {
-                    if (x.geoposition.point) {
-                      if (selectedObservation.id !== x.id) {
-                        return (
-                          // <View key={index}>
-                          <MarkerView
-                            key={index}
-                            // coordinate={[-6.300905, 36.53777]}
-                            onTouchStart={() => console.log('aprieta la marca')}
-                            coordinate={[
-                              x.geoposition.point.latitude,
-                              x.geoposition.point.longitude,
-                            ]}>
-                            {/* sustituir esto por una imagen */}
-                            <TouchableOpacity
-                              // style={{backgroundColor: 'cyan'}}
-                              disabled={isCreatingObservation}
-                              onPress={() => {
-                                setSelectedObservation(x);
-                                setShowSelectedObservation(x);
-                                // console.log('aprieta la marca')
-                              }}>
-                              <View
-                                style={{
-                                  alignItems: 'center',
-                                  width: RFPercentage(5),
-                                  backgroundColor: 'transparent',
-                                  height: RFPercentage(6),
-                                }}>
-                                <MarkEnabled
-                                  height={RFPercentage(5)}
-                                  width={RFPercentage(5)}
-                                  fill={colorMark}
-                                />
-                              </View>
-                            </TouchableOpacity>
-                          </MarkerView>
-                          // </View>
-                        );
-                      } else {
-                        return <View key={index}></View>;
-                      }
-                    } else {
-                      return <View key={index}></View>;
-                    }
-                  })}
-                {observationListCreator.length > 0 &&
-                  observationListCreator.map((x, index) => {
-                    console.log(x.geoposition);
-                    if (x.geoposition) {
-                      return (
-                        <View key={index}>
-                          <MarkerView
-                            // coordinate={[-6.300905, 36.53777]}
-                            coordinate={parsePoint(x.geoposition)}>
-                            <TouchableOpacity
-                              onPress={() => console.log('touchable tochable')}>
-                              <View
-                                style={{
-                                  alignItems: 'center',
-                                  width: RFPercentage(5),
-                                  backgroundColor: 'transparent',
-                                  height: RFPercentage(6),
-                                }}>
-                                <MarkEnabled
-                                  height={RFPercentage(5)}
-                                  width={RFPercentage(5)}
-                                  fill={'#FC5561'}
-                                />
-                              </View>
-                            </TouchableOpacity>
-                          </MarkerView>
-                        </View>
-                      );
-                    } else {
-                      return <View key={index}></View>;
-                    }
-                  })}
-
-                {/* CREAR OTRA MARCA CON EL CUADRITO QUE HA PASADO GERMAN PARA QUE ASÍ, ESTE SE MUESTRE EN LA COORDENADA PASADA Y LISTO */}
-                {selectedObservation && (
-                  <MarkerView
-                    // coordinate={[-6.300905, 36.53777]}
-                    coordinate={[
-                      selectedObservation.geoposition.point.latitude,
-                      selectedObservation.geoposition.point.longitude,
-                    ]}>
-                    <View
-                      style={{
-                        alignItems: 'center',
+          <>
+            {chargedData ? (
+              <>
+                {showMap ? (
+                  <View
+                    style={{flex: 1}}
+                    onTouchEnd={() => {
+                      updateMap();
+                    }}>
+                    <MapView
+                      ref={element => (mapViewRef.current = element!)}
+                      key={mapUpdateFlag ? 'mapUpdate' : 'mapNoUpdate'}
+                      style={{flex: 1}}
+                      logoEnabled={false}
+                      scaleBarEnabled={false}
+                      compassEnabled={false}
+                      collapsable={true}
+                      onTouchStart={() => {
+                        setSelectedObservation(clearSelectedObservation());
+                        // if (!mapUpdateFlag) setMapUpdateFlag(true);
+                      }}
+                      onLongPress={data => {
+                        addMarkLongPress(data);
                       }}>
-                      <View
-                        style={{
-                          alignItems: 'center',
-                          width: RFPercentage(25),
-                          height: RFPercentage(25),
-                          backgroundColor: 'transparent',
-                          right: RFPercentage(-3),
-                          top: RFPercentage(0),
-                        }}>
-                        <CardMap
-                          height={RFPercentage(15)}
-                          width={RFPercentage(15)}
-                          fill={'blue'}
-                        />
+                      <Camera
+                        ref={reference => (cameraRef.current = reference!)}
+                        zoomLevel={15}
+                        maxZoomLevel={2000}
+                        followZoomLevel={2000}
+                        centerCoordinate={
+                          route.params.coords
+                            ? [
+                                route.params.coords.latitude,
+                                route.params.coords.longitude,
+                              ]
+                            : initialPositionArray
+                        }
+                        followUserLocation={followView.current}
+                        followUserMode={UserTrackingMode.FollowWithHeading}
+                        minZoomLevel={4}
+                        animationMode="flyTo"
+                        animationDuration={1000}
+                        allowUpdates={true}
+                      />
+                      <Mapbox.UserLocation visible animated />
+                      {observationList.length > 0 &&
+                        observationList.map((x, index) => {
+                          if (x.geoposition.point) {
+                            if (selectedObservation.id !== x.id) {
+                              return (
+                                // <View key={index}>
+                                <MarkerView
+                                  key={index}
+                                  // coordinate={[-6.300905, 36.53777]}
+                                  onTouchStart={() =>
+                                    console.log('aprieta la marca')
+                                  }
+                                  coordinate={[
+                                    x.geoposition.point.latitude,
+                                    x.geoposition.point.longitude,
+                                  ]}>
+                                  {/* sustituir esto por una imagen */}
+                                  <TouchableOpacity
+                                    // style={{backgroundColor: 'cyan'}}
+                                    disabled={isCreatingObservation}
+                                    onPress={() => {
+                                      setSelectedObservation(x);
+                                      setShowSelectedObservation(x);
+                                      // console.log('aprieta la marca')
+                                    }}>
+                                    <View
+                                      style={{
+                                        alignItems: 'center',
+                                        width: RFPercentage(5),
+                                        backgroundColor: 'transparent',
+                                        height: RFPercentage(6),
+                                      }}>
+                                      <MarkEnabled
+                                        height={RFPercentage(5)}
+                                        width={RFPercentage(5)}
+                                        fill={colorMark}
+                                      />
+                                    </View>
+                                  </TouchableOpacity>
+                                </MarkerView>
+                                // </View>
+                              );
+                            } else {
+                              return <View key={index}></View>;
+                            }
+                          } else {
+                            return <View key={index}></View>;
+                          }
+                        })}
+                      {observationListCreator.length > 0 &&
+                        observationListCreator.map((x, index) => {
+                          console.log(x.geoposition);
+                          if (x.geoposition) {
+                            return (
+                              <View key={index}>
+                                <MarkerView
+                                  // coordinate={[-6.300905, 36.53777]}
+                                  coordinate={parsePoint(x.geoposition)}>
+                                  <TouchableOpacity
+                                    onPress={() =>
+                                      console.log('touchable tochable')
+                                    }>
+                                    <View
+                                      style={{
+                                        alignItems: 'center',
+                                        width: RFPercentage(5),
+                                        backgroundColor: 'transparent',
+                                        height: RFPercentage(6),
+                                      }}>
+                                      <MarkEnabled
+                                        height={RFPercentage(5)}
+                                        width={RFPercentage(5)}
+                                        fill={'#FC5561'}
+                                      />
+                                    </View>
+                                  </TouchableOpacity>
+                                </MarkerView>
+                              </View>
+                            );
+                          } else {
+                            return <View key={index}></View>;
+                          }
+                        })}
+
+                      {/* CREAR OTRA MARCA CON EL CUADRITO QUE HA PASADO GERMAN PARA QUE ASÍ, ESTE SE MUESTRE EN LA COORDENADA PASADA Y LISTO */}
+                      {selectedObservation && (
+                        <MarkerView
+                          // coordinate={[-6.300905, 36.53777]}
+                          coordinate={[
+                            selectedObservation.geoposition.point.latitude,
+                            selectedObservation.geoposition.point.longitude,
+                          ]}>
+                          <View
+                            style={{
+                              alignItems: 'center',
+                            }}>
+                            <View
+                              style={{
+                                alignItems: 'center',
+                                width: RFPercentage(25),
+                                height: RFPercentage(25),
+                                backgroundColor: 'transparent',
+                                right: RFPercentage(-3),
+                                top: RFPercentage(0),
+                              }}>
+                              <CardMap
+                                height={RFPercentage(15)}
+                                width={RFPercentage(15)}
+                                fill={'blue'}
+                              />
+                              <View
+                                style={{
+                                  width: '30%',
+                                  marginHorizontal: RFPercentage(1),
+                                  marginBottom: RFPercentage(-5),
+                                  zIndex: 999,
+                                  position: 'absolute',
+                                  top: RFPercentage(2),
+                                }}>
+                                <Text
+                                  style={{
+                                    color: Colors.textColorPrimary,
+                                    fontSize: FontSize.fontSizeText13,
+                                  }}>
+                                  {fontLanguage.map[0].number_mark}{' '}
+                                  {selectedObservation.id}
+                                </Text>
+                              </View>
+                              <View
+                                style={{
+                                  width: '35%',
+                                  marginHorizontal: RFPercentage(1),
+                                  marginBottom: RFPercentage(-5),
+                                  zIndex: 999,
+                                  position: 'absolute',
+                                  top: RFPercentage(7.4),
+                                }}>
+                                <CustomButton
+                                  fontSize={FontSize.fontSizeText10}
+                                  height={RFPercentage(3)}
+                                  onPress={() => {
+                                    setShowMap(false);
+                                    console.log(JSON.stringify(form, null, 2));
+                                  }}
+                                  label={fontLanguage.map[0].show_more}
+                                  backgroundColor={Colors.primaryLigth}
+                                />
+                              </View>
+                            </View>
+                          </View>
+                        </MarkerView>
+                      )}
+                    </MapView>
+                    {showConfirmMark && (
+                      <View style={styles.showConfirmMarkStyle}>
                         <View
                           style={{
-                            width: '30%',
-                            marginHorizontal: RFPercentage(1),
-                            marginBottom: RFPercentage(-5),
-                            zIndex: 999,
-                            position: 'absolute',
-                            top: RFPercentage(2),
+                            justifyContent: 'space-between',
+                            flexDirection: 'row',
+                            marginBottom: '10%',
+                            marginHorizontal: RFPercentage(4),
                           }}>
-                          <Text
-                            style={{
-                              color: Colors.textColorPrimary,
-                              fontSize: FontSize.fontSizeText13,
-                            }}>
-                            {fontLanguage.map[0].number_mark}{' '}
-                            {selectedObservation.id}
-                          </Text>
+                          <View>
+                            <Text
+                              style={{
+                                color: Colors.textColorPrimary,
+                                fontSize: FontSize.fontSizeText17,
+                              }}>
+                              {fontLanguage.map[0].want_to_confirm}
+                            </Text>
+                          </View>
                         </View>
                         <View
                           style={{
-                            width: '35%',
-                            marginHorizontal: RFPercentage(1),
-                            marginBottom: RFPercentage(-5),
-                            zIndex: 999,
-                            position: 'absolute',
-                            top: RFPercentage(7.4),
+                            flexDirection: 'row',
+                            height: '100%',
+                            justifyContent: 'flex-end',
+                            marginHorizontal: '4%',
                           }}>
-                          <CustomButton
-                            fontSize={FontSize.fontSizeText10}
-                            height={RFPercentage(3)}
-                            onPress={() => {
-                              setShowMap(false);
-                              console.log(JSON.stringify(form, null, 2));
-                            }}
-                            label={fontLanguage.map[0].show_more}
-                            backgroundColor={Colors.primaryLigth}
-                          />
+                          <View
+                            style={{
+                              width: RFPercentage(12),
+                              marginHorizontal: RFPercentage(1),
+                              bottom: 2,
+                            }}>
+                            <CustomButton
+                              onPress={() => {
+                                setShowMap(false), setShowConfirmMark(false);
+
+                                setSelectedObservation(
+                                  clearSelectedObservation(),
+                                );
+                              }}
+                              label={fontLanguage.global[0].confirm_button}
+                              backgroundColor={Colors.primaryLigth}
+                            />
+                          </View>
+                          <View
+                            style={{
+                              width: RFPercentage(12),
+                              marginHorizontal: RFPercentage(1),
+                              bottom: 2,
+                            }}>
+                            <CustomButton
+                              onPress={() => cancelCreationObservation()}
+                              label={fontLanguage.global[0].cancel_button}
+                              fontColor="black"
+                              outlineColor="black"
+                              backgroundColor={'white'}
+                            />
+                          </View>
                         </View>
                       </View>
-                    </View>
-                  </MarkerView>
-                )}
-              </MapView>
-              {showConfirmMark && (
-                <View style={styles.showConfirmMarkStyle}>
-                  <View
-                    style={{
-                      justifyContent: 'space-between',
-                      flexDirection: 'row',
-                      marginBottom: '10%',
-                      marginHorizontal: RFPercentage(4),
-                    }}>
-                    <View>
-                      <Text
+                    )}
+                    {/* BUTTONS */}
+
+                    {/* PLUS */}
+                    <TouchableOpacity
+                      style={{
+                        position: 'absolute',
+                        right: '2%',
+                        bottom: '2%',
+                      }}
+                      onPress={() => addMarkPlus()}>
+                      <Plus height={RFPercentage(10)} />
+                    </TouchableOpacity>
+                    {/* BACK */}
+                    <TouchableOpacity
+                      style={{
+                        position: 'absolute',
+                        left: '2%',
+                        top: '5%',
+                      }}
+                      onPress={() => {
+                        if (route.params.coords) {
+                          navigation.goBack();
+                        } else {
+                          navigation.navigate('ProjectPage', {
+                            id: route.params.id,
+                          });
+                        }
+                      }}>
+                      <Back height={RFPercentage(6)} />
+                    </TouchableOpacity>
+                    {/* COMPASS */}
+                    <TouchableOpacity
+                      style={{
+                        position: 'absolute',
+                        right: '2%',
+                        top: '5%',
+                      }}
+                      onPress={() => centerPosition()}>
+                      <Compass height={RFPercentage(6)} />
+                    </TouchableOpacity>
+                    {/* CENTER */}
+                    <TouchableOpacity
+                      style={{
+                        position: 'absolute',
+                        right: '2%',
+                        top: '12%',
+                      }}
+                      onPress={() => centerPosition()}>
+                      <Target height={RFPercentage(6)} />
+                    </TouchableOpacity>
+                    {/* INFO */}
+                    <TouchableOpacity
+                      style={{
+                        position: 'absolute',
+                        right: '4%',
+                        top: '19%',
+                      }}
+                      onPress={() => showModalInfo()}>
+                      <Info width={RFPercentage(4)} height={RFPercentage(4)} />
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <>
+                    <HeaderComponent
+                      title={project!.name}
+                      onPressLeft={() => {
+                        setShowMap(true);
+                        cancelCreationObservation();
+                        setOnlyRead(false);
+                        // setShowConfirmMark(true);
+                      }}
+                      rightIcon={false}
+                    />
+                    <ScrollView contentContainerStyle={{flexGrow: 1}}>
+                      <View
                         style={{
-                          color: Colors.textColorPrimary,
-                          fontSize: FontSize.fontSizeText17,
+                          backgroundColor: true ? 'transparent' : 'grey',
+                          alignItems: 'center',
+                          marginBottom: heightPercentageToDP(20),
+                          marginTop: '7%',
                         }}>
-                        {fontLanguage.map[0].want_to_confirm}
-                      </Text>
-                    </View>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      height: '100%',
-                      justifyContent: 'flex-end',
-                      marginHorizontal: '4%',
-                    }}>
-                    <View
-                      style={{
-                        width: RFPercentage(12),
-                        marginHorizontal: RFPercentage(1),
-                        bottom: 2,
-                      }}>
-                      <CustomButton
-                        onPress={() => {
-                          setShowMap(false), setShowConfirmMark(false);
-
-                          setSelectedObservation(clearSelectedObservation());
-                        }}
-                        label={fontLanguage.global[0].confirm_button}
-                        backgroundColor={Colors.primaryLigth}
-                      />
-                    </View>
-                    <View
-                      style={{
-                        width: RFPercentage(12),
-                        marginHorizontal: RFPercentage(1),
-                        bottom: 2,
-                      }}>
-                      <CustomButton
-                        onPress={() => cancelCreationObservation()}
-                        label={fontLanguage.global[0].cancel_button}
-                        fontColor="black"
-                        outlineColor="black"
-                        backgroundColor={'white'}
-                      />
-                    </View>
-                  </View>
-                </View>
-              )}
-              {/* BUTTONS */}
-
-              {/* PLUS */}
-              <TouchableOpacity
-                style={{
-                  position: 'absolute',
-                  right: '2%',
-                  bottom: '2%',
-                }}
-                onPress={() => addMarkPlus()}>
-                <Plus height={RFPercentage(10)} />
-              </TouchableOpacity>
-              {/* BACK */}
-              <TouchableOpacity
-                style={{
-                  position: 'absolute',
-                  left: '2%',
-                  top: '5%',
-                }}
-                onPress={() => {
-                  if (route.params.coords) {
-                    navigation.goBack();
-                  } else {
-                    navigation.navigate('ProjectPage', {id: route.params.id});
-                  }
-                }}>
-                <Back height={RFPercentage(6)} />
-              </TouchableOpacity>
-              {/* COMPASS */}
-              <TouchableOpacity
-                style={{
-                  position: 'absolute',
-                  right: '2%',
-                  top: '5%',
-                }}
-                onPress={() => centerPosition()}>
-                <Compass height={RFPercentage(6)} />
-              </TouchableOpacity>
-              {/* CENTER */}
-              <TouchableOpacity
-                style={{
-                  position: 'absolute',
-                  right: '2%',
-                  top: '12%',
-                }}
-                onPress={() => centerPosition()}>
-                <Target height={RFPercentage(6)} />
-              </TouchableOpacity>
-              {/* INFO */}
-              <TouchableOpacity
-                style={{
-                  position: 'absolute',
-                  right: '4%',
-                  top: '19%',
-                }}
-                onPress={() => showModalInfo()}>
-                <Info width={RFPercentage(4)} height={RFPercentage(4)} />
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <>
-              <HeaderComponent
-                title={project!.name}
-                onPressLeft={() => {
-                  setShowMap(true);
-                  cancelCreationObservation();
-                  setOnlyRead(false);
-                  // setShowConfirmMark(true);
-                }}
-                rightIcon={false}
-              />
-              <ScrollView contentContainerStyle={{flexGrow: 1}}>
-                <View
-                  style={{
-                    backgroundColor: true ? 'transparent' : 'grey',
-                    alignItems: 'center',
-                    marginBottom: heightPercentageToDP(20),
-                    marginTop: '7%',
-                  }}>
-                  {questions.map((x, index) => {
-                    /**
-                     * el primer if es si no hay ninguna observation seleccionada y está creando. Entra a crear
-                     * el segundo if es si hay una observation seleccionada, si esta es por parte del creador y si no está creando. Entra a editar
-                     * la tercera entra si hay una observation seleccionada, si esta no es por parte del creador y si no está creando. Entra a Ver
-                     */
-                    if (isCreatingObservation) {
-                      return (
-                        <View
-                          style={{
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                          }}
-                          key={index}>
-                          <CardAnswerMap
-                            obligatory={x.mandatory}
-                            question={x}
-                            index={index + 1}
-                            onChangeText={value =>
-                              onChangeText(value, x.id!, x.answer_type)
+                        {questions.map((x, index) => {
+                          /**
+                           * el primer if es si no hay ninguna observation seleccionada y está creando. Entra a crear
+                           * el segundo if es si hay una observation seleccionada, si esta es por parte del creador y si no está creando. Entra a editar
+                           * la tercera entra si hay una observation seleccionada, si esta no es por parte del creador y si no está creando. Entra a Ver
+                           */
+                          if (isCreatingObservation) {
+                            return (
+                              <View
+                                style={{
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                }}
+                                key={index}>
+                                <CardAnswerMap
+                                  obligatory={x.mandatory}
+                                  question={x}
+                                  index={index + 1}
+                                  onChangeText={value =>
+                                    onChangeText(value, x.id!, x.answer_type)
+                                  }
+                                  showModal={value => {
+                                    if (value) {
+                                      Toast.show({
+                                        type: 'error',
+                                        text1: 'Image',
+                                        // text2: 'No se han podido obtener los datos, por favor reinicie la app',
+                                        text2:
+                                          fontLanguage.map[0].mark.image_weight,
+                                      });
+                                    }
+                                  }}
+                                />
+                              </View>
+                            );
+                          } else if (
+                            userInfo.pk === showSelectedObservation.creator &&
+                            !isCreatingObservation
+                          ) {
+                            let image;
+                            let selectedElement;
+                            if (showSelectedObservation.images) {
+                              image = showSelectedObservation.images.find(
+                                img => img.question === x.id,
+                              );
                             }
-                            showModal={value => {
-                              if (value) {
-                                Toast.show({
-                                  type: 'error',
-                                  text1: 'Image',
-                                  // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-                                  text2: fontLanguage.map[0].mark.image_weight,
-                                });
-                              }
-                            }}
-                          />
-                        </View>
-                      );
-                    } else if (
-                      userInfo.pk === showSelectedObservation.creator &&
-                      !isCreatingObservation
-                    ) {
-                      let image;
-                      let selectedElement;
-                      if (showSelectedObservation.images) {
-                        image = showSelectedObservation.images.find(
-                          img => img.question === x.id,
-                        );
-                      }
-                      if (form.data) {
-                        selectedElement = form.data.find(
-                          item => item.key === x.id!.toString(),
-                        );
-                      }
-
-                      const valueToUse = image
-                        ? image.image
-                        : selectedElement
-                        ? selectedElement.value
-                        : '';
-
-                      return (
-                        <View
-                          style={{
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                          }}
-                          key={index}>
-                          <CardAnswerMap
-                            value={
-                              valueToUse
-                              //: inputValues[x.id!] || ''
+                            if (form.data) {
+                              selectedElement = form.data.find(
+                                item => item.key === x.id!.toString(),
+                              );
                             }
-                            onlyRead={false}
-                            question={x}
-                            index={index + 1}
-                            isEditing={true}
-                            onChangeText={value =>
-                              onChangeText(value, x.id!, x.answer_type)
-                            }
-                            showModal={value => {
-                              if (value) {
-                                console.log('la imagen pesa demasiado');
-                              }
-                            }}
-                          />
-                        </View>
-                      );
-                    } else {
-                      let image = [];
-                      let selectedElement;
-                      if (showSelectedObservation.images) {
-                        image = showSelectedObservation.images.find(
-                          img => img.question === x.id,
-                        );
-                      }
-                      if (form.data) {
-                        selectedElement = form.data.find(
-                          item => item.key === x.id!.toString(),
-                        );
-                      }
 
-                      const valueToUse = image
-                        ? image.image
-                        : selectedElement
-                        ? selectedElement.value
-                        : '';
+                            const valueToUse = image
+                              ? image.image
+                              : selectedElement
+                              ? selectedElement.value
+                              : '';
 
-                      return (
-                        <View
-                          style={{
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                          }}
-                          key={index}>
-                          <CardAnswerMap
-                            value={valueToUse}
-                            onlyRead={true}
-                            question={x}
-                            index={index + 1}
-                            onChangeText={value =>
-                              onChangeText(value, x.id!, x.answer_type)
+                            return (
+                              <View
+                                style={{
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                }}
+                                key={index}>
+                                <CardAnswerMap
+                                  value={
+                                    valueToUse
+                                    //: inputValues[x.id!] || ''
+                                  }
+                                  onlyRead={false}
+                                  question={x}
+                                  index={index + 1}
+                                  isEditing={true}
+                                  onChangeText={value =>
+                                    onChangeText(value, x.id!, x.answer_type)
+                                  }
+                                  showModal={value => {
+                                    if (value) {
+                                      console.log('la imagen pesa demasiado');
+                                    }
+                                  }}
+                                />
+                              </View>
+                            );
+                          } else {
+                            let image = [];
+                            let selectedElement;
+                            if (showSelectedObservation.images) {
+                              image = showSelectedObservation.images.find(
+                                img => img.question === x.id,
+                              );
                             }
-                            showModal={value => {
-                              if (value) {
-                                console.log('la imagen pesa demasiado');
-                              }
-                            }}
-                          />
-                        </View>
-                      );
-                    }
-                  })}
-                  {/* si es igual al creator y no está creando, está editando
+                            if (form.data) {
+                              selectedElement = form.data.find(
+                                item => item.key === x.id!.toString(),
+                              );
+                            }
+
+                            const valueToUse = image
+                              ? image.image
+                              : selectedElement
+                              ? selectedElement.value
+                              : '';
+
+                            return (
+                              <View
+                                style={{
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                }}
+                                key={index}>
+                                <CardAnswerMap
+                                  value={valueToUse}
+                                  onlyRead={true}
+                                  question={x}
+                                  index={index + 1}
+                                  onChangeText={value =>
+                                    onChangeText(value, x.id!, x.answer_type)
+                                  }
+                                  showModal={value => {
+                                    if (value) {
+                                      console.log('la imagen pesa demasiado');
+                                    }
+                                  }}
+                                />
+                              </View>
+                            );
+                          }
+                        })}
+                        {/* si es igual al creator y no está creando, está editando
                       si es diferente al creador y no está creando, está viendo
                       si no, significa que está creando
                   */}
-                  {userInfo.pk === showSelectedObservation.creator &&
-                  !isCreatingObservation ? (
-                    <>
-                      <View
-                        style={{
-                          width: '70%',
-                          marginHorizontal: RFPercentage(1),
-                          marginBottom: '5%',
-                        }}>
-                        <CustomButton
-                          disabled={onlyRead}
-                          onPress={() => onEditObservation()}
-                          label={fontLanguage.map[0].mark.save}
-                          backgroundColor={Colors.primaryLigth}
-                        />
+                        {userInfo.pk === showSelectedObservation.creator &&
+                        !isCreatingObservation ? (
+                          <>
+                            <View
+                              style={{
+                                width: '70%',
+                                marginHorizontal: RFPercentage(1),
+                                marginBottom: '5%',
+                              }}>
+                              <CustomButton
+                                disabled={onlyRead}
+                                onPress={() => onEditObservation()}
+                                label={fontLanguage.map[0].mark.save}
+                                backgroundColor={Colors.primaryLigth}
+                              />
+                            </View>
+                            <View
+                              style={{
+                                width: '70%',
+                                marginHorizontal: RFPercentage(1),
+                                marginBottom: '5%',
+                              }}>
+                              <CustomButton
+                                disabled={onlyRead}
+                                onPress={() => showModalDelete()}
+                                label={fontLanguage.map[0].mark.delete}
+                                backgroundColor={Colors.semanticDangerLight}
+                              />
+                            </View>
+                          </>
+                        ) : userInfo.pk !== showSelectedObservation.creator &&
+                          !isCreatingObservation ? (
+                          <View
+                            style={{
+                              width: '70%',
+                              marginHorizontal: RFPercentage(1),
+                              marginBottom: '5%',
+                            }}>
+                            <CustomButton
+                              disabled={true}
+                              onPress={() => {
+                                // if(onlyRead != true){
+                                //   onSaveObservation()
+                                // }
+                              }}
+                              label={fontLanguage.map[0].mark.finish}
+                              backgroundColor={
+                                showSelectedObservation.id <= 0
+                                  ? Colors.primaryLigth
+                                  : Colors.secondaryBackground
+                              }
+                            />
+                          </View>
+                        ) : (
+                          <View
+                            style={{
+                              width: '70%',
+                              marginHorizontal: RFPercentage(1),
+                              marginBottom: '5%',
+                            }}>
+                            <CustomButton
+                              disabled={false}
+                              onPress={() => onSaveObservation()}
+                              label={fontLanguage.map[0].mark.finish}
+                              backgroundColor={
+                                showSelectedObservation.id <= 0
+                                  ? Colors.primaryLigth
+                                  : Colors.secondaryBackground
+                              }
+                            />
+                          </View>
+                        )}
                       </View>
-                      <View
-                        style={{
-                          width: '70%',
-                          marginHorizontal: RFPercentage(1),
-                          marginBottom: '5%',
-                        }}>
-                        <CustomButton
-                          disabled={onlyRead}
-                          onPress={() => showModalDelete()}
-                          label={fontLanguage.map[0].mark.delete}
-                          backgroundColor={Colors.semanticDangerLight}
-                        />
-                      </View>
-                    </>
-                  ) : userInfo.pk !== showSelectedObservation.creator &&
-                    !isCreatingObservation ? (
-                    <View
-                      style={{
-                        width: '70%',
-                        marginHorizontal: RFPercentage(1),
-                        marginBottom: '5%',
-                      }}>
-                      <CustomButton
-                        disabled={true}
-                        onPress={() => {
-                          // if(onlyRead != true){
-                          //   onSaveObservation()
-                          // }
-                        }}
-                        label={fontLanguage.map[0].mark.finish}
-                        backgroundColor={
-                          showSelectedObservation.id <= 0
-                            ? Colors.primaryLigth
-                            : Colors.secondaryBackground
-                        }
-                      />
-                    </View>
-                  ) : (
-                    <View
-                      style={{
-                        width: '70%',
-                        marginHorizontal: RFPercentage(1),
-                        marginBottom: '5%',
-                      }}>
-                      <CustomButton
-                        disabled={false}
-                        onPress={() => onSaveObservation()}
-                        label={fontLanguage.map[0].mark.finish}
-                        backgroundColor={
-                          showSelectedObservation.id <= 0
-                            ? Colors.primaryLigth
-                            : Colors.secondaryBackground
-                        }
-                      />
-                    </View>
-                  )}
+                    </ScrollView>
+                  </>
+                )}
+                {/* modales */}
+                <View>
+                  <InfoModalMap
+                    visible={infoModal}
+                    hideModal={hideModalInfo}
+                    onPress={hideModalInfo}
+                    size={RFPercentage(4)}
+                    color={Colors.primaryLigth}
+                    label={fontLanguage.map[0].modal.info_label}
+                    subLabel={fontLanguage.map[0].modal.info_sublabel}
+                    subLabel2={fontLanguage.map[0].modal.info_sublabel2}
+                    isChecked={start}
+                    onPressDontShowAgain={() => {
+                      onSetDontShowAgain();
+                    }}
+                    helper={false}
+                  />
+                  <DeleteModal
+                    visible={wantDelete}
+                    hideModal={hideModalDelete}
+                    onPress={() => {
+                      onDeleteObservation();
+                      hideModalDelete();
+                    }}
+                    label={fontLanguage.map[0].modal.delete_label}
+                  />
                 </View>
-              </ScrollView>
-            </>
-          )}
-          {/* modales */}
-          <View>
-            <InfoModalMap
-              visible={infoModal}
-              hideModal={hideModalInfo}
-              onPress={hideModalInfo}
-              size={RFPercentage(4)}
-              color={Colors.primaryLigth}
-              label={fontLanguage.map[0].modal.info_label}
-              subLabel={fontLanguage.map[0].modal.info_sublabel}
-              subLabel2={fontLanguage.map[0].modal.info_sublabel2}
-              isChecked={start}
-              onPressDontShowAgain={() => {
-                onSetDontShowAgain();
-              }}
-              helper={false}
-            />
-            <DeleteModal
-              visible={wantDelete}
-              hideModal={hideModalDelete}
-              onPress={() => {
-                onDeleteObservation();
-                hideModalDelete();
-              }}
-              label={fontLanguage.map[0].modal.delete_label}
-            />
-          </View>
-          {/* <View>
+                {/* <View>
             <SaveProyectModal
               visible={errorValidate}
               hideModal={hideModalCValidate}
@@ -1791,12 +1799,59 @@ export const ParticipateMap = ({navigation, route}: Props) => {
               helper={false}
             />
           </View> */}
-          <Toast position="bottom" />
-          <Spinner visible={waitingData} />
+                <Toast position="bottom" />
+                <Spinner visible={waitingData} />
+              </>
+            ) : (
+              <>
+                <Spinner visible={true} />
+              </>
+            )}
+          </>
         </>
       ) : (
         <>
-          <Spinner visible={true} />
+          {!loading ? (
+            <LoadingScreen />
+          ) : (
+            <>
+              <View
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  flex: 1,
+                }}>
+                <Text
+                  style={{
+                    color: Colors.textColorPrimary,
+                    marginBottom: RFPercentage(3),
+                  }}>
+                  {fontLanguage.map[0].enable_gps}
+                </Text>
+                <TouchableOpacity
+                  style={{
+                    minWidth: RFPercentage(8),
+                    marginBottom: RFPercentage(2),
+                    marginTop: RFPercentage(2),
+                    backgroundColor: 'white',
+                    padding: RFPercentage(1),
+                    borderRadius: 10,
+                    paddingVertical: '5%',
+                    shadowColor: '#000',
+                    shadowOffset: {
+                      width: 0,
+                      height: 0.1,
+                    },
+                    shadowOpacity: 0.2,
+                    shadowRadius: 1.41,
+                    elevation: 5,
+                  }}
+                  onPress={getCurrentLocation}>
+                  <Text>{fontLanguage.map[0].recharge_screen}</Text>
+                </TouchableOpacity>
+              </View>
+            </>
+          )}
         </>
       )}
     </>

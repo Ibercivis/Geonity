@@ -874,6 +874,7 @@ export const CreateProject = ({navigation, route}: Props) => {
         correct = false;
       }
     });
+    console.log(JSON.stringify(updatedQuestions, null, 2))
     try {
       const userInfo = await citmapApi.get<User>(
         '/users/authentication/user/',
@@ -930,7 +931,7 @@ export const CreateProject = ({navigation, route}: Props) => {
       if (imagesCharged.length > 0 && !imageBlob) {
         formData.append('cover', imagesCharged[0]);
       }
-      // fieldFormData.append('field_form', JSON.stringify(updatedForm.field_form));
+      // formData.append('field_form', JSON.stringify(updatedForm.field_form));
       console.log(JSON.stringify(formData, null, 2));
       if (correct) {
         const editedProject = await citmapApi.patch(
@@ -1003,11 +1004,11 @@ export const CreateProject = ({navigation, route}: Props) => {
     } catch (error: any) {
       if (error.response) {
         // El servidor respondió con un estado de error (por ejemplo, 4xx, 5xx)
-        console.error('Error de respuesta del servidor:', error.response.data);
-        console.error(
-          'Estado de respuesta del servidor:',
-          error.response.status,
-        );
+        // console.error('Error de respuesta del servidor:', error.response.data);
+        // console.error(
+        //   'Estado de respuesta del servidor:',
+        //   error.response.status,
+        // );
         Toast.show({
           type: 'error',
           text1: 'Error',
