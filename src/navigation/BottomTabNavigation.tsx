@@ -219,7 +219,7 @@ export const BottomTabNavigation = () => {
         tabBar={({state, descriptors, navigation}) => (
           // <View style={styles.tabBarContainer}>
             <LinearGradient
-                  colors={['transparent', '#fff','#fff' ]}
+                  colors={['transparent','#fff' ]}
                   style={styles.tabBarContainer}
                   start={{x: 0, y: 0}}
                   end={{x: 0, y: 1}}
