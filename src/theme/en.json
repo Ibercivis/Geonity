@@ -282,6 +282,9 @@
         "without_description": "No description available",
         "edit_profile": "Edit profile",
         "delete_user": "Delete user",
+        "reset_pass": "Reset password",
+        "reset_pass_toast": "Recovery email sent",
+        "reset_pass_description": "If you wish to reset your password, please press the button below, and you will receive an email with instructions on how to reset it.",
         "delete_modal_label": "Do you want to delete the user?",
         "delete_modal_sublabel": "Once deleted, it cannot be recovered",
         "user_deleted_success": "User deleted"

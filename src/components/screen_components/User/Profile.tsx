@@ -159,7 +159,7 @@ export const Profile = ({navigation}: Props) => {
 
   const [selectedCountry, setSelectedCountry] = useState([]);
 
-  const {signOut} = useContext(AuthContext);
+  const {signOut, recoveryPass} = useContext(AuthContext);
 
   const [passModal, setPassModal] = useState(false);
   const showModalPass = () => setPassModal(true);
@@ -1524,6 +1524,14 @@ export const Profile = ({navigation}: Props) => {
     }
   };
 
+  const recoveryPassMethod = () => {
+    recoveryPass(user.email)
+    Toast.show({
+      type: 'success',
+      text1: fontLanguage.profile[0].reset_pass_toast,
+    });
+  }
+
   //#endregion
 
   // if (!isAllCharged) {
@@ -1760,6 +1768,38 @@ export const Profile = ({navigation}: Props) => {
                       /{MAX_CHARACTERS}
                     </Text>
                   </View>
+                </View>
+
+                {/* cambiar contraseña */}
+                <View
+                  style={{
+                    // backgroundColor: 'yellow',
+                    width: '80%',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginVertical: RFPercentage(1),
+                  }}>
+                  <Text
+                    style={{
+                      color: 'black',
+                      fontFamily: FontFamily.NotoSansDisplayLight,
+                      fontSize: FontSize.fontSizeText13,
+                    }}>
+                    {fontLanguage.profile[0].reset_pass_description}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    width: '80%',
+                    marginHorizontal: RFPercentage(1),
+                    marginBottom: '5%',
+                  }}>
+                  <CustomButton
+                    onPress={() => recoveryPassMethod()}
+                    label={fontLanguage.profile[0].reset_pass}
+                    backgroundColor={Colors.contentQuaternaryLight}
+                  />
                 </View>
 
                 {/* email */}
@@ -2016,7 +2056,7 @@ export const Profile = ({navigation}: Props) => {
 
                 <View
                   style={{
-                    width: '70%',
+                    width: '80%',
                     marginHorizontal: RFPercentage(1),
                     marginBottom: '5%',
                   }}>
