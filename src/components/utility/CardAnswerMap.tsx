@@ -144,14 +144,9 @@ export const CardAnswerMap = ({
         break;
       case 2:
         setImageTypeNumber(2);
-        const options = {
-          mediaType: 'photo',
-          includeBase64: false,
-          maxHeight: 2000,
-          maxWidth: 2000,
-        };
-
-        launchCamera(
+        
+          setTimeout(() => {
+            launchCamera(
           {
             mediaType: 'photo',
             includeBase64: true,
@@ -191,6 +186,8 @@ export const CardAnswerMap = ({
             }
           },
         );
+          }, 200);
+        
         break;
       case 3: //openCamera
         ImagePicker.openCamera({
@@ -352,6 +349,7 @@ export const CardAnswerMap = ({
                             : FontFamily.NotoSansDisplayRegular,
                         },
                       ]}
+                      textColor='#000000'
                       multiline={true}
                       contentStyle={{bottom: heightPercentageToDP(-0.4)}}
                       placeholder={
@@ -450,9 +448,10 @@ export const CardAnswerMap = ({
                             : FontFamily.NotoSansDisplayRegular,
                         },
                       ]}
+                      textColor='#000000'
                       multiline={true}
                       contentStyle={{bottom: heightPercentageToDP(-0.4)}}
-                      keyboardType="number-pad"
+                      keyboardType="decimal-pad"
                       placeholder={
                         value || fontLanguage.map[0].cards.number_answer
                       }
