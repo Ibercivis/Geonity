@@ -282,6 +282,9 @@
         "without_description": "No hay ninguna descripción",
         "edit_profile": "Editar perfil",
         "delete_user": "Borrar usuario",
+        "reset_pass": "Cambiar contraseña",
+        "reset_pass_toast": "Correo de recuperación enviado",
+        "reset_pass_description": "Si desea reestablecer la contraseña, pulse el boton que hay a continuación y se le enviará un correo electrónico con las instrucciones a seguir para reestablecerla.",
         "delete_modal_label": "¿Desea borrar el usuario?",
         "delete_modal_sublabel": "Una vez borrada no podrá recuperarse",
         "user_deleted_success": "Usuario borrado"

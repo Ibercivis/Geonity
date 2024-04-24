@@ -10,6 +10,7 @@ import {
   Platform,
   Alert,
   Share,
+  Linking,
 } from 'react-native';
 import {Text} from 'react-native-paper';
 import {RFPercentage} from 'react-native-responsive-fontsize';
@@ -171,26 +172,65 @@ export const ProjectPage = (props: Props) => {
    * Metodo para compartir, en message pones lo que quieres compartir
    */
   const onShare = async () => {
+    // try {
+    //   const result = await Share.share({
+    //     message:
+    //       'https://play.google.com/store/apps/details?id=com.reactnativeplantilla',
+    //     title: 'Compartir el proyecto con:',
+    //     url: 'https://play.google.com/store/apps/details?id=com.reactnativeplantilla',
+    //   });
+    //   console.log(result);
+    //   if (result.action === Share.sharedAction) {
+    //     if (result.activityType) {
+    //       // shared with activity type of result.activityType
+    //       console.log(result.activityType);
+    //     } else {
+    //       // shared
+    //     }
+    //   } else if (result.action === Share.dismissedAction) {
+    //     // dismissed
+    //   }
+    // } catch (error: any) {}
+
     try {
+      const deepLink = 'tu_ruta_de_enlace_profundo'; // Reemplaza con tu enlace profundo
       const result = await Share.share({
-        message:
-          'https://play.google.com/store/apps/details?id=com.reactnativeplantilla',
+        message: deepLink,
         title: 'Compartir el proyecto con:',
-        url: 'https://play.google.com/store/apps/details?id=com.reactnativeplantilla',
       });
+  
       console.log(result);
+  
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
-          // shared with activity type of result.activityType
+          // Compartido con el tipo de actividad result.activityType
           console.log(result.activityType);
         } else {
-          // shared
+          // Compartido
         }
       } else if (result.action === Share.dismissedAction) {
-        // dismissed
+        // Descartado
       }
-    } catch (error: any) {}
+    } catch (error: any) {
+      console.error('Error al compartir:', error);
+    }
   };
+
+  // Función para abrir el enlace profundo en la aplicación o en la tienda de aplicaciones
+const openDeepLink = async (deepLink: string) => {
+  try {
+    const supported = await Linking.canOpenURL(deepLink);
+    if (supported) {
+      await Linking.openURL(deepLink);
+    } else {
+      // Si el enlace profundo no es compatible, abre la tienda de aplicaciones
+      const storeLink = 'https://play.google.com/store/apps/details?id=com.reactnativeplantilla';
+      await Linking.openURL(storeLink);
+    }
+  } catch (error) {
+    console.error('Error al abrir el enlace profundo:', error);
+  }
+};
 
   /**
    * Metodo para descargar el proyecto

@@ -142,7 +142,7 @@ export const CardAnswerMap = ({
             showModal(true);
           });
         break;
-      case 2:
+      case 2: //open camera
         setImageTypeNumber(2);
         
           setTimeout(() => {
@@ -830,7 +830,7 @@ export const CardAnswerMap = ({
                     <TouchableOpacity
                       activeOpacity={0.9}
                       style={{...stylesModal.button}}
-                      onPress={() => selectImage(2)}>
+                      onPress={() => selectImage(3)}>
                       <Text style={stylesModal.textButton}>
                         {fontLanguage.map[0].cards.camera}
                       </Text>
