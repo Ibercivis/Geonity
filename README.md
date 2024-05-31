@@ -132,6 +132,7 @@ get ViewPropTypes(): $FlowFixMe {
 
 ```
 
+<!--
 ## Login Android
 ```bash
 # datos
@@ -140,6 +141,7 @@ get ViewPropTypes(): $FlowFixMe {
 - webClient ID 0Auth: 235777853257-rnbdsrqchtl76jq0givh1h6l7u47rs4k.apps.googleusercontent.com
 - secret: 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
 ```
+-->
 
 ## Crear APP
 
