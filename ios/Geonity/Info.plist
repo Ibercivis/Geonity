@@ -42,7 +42,7 @@
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Se necesita saber tu ubicación para mostrar el mapa</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>Esta aplicación necesita acceso a tu ubicación mientras está en uso para proporcionarte funcionalidades relacionadas con la ubicación.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Se requiere el uso de la galería para poder seleccionar fotografías en algunas observaciones</string>
 	<key>UIAppFonts</key>

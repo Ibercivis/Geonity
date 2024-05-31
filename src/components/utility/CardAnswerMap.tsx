@@ -105,6 +105,7 @@ export const CardAnswerMap = ({
     switch (type) {
       case 1: //openPicker
         setImageTypeNumber(1);
+        setTimeout(() => {
         ImagePicker.openPicker({
           mediaType: 'photo',
           multiple: false,
@@ -141,6 +142,7 @@ export const CardAnswerMap = ({
             setImages(null);
             showModal(true);
           });
+        }, 200);
         break;
       case 2: //open camera
         setImageTypeNumber(2);
@@ -830,7 +832,7 @@ export const CardAnswerMap = ({
                     <TouchableOpacity
                       activeOpacity={0.9}
                       style={{...stylesModal.button}}
-                      onPress={() => selectImage(3)}>
+                      onPress={() => selectImage(2)}>
                       <Text style={stylesModal.textButton}>
                         {fontLanguage.map[0].cards.camera}
                       </Text>
