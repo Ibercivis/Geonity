@@ -1,94 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-	<dict>
-		<key>CFBundleDevelopmentRegion</key>
-		<string>en</string>
-		<key>CFBundleDisplayName</key>
-		<string>Geonity</string>
-		<key>CFBundleExecutable</key>
-		<string>$(EXECUTABLE_NAME)</string>
-		<key>CFBundleIdentifier</key>
-		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-		<key>CFBundleInfoDictionaryVersion</key>
-		<string>6.0</string>
-		<key>CFBundleName</key>
-		<string>$(PRODUCT_NAME)</string>
-		<key>CFBundlePackageType</key>
-		<string>APPL</string>
-		<key>CFBundleShortVersionString</key>
-		<string>$(MARKETING_VERSION)</string>
-		<key>CFBundleSignature</key>
-		<string>????</string>
-		<key>CFBundleVersion</key>
-		<string>$(CURRENT_PROJECT_VERSION)</string>
-		<key>LSRequiresIPhoneOS</key>
-		<true/>
-		<key>NSAppTransportSecurity</key>
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleDisplayName</key>
+	<string>Geonity</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
 		<dict>
-			<key>NSAllowsArbitraryLoads</key>
-			<false/>
-			<key>NSAllowsLocalNetworking</key>
-			<true/>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>geonity-ios</string>
+			</array>
 		</dict>
-		<key>NSAppleMusicUsageDescription</key>
-		<string>Se necesita acceso al sistema de archivos para guardar archivos descargados en la aplicación.</string>
-		<key>NSCameraUsageDescription</key>
-		<string>Se requiere el uso de la camara para poder tomar fotografías en algunas observaciones</string>
-		<key>NSFileUsageDescription</key>
-		<string>Se necesita acceso al sistema de archivos para guardar archivos descargados en la aplicación.</string>
-		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-		<string>Se necesita saber tu ubicación para mostrar el mapa</string>
-		<key>NSLocationAlwaysUsageDescription</key>
-		<string>Se necesita saber tu ubicación para mostrar el mapa</string>
-		<key>NSLocationWhenInUseUsageDescription</key>
-		<string>Esta aplicación necesita acceso a tu ubicación mientras está en uso para proporcionarte funcionalidades relacionadas con la ubicación.</string>
-		<key>NSPhotoLibraryUsageDescription</key>
-		<string>Se requiere el uso de la galería para poder seleccionar fotografías en algunas observaciones</string>
-		<key>UIAppFonts</key>
-		<array>
-			<string>AntDesign.ttf</string>
-			<string>Entypo.ttf</string>
-			<string>EvilIcons.ttf</string>
-			<string>Feather.ttf</string>
-			<string>FontAwesome.ttf</string>
-			<string>FontAwesome5_Brands.ttf</string>
-			<string>FontAwesome5_Regular.ttf</string>
-			<string>FontAwesome5_Solid.ttf</string>
-			<string>FontAwesome6_Brands.ttf</string>
-			<string>FontAwesome6_Regular.ttf</string>
-			<string>FontAwesome6_Solid.ttf</string>
-			<string>Foundation.ttf</string>
-			<string>Ionicons.ttf</string>
-			<string>MaterialIcons.ttf</string>
-			<string>MaterialCommunityIcons.ttf</string>
-			<string>SimpleLineIcons.ttf</string>
-			<string>Octicons.ttf</string>
-			<string>Zocial.ttf</string>
-			<string>Fontisto.ttf</string>
-		</array>
-		<key>UILaunchStoryboardName</key>
-		<string>Launch Screen.storyboard</string>
-		<key>UIRequiredDeviceCapabilities</key>
-		<array>
-			<string>armv7</string>
-		</array>
-		<key>UISupportedInterfaceOrientations</key>
-		<array>
-			<string>UIInterfaceOrientationPortrait</string>
-			<string>UIInterfaceOrientationLandscapeLeft</string>
-			<string>UIInterfaceOrientationLandscapeRight</string>
-		</array>
-		<key>UIViewControllerBasedStatusBarAppearance</key>
+	</array>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
 		<false/>
-		<key>CFBundleURLTypes</key>
-		<array>
-			<dict>
-				<key>CFBundleURLSchemes</key>
-				<array>
-					<string>geonity-ios</string>
-				</array>
-			</dict>
-		</array>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
 	</dict>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Se necesita acceso al sistema de archivos para guardar archivos descargados en la aplicación.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Se requiere el uso de la camara para poder tomar fotografías en algunas observaciones</string>
+	<key>NSFileUsageDescription</key>
+	<string>Se necesita acceso al sistema de archivos para guardar archivos descargados en la aplicación.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Se necesita saber tu ubicación para mostrar el mapa</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Se necesita saber tu ubicación para mostrar el mapa</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Esta aplicación necesita acceso a tu ubicación mientras está en uso para proporcionarte funcionalidades relacionadas con la ubicación.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Se requiere el uso de la galería para poder seleccionar fotografías en algunas observaciones</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>AntDesign.ttf</string>
+		<string>Entypo.ttf</string>
+		<string>EvilIcons.ttf</string>
+		<string>Feather.ttf</string>
+		<string>FontAwesome.ttf</string>
+		<string>FontAwesome5_Brands.ttf</string>
+		<string>FontAwesome5_Regular.ttf</string>
+		<string>FontAwesome5_Solid.ttf</string>
+		<string>FontAwesome6_Brands.ttf</string>
+		<string>FontAwesome6_Regular.ttf</string>
+		<string>FontAwesome6_Solid.ttf</string>
+		<string>Foundation.ttf</string>
+		<string>Ionicons.ttf</string>
+		<string>MaterialIcons.ttf</string>
+		<string>MaterialCommunityIcons.ttf</string>
+		<string>SimpleLineIcons.ttf</string>
+		<string>Octicons.ttf</string>
+		<string>Zocial.ttf</string>
+		<string>Fontisto.ttf</string>
+	</array>
+	<key>UILaunchStoryboardName</key>
+	<string>Launch Screen.storyboard</string>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>armv7</string>
+	</array>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
+</dict>
 </plist>

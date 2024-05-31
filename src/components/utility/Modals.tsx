@@ -41,6 +41,8 @@ import {useLanguage} from '../../hooks/useLanguage';
 import PagerView from 'react-native-pager-view';
 import Dots from 'react-native-dots-pagination';
 import Svg, {Circle, Path} from 'react-native-svg';
+import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import {Platform} from 'react-native';
 
 interface Props {
   label?: string;
@@ -1313,7 +1315,7 @@ export const GuideModal = ({
   //sacar cada pantalla a un switch para que funcionen los dots
   //el skip estará el mismo en todos
   const [currentIndex, setCurrentIndex] = useState(0);
-
+  const insets = useSafeAreaInsets();
   const onPageSelected = (event: any) => {
     setCurrentIndex(event.nativeEvent.position);
   };
@@ -1321,7 +1323,7 @@ export const GuideModal = ({
     <Provider>
       <Portal>
         <Modal visible={visible} transparent>
-          <View style={stylesGuide.modalContainer}>
+          <SafeAreaView style={stylesGuide.modalContainer}>
             <PagerView
               style={stylesGuide.pagerView}
               initialPage={0}
@@ -1458,10 +1460,16 @@ export const GuideModal = ({
 
             <TouchableOpacity
               onPress={hideModal}
-              style={stylesGuide.closeButton}>
+              style={{
+                ...stylesGuide.closeButton,
+                top:
+                  Platform.OS === 'ios'
+                    ? insets.top + heightPercentageToDP(2)
+                    : heightPercentageToDP(3),
+              }}>
               <Text style={stylesGuide.closeButtonText}>Skip</Text>
             </TouchableOpacity>
-          </View>
+          </SafeAreaView>
         </Modal>
       </Portal>
     </Provider>
@@ -1482,7 +1490,7 @@ export const ProyectGuideModal = ({
   //sacar cada pantalla a un switch para que funcionen los dots
   //el skip estará el mismo en todos
   const [currentIndex, setCurrentIndex] = useState(0);
-
+  const insets = useSafeAreaInsets();
   const onPageSelected = (event: any) => {
     setCurrentIndex(event.nativeEvent.position);
   };
@@ -1519,20 +1527,25 @@ export const ProyectGuideModal = ({
                 <Text style={stylesGuide.slideTextTitle}>
                   {fontLanguage.modals[0].guide_proyect.title}
                 </Text>
-                <Text style={{width: '90%', justifyContent:'center', textAlign:'center'}}>
-                  <Text style={{color: Colors.primaryDark, fontWeight:'bold'}}>
+                <Text
+                  style={{
+                    width: '90%',
+                    justifyContent: 'center',
+                    textAlign: 'center',
+                  }}>
+                  <Text style={{color: Colors.primaryDark, fontWeight: 'bold'}}>
                     01{' '}
                     <Text style={stylesGuide.slideText}>
                       {fontLanguage.modals[0].guide_proyect.subtitle_01}
                     </Text>
                   </Text>
-                  <Text style={{color: Colors.primaryDark, fontWeight:'bold'}}>
+                  <Text style={{color: Colors.primaryDark, fontWeight: 'bold'}}>
                     02{' '}
                     <Text style={stylesGuide.slideText}>
                       {fontLanguage.modals[0].guide_proyect.subtitle_02}
                     </Text>
                   </Text>
-                  <Text style={{color: Colors.primaryDark, fontWeight:'bold'}}>
+                  <Text style={{color: Colors.primaryDark, fontWeight: 'bold'}}>
                     03
                     <Text style={stylesGuide.slideText}>
                       {fontLanguage.modals[0].guide_proyect.subtitle_03}
@@ -1565,15 +1578,20 @@ export const ProyectGuideModal = ({
                 <Text style={stylesGuide.slideTextTitle}>
                   {fontLanguage.modals[0].guide_proyect.title2}
                 </Text>
-                
-                <Text style={{width: '90%', justifyContent:'center', textAlign:'center'}}>
-                  <Text style={{color: Colors.primaryDark, fontWeight:'bold'}}>
-                    01 
+
+                <Text
+                  style={{
+                    width: '90%',
+                    justifyContent: 'center',
+                    textAlign: 'center',
+                  }}>
+                  <Text style={{color: Colors.primaryDark, fontWeight: 'bold'}}>
+                    01
                     <Text style={stylesGuide.slideText}>
                       {fontLanguage.modals[0].guide_proyect.subtitle2_01}
                     </Text>
                   </Text>
-                  <Text style={{color: Colors.primaryDark, fontWeight:'bold'}}>
+                  <Text style={{color: Colors.primaryDark, fontWeight: 'bold'}}>
                     02
                     <Text style={stylesGuide.slideText}>
                       {fontLanguage.modals[0].guide_proyect.subtitle2_02}
@@ -1635,22 +1653,27 @@ export const ProyectGuideModal = ({
                 <Text style={stylesGuide.slideTextTitle}>
                   {fontLanguage.modals[0].guide_proyect.title4}
                 </Text>
-                <Text style={{width: '90%', justifyContent:'center', textAlign:'center'}}>
-                  <Text style={{color: Colors.primaryDark, fontWeight:'bold'}}>
+                <Text
+                  style={{
+                    width: '90%',
+                    justifyContent: 'center',
+                    textAlign: 'center',
+                  }}>
+                  <Text style={{color: Colors.primaryDark, fontWeight: 'bold'}}>
                     01
                     <Text style={stylesGuide.slideText}>
                       {fontLanguage.modals[0].guide_proyect.subtitle4_01}
                     </Text>
                   </Text>
 
-                  <Text style={{color: Colors.primaryDark, fontWeight:'bold'}}>
+                  <Text style={{color: Colors.primaryDark, fontWeight: 'bold'}}>
                     02
                     <Text style={stylesGuide.slideText}>
                       {fontLanguage.modals[0].guide_proyect.subtitle4_02}
                     </Text>
                   </Text>
 
-                  <Text style={{color: Colors.primaryDark, fontWeight:'bold'}}>
+                  <Text style={{color: Colors.primaryDark, fontWeight: 'bold'}}>
                     03
                     <Text style={stylesGuide.slideText}>
                       {fontLanguage.modals[0].guide_proyect.subtitle4_03}
@@ -1673,7 +1696,13 @@ export const ProyectGuideModal = ({
 
             <TouchableOpacity
               onPress={hideModal}
-              style={stylesGuide.closeButton}>
+              style={{
+                ...stylesGuide.closeButton,
+                top:
+                  Platform.OS === 'ios'
+                    ? insets.top + heightPercentageToDP(2)
+                    : heightPercentageToDP(3),
+              }}>
               <Text style={stylesGuide.closeButtonText}>Skip</Text>
             </TouchableOpacity>
           </View>
@@ -1697,7 +1726,7 @@ export const OrganizationGuideModal = ({
   //sacar cada pantalla a un switch para que funcionen los dots
   //el skip estará el mismo en todos
   const [currentIndex, setCurrentIndex] = useState(0);
-
+  const insets = useSafeAreaInsets();
   const onPageSelected = (event: any) => {
     setCurrentIndex(event.nativeEvent.position);
   };
@@ -1734,20 +1763,28 @@ export const OrganizationGuideModal = ({
                 <Text style={stylesGuide.slideTextTitle}>
                   {fontLanguage.modals[0].guide_proyect.title}
                 </Text>
-                <Text style={{width: '90%', justifyContent:'center', textAlign:'center'}}>
+                <Text
+                  style={{
+                    width: '90%',
+                    justifyContent: 'center',
+                    textAlign: 'center',
+                  }}>
                   <Text style={stylesGuide.slideText}>
-                  {fontLanguage.modals[0].guide_organization.subtitle}
+                    {fontLanguage.modals[0].guide_organization.subtitle}
+                  </Text>
+                  <Text style={{color: Colors.primaryDark, fontWeight: 'bold'}}>
+                    01
+                  </Text>
+                  <Text style={stylesGuide.slideText}>
+                    {fontLanguage.modals[0].guide_organization.subtitle_01}
+                  </Text>
+                  <Text style={{color: Colors.primaryDark, fontWeight: 'bold'}}>
+                    02
+                  </Text>
+                  <Text style={stylesGuide.slideText}>
+                    {fontLanguage.modals[0].guide_organization.subtitle_02}
+                  </Text>
                 </Text>
-                <Text style={{color: Colors.primaryDark, fontWeight:'bold'}}>01</Text>
-                <Text style={stylesGuide.slideText}>
-                  {fontLanguage.modals[0].guide_organization.subtitle_01}
-                </Text>
-                <Text style={{color: Colors.primaryDark, fontWeight:'bold'}}>02</Text>
-                <Text style={stylesGuide.slideText}>
-                  {fontLanguage.modals[0].guide_organization.subtitle_02}
-                </Text>
-                </Text>
-                
               </View>
               <View key="2" style={stylesGuide.slide}>
                 <View style={stylesGuide.background}>
@@ -1824,7 +1861,13 @@ export const OrganizationGuideModal = ({
 
             <TouchableOpacity
               onPress={hideModal}
-              style={stylesGuide.closeButton}>
+              style={{
+                ...stylesGuide.closeButton,
+                top:
+                  Platform.OS === 'ios'
+                    ? insets.top + heightPercentageToDP(2)
+                    : heightPercentageToDP(3),
+              }}>
               <Text style={stylesGuide.closeButtonText}>Skip</Text>
             </TouchableOpacity>
           </View>
@@ -1922,7 +1965,7 @@ const stylesGuide = StyleSheet.create({
     textAlign: 'center',
     padding: '5%',
     color: 'black',
-    fontWeight:'normal'
+    fontWeight: 'normal',
     // backgroundColor: 'green',
   },
   slideTextTitle: {

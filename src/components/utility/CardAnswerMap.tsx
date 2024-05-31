@@ -497,7 +497,6 @@ export const CardAnswerMap = ({
                       multiline={true}
                       contentStyle={{bottom: heightPercentageToDP(-0.4)}}
                       keyboardType="decimal-pad"
-                      keyboardType="decimal-pad"
                       placeholder={
                         value || fontLanguage.map[0].cards.number_answer
                       }
