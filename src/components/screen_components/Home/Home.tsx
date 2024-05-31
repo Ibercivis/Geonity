@@ -72,19 +72,19 @@ export const Home = ({navigation}: Props) => {
   const RETRY_DELAY_MS = 1000;
   const [loading, setLoading] = useState(false);
   const [categoryList, setCategoryList] = useState<Topic[]>([]); //clonar para que la que se muestre solo tenga X registros siendo la ultima el +
-  const [categoriesSelected, setCategoriesSelected] = useState<Topic[]>([]);// almacena la categoría seleccionada
-  const [newProjectList, setNewProjectList] = useState<ShowProject[]>([]); // partir la lista en 2
+  const [categoriesSelected, setCategoriesSelected] = useState<Topic[]>([]); // almacena la categoría seleccionada
+  const [newProjectList, setNewProjectList] = useState<ShowProject[]>([]); // listado de nuevos proyectos
   const [newProjectListSliced, setNewProjectListSliced] = useState<
     ShowProject[]
-  >([]); // partir la lista en 2
-
-  //listado de proyectos que puedan interesar
-  const [importantProjectList, setImportantProjectList] = useState<
-    ShowProject[]
-  >([]);
+  >([]); // listado de proyectos destacados
   const [interestingProjectList, setInterestingProjectList] = useState<
-    number[]
-  >([1, 2, 3, 4, 5, 6, 7, 8]);
+    ShowProject[]
+  >([]); // listado de proyectos que te puedan interesar
+
+  
+  const [searchProyectList, setSearchProyectList] = useState<
+    ShowProject[]
+  >([]);//listado de proyectos en onsearch
 
   //listado de organizaciones
   const [organizationList, setOrganizationList] = useState<Organization[]>([]);
@@ -287,7 +287,7 @@ export const Home = ({navigation}: Props) => {
         ),
       );
       setOnSearch(true);
-      setImportantProjectList(filtered);
+      setSearchProyectList(filtered);
     }
   };
 
@@ -301,7 +301,7 @@ export const Home = ({navigation}: Props) => {
       const filtered = newProjectList.filter(x =>
         x.name.toLocaleLowerCase().includes(value.toLocaleLowerCase()),
       );
-      setImportantProjectList(filtered);
+      setSearchProyectList(filtered);
     } else {
       onChange('', 'searchText');
       setOnSearch(false);
@@ -332,7 +332,7 @@ export const Home = ({navigation}: Props) => {
   /**
    * separa la lista en el numero de columnas
    * @param data proyectos
-   * @param columns numero de columnas 
+   * @param columns numero de columnas
    * @returns devuelve la lista separada
    */
   const splitDataIntoRows = (data: ShowProject[], columns: number) => {
@@ -344,16 +344,116 @@ export const Home = ({navigation}: Props) => {
   };
 
   /**
-   * separa la lista en el numero de columnas para llenar el listado de nuevos proyectos
+   * separa la lista en el numero de columnas para llenar el listado de nuevos proyectos y ordena segun fecha creación
    * @param list proyectos
    * @param chunkSize numero por el que separar
    */
   const chunkArray = (list: ShowProject[], chunkSize: number) => {
-    if (list.length > 5) {
-      setNewProjectListSliced(list.slice(0, chunkSize));
+    // Hacer una copia de la lista antes de ordenar por created_at
+    const sortedList = [...list].sort((a, b) => {
+      if (!a.created_at || !b.created_at) return 0; // Manejar casos donde created_at puede ser undefined
+      return (
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+    });
+
+    // Hacer una copia de la lista antes de ordenar por contributions
+    const sortedListbycontributions = [...list].sort((a, b) => {
+      if (a.contributions === undefined || b.contributions === undefined) return 0; // Manejar casos donde contributions puede ser undefined
+      return (b.contributions || 0) - (a.contributions || 0);
+    });
+
+    setNewProjectList(sortedListbycontributions);
+
+    if (sortedList.length > 5) {
+      setNewProjectListSliced(sortedList.slice(0, chunkSize));
     } else {
-      setNewProjectListSliced(list);
+      setNewProjectListSliced(sortedList);
     }
+
+    //ahora aquí se recorre el proyecto para ver si se le ha dado like
+    //si se le ha dado like, se guarda el topic
+    //se hace otra ordenación de listado en base a si tienen ese topic o no
+    const sortedListbyTags = [...list];
+
+    //primero se filtran para ver si le has dado like o no
+    const bytagFiltered = sortedListbyTags.filter(
+      tags => tags.is_liked_by_user,
+    );
+    // Extraer los arrays de números de cada topic
+    const topicArrays = bytagFiltered.map(topic => topic.topic);
+
+    // Encontrar los números en común
+    const commonNumbers = findCommonNumbers(topicArrays);
+    let uniqueNumbers: number[] = [];
+
+    // Si no hay números en común, encontrar todos los números únicos
+    if (commonNumbers.length === 0) {
+      uniqueNumbers = findAllUniqueNumbers(topicArrays);
+      const compareByuniqueNumbers = (
+        a: ShowProject,
+        b: ShowProject,
+      ): number => {
+        const countuniqueNumbers = (topic: number[]): number => {
+          return topic.filter(num => uniqueNumbers.includes(num)).length;
+        };
+
+        const countA = countuniqueNumbers(a.topic);
+        const countB = countuniqueNumbers(b.topic);
+
+        // Ordenar en base a la cantidad de números comunes
+        if (countA !== countB) {
+          return countB - countA; // Orden descendente por cantidad de números comunes
+        }
+
+        // Si tienen la misma cantidad de números comunes, mantener el orden original
+        return sortedListbyTags.indexOf(a) - sortedListbyTags.indexOf(b);
+      };
+
+      // Ordenar sortedListbyTags usando la función de comparación personalizada
+      const sortedListinteresting = sortedListbyTags.sort(
+        compareByuniqueNumbers,
+      );
+      setInterestingProjectList(sortedListinteresting);
+    } else {
+      const compareByCommonNumbers = (
+        a: ShowProject,
+        b: ShowProject,
+      ): number => {
+        const countCommonNumbers = (topic: number[]): number => {
+          return topic.filter(num => commonNumbers.includes(num)).length;
+        };
+
+        const countA = countCommonNumbers(a.topic);
+        const countB = countCommonNumbers(b.topic);
+
+        // Ordenar en base a la cantidad de números comunes
+        if (countA !== countB) {
+          return countB - countA; // Orden descendente por cantidad de números comunes
+        }
+
+        // Si tienen la misma cantidad de números comunes, mantener el orden original
+        return sortedListbyTags.indexOf(a) - sortedListbyTags.indexOf(b);
+      };
+
+      // Ordenar sortedListbyTags usando la función de comparación personalizada
+      const sortedListinteresting = sortedListbyTags.sort(
+        compareByCommonNumbers,
+      );
+      setInterestingProjectList(sortedListinteresting);
+    }
+  };
+
+  // Función para encontrar números en común
+  const findCommonNumbers = (arrays: number[][]): number[] => {
+    if (arrays.length === 0) return [];
+    return arrays.reduce((acc, curr) => acc.filter(num => curr.includes(num)));
+  };
+
+  // Función para encontrar todos los números sin duplicados
+  const findAllUniqueNumbers = (arrays: number[][]): number[] => {
+    const allNumbers = arrays.flat();
+    return Array.from(new Set(allNumbers));
   };
 
   //#region ApiCalls
@@ -414,7 +514,7 @@ export const Home = ({navigation}: Props) => {
   };
 
   /**
-   * Obtiene el listado de proyectos 
+   * Obtiene el listado de proyectos
    */
   const projectListApi = async () => {
     let token;
@@ -431,13 +531,13 @@ export const Home = ({navigation}: Props) => {
         },
       });
 
-      setNewProjectList(resp.data);
+      // setNewProjectList(resp.data);
       chunkArray(resp.data, NUM_SLICE_NEW_PROJECT_LIST);
       organizationListApi();
     } catch (err: any) {
       console.log('Error en project list');
       console.log(err.response.data);
-    } 
+    }
   };
 
   /**
@@ -458,8 +558,8 @@ export const Home = ({navigation}: Props) => {
       });
       setOrganizationList(resp.data);
       setLoading(false);
-    } catch(err: any) {
-      console.log(err)
+    } catch (err: any) {
+      console.log(err);
     } finally {
     }
   };
@@ -538,7 +638,7 @@ export const Home = ({navigation}: Props) => {
     showGuestModal();
   };
 
-  // oculta el modal de info de invitado y redirige al loggin 
+  // oculta el modal de info de invitado y redirige al loggin
   const toLogginIfGuest = () => {
     hideGuestModal();
     signOut();
@@ -547,7 +647,7 @@ export const Home = ({navigation}: Props) => {
   //#endregion
 
   /**
-   * 
+   *
    * @returns devuelve un renderizado generico cuando no hay proyectos que mostrar
    */
   const returnRenderNoProyects = () => {
@@ -586,7 +686,7 @@ export const Home = ({navigation}: Props) => {
   };
 
   /**
-   * 
+   *
    * @returns devuelve un renderizado generico cuando no hay organizaciones que mostrar
    */
   const returnRenderNoOrganizations = () => {
@@ -623,7 +723,6 @@ export const Home = ({navigation}: Props) => {
       </>
     );
   };
-
 
   return (
     <>
@@ -800,7 +899,7 @@ export const Home = ({navigation}: Props) => {
                         {fontLanguage.Home[0].new_project}
                       </Text>
                     </View>
-                    {newProjectList.length <= 0 ? (
+                    {newProjectListSliced.length <= 0 ? (
                       returnRenderNoProyects()
                     ) : (
                       <ScrollView
@@ -1053,7 +1152,7 @@ export const Home = ({navigation}: Props) => {
                       </Text>
                     </View>
 
-                    {newProjectList.length <= 0 ? (
+                    {interestingProjectList.length <= 0 ? (
                       returnRenderNoProyects()
                     ) : (
                       <ScrollView
@@ -1064,7 +1163,7 @@ export const Home = ({navigation}: Props) => {
                         horizontal={true}
                         showsHorizontalScrollIndicator={false}
                         nestedScrollEnabled={true}>
-                        {newProjectList.slice(0, 10).map((x, index) => {
+                        {interestingProjectList.slice(0, 10).map((x, index) => {
                           if (
                             newProjectList.length > 5 &&
                             newProjectList.slice(0, 10).length - 1 === index
@@ -1316,7 +1415,7 @@ export const Home = ({navigation}: Props) => {
                     horizontal={false}
                     showsHorizontalScrollIndicator={false}
                     showsVerticalScrollIndicator={false}>
-                    {importantProjectList.map((x, index) => {
+                    {searchProyectList.map((x, index) => {
                       // if (importantProjectList.length - 1 === index) {
                       return (
                         <Card
@@ -1756,7 +1855,7 @@ const HomeStyles = StyleSheet.create({
     height: RFPercentage(75),
     width: '100%',
     zIndex: 200,
-    bottom: 0,
+    bottom: heightPercentageToDP(5),
     alignSelf: 'center',
     // borderTopWidth: 1,
     // borderLeftWidth: 1,
