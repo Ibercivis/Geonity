@@ -8,6 +8,7 @@ import CustomTab from '../components/utility/CustomTab';
 import {
   ImageBackground,
   Modal,
+  Platform,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -219,7 +220,7 @@ export const BottomTabNavigation = () => {
         tabBar={({state, descriptors, navigation}) => (
           // <View style={styles.tabBarContainer}>
             <LinearGradient
-                  colors={['transparent','#fff' ]}
+                  colors={[Platform.OS === 'android' ? 'transparent' : 'white','#fff' ]}
                   style={styles.tabBarContainer}
                   start={{x: 0, y: 0}}
                   end={{x: 0, y: 1}}

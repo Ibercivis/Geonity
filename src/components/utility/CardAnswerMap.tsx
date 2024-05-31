@@ -112,6 +112,7 @@ export const CardAnswerMap = ({
     switch (type) {
       case 1: //openPicker
         setImageTypeNumber(1);
+        setTimeout(() => {
         ImagePicker.openPicker({
           mediaType: 'photo',
           multiple: false,
@@ -148,17 +149,13 @@ export const CardAnswerMap = ({
             setImages(null);
             showModal(true);
           });
+        }, 200);
         break;
       case 2: //open camera
         setImageTypeNumber(2);
-        const options = {
-          mediaType: 'photo',
-          includeBase64: false,
-          maxHeight: 2000,
-          maxWidth: 2000,
-        };
-
-        launchCamera(
+        
+          setTimeout(() => {
+            launchCamera(
           {
             mediaType: 'photo',
             includeBase64: true,
@@ -199,6 +196,8 @@ export const CardAnswerMap = ({
             }
           },
         );
+          }, 200);
+        
         break;
       case 3: //openCamera
         ImagePicker.openCamera({
@@ -395,6 +394,7 @@ export const CardAnswerMap = ({
                             : FontFamily.NotoSansDisplayRegular,
                         },
                       ]}
+                      textColor='#000000'
                       multiline={true}
                       contentStyle={{bottom: heightPercentageToDP(-0.4)}}
                       placeholder={
@@ -493,8 +493,10 @@ export const CardAnswerMap = ({
                             : FontFamily.NotoSansDisplayRegular,
                         },
                       ]}
+                      textColor='#000000'
                       multiline={true}
                       contentStyle={{bottom: heightPercentageToDP(-0.4)}}
+                      keyboardType="decimal-pad"
                       keyboardType="decimal-pad"
                       placeholder={
                         value || fontLanguage.map[0].cards.number_answer
@@ -1003,7 +1005,7 @@ export const CardAnswerMap = ({
                     <TouchableOpacity
                       activeOpacity={0.9}
                       style={{...stylesModal.button}}
-                      onPress={() => selectImage(4)}>
+                      onPress={() => selectImage(3)}>
                       <Text style={stylesModal.textButton}>
                         {fontLanguage.map[0].cards.camera}
                       </Text>

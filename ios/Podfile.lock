@@ -957,7 +957,7 @@ PODS:
     - React-debug
   - react-native-geolocation (3.1.0):
     - React-Core
-  - react-native-image-picker (7.1.0):
+  - react-native-image-picker (7.1.2):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
@@ -1148,12 +1148,12 @@ PODS:
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
-  - RNImageCropPicker (0.40.2):
+  - RNImageCropPicker (0.40.3):
     - React-Core
     - React-RCTImage
-    - RNImageCropPicker/QBImagePickerController (= 0.40.2)
+    - RNImageCropPicker/QBImagePickerController (= 0.40.3)
     - TOCropViewController
-  - RNImageCropPicker/QBImagePickerController (0.40.2):
+  - RNImageCropPicker/QBImagePickerController (0.40.3):
     - React-Core
     - React-RCTImage
     - TOCropViewController
@@ -1491,7 +1491,7 @@ SPEC CHECKSUMS:
   React-logger: e0c1e918d9588a9f39c9bc62d9d6bfe9ca238d9d
   React-Mapbuffer: 9731a0a63ebaf8976014623c4d637744d7353a7c
   react-native-geolocation: ef66fb798d96284c6043f0b16c15d9d1d4955db4
-  react-native-image-picker: 6c51359eca7a7df9f07e297218c25696eb9da976
+  react-native-image-picker: 994a97b28e7f2c2197e21801569bb19f6e494e38
   react-native-pager-view: d81ab2060b9caf57ca8c3a0d57467ff407cdb825
   react-native-safe-area-context: b97eb6f9e3b7f437806c2ce5983f479f8eb5de4b
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
@@ -1520,7 +1520,7 @@ SPEC CHECKSUMS:
   RNCPicker: b18aaf30df596e9b1738e7c1f9ee55402a229dca
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: 61bfdfc05db9b79dd61f894dcd29d3dcc6db3c02
-  RNImageCropPicker: d9616a0cb9b72e8551ff94a7a5021fbd29050aa5
+  RNImageCropPicker: e7ab6fb43d2fc3e84651e786ef4a080d63b0ed3d
   rnmapbox-maps: c5a6bcd941aef23d9a14af7bbae5042e097687b6
   RNPermissions: bf1574f4e7e666f2e44db2fa0e08dbef90c613de
   RNReanimated: 57f436e7aa3d277fbfed05e003230b43428157c0
