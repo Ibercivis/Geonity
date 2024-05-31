@@ -15,15 +15,13 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import {StackScreenProps} from '@react-navigation/stack';
-import {Size} from '../../../theme/size';
 import {Colors} from '../../../theme/colors';
 import LinearGradient from 'react-native-linear-gradient';
-import translate from '../../../theme/es.json';
 import {HasTag, Projects, Topic} from '../../../interfaces/appInterfaces';
 import SplashScreen from 'react-native-splash-screen';
 import {Card} from '../../utility/Card';
 import {InputText} from '../../utility/InputText';
-import {FontFamily, FontSize, fonts} from '../../../theme/fonts';
+import {FontFamily, FontSize, FontWeight, fonts} from '../../../theme/fonts';
 import {IconBootstrap} from '../../utility/IconBootstrap';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 import {Checkbox} from 'react-native-paper';
@@ -35,10 +33,8 @@ import {
   ShowProject,
 } from '../../../interfaces/interfaces';
 import {useForm} from '../../../hooks/useForm';
-import {LoadingScreen} from '../../../screens/LoadingScreen';
 
 import PeopleFill from '../../../assets/icons/general/people-fill.svg';
-import HeartFill from '../../../assets/icons/general/heart-fill.svg';
 import Stars from '../../../assets/icons/general/stars.svg';
 import Dots from '../../../assets/icons/general/three-dots-vertical.svg';
 import Magic from '../../../assets/icons/general/magic.svg';
@@ -55,16 +51,20 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import NotCreated from '../../../assets/icons/profile/No hay creados.svg';
 import Geonity from '../../../assets/icons/general/Geonity-Tittle.svg';
 import {CustomButton} from '../../utility/CustomButton';
-import {InfoModal, InfoModalGuest} from '../../utility/Modals';
+import {
+  GuideModal,
+  InfoModal,
+  InfoModalGuest,
+  OrganizationGuideModal,
+  ProyectGuideModal,
+} from '../../utility/Modals';
 import {useLanguage} from '../../../hooks/useLanguage';
 
 interface Props extends StackScreenProps<any, any> {}
 
 export const Home = ({navigation}: Props) => {
-
   //#region states
   const {isGuest} = useContext(AuthContext);
-  let notchHeight = 0;
   const {fontLanguage} = useLanguage();
   const insets = useSafeAreaInsets();
 
@@ -72,38 +72,53 @@ export const Home = ({navigation}: Props) => {
   const RETRY_DELAY_MS = 1000;
   const [loading, setLoading] = useState(false);
   const [categoryList, setCategoryList] = useState<Topic[]>([]); //clonar para que la que se muestre solo tenga X registros siendo la ultima el +
-  const [categoriesSelected, setCategoriesSelected] = useState<Topic[]>([]);
+  const [categoriesSelected, setCategoriesSelected] = useState<Topic[]>([]);// almacena la categoría seleccionada
   const [newProjectList, setNewProjectList] = useState<ShowProject[]>([]); // partir la lista en 2
   const [newProjectListSliced, setNewProjectListSliced] = useState<
     ShowProject[]
   >([]); // partir la lista en 2
 
+  //listado de proyectos que puedan interesar
   const [importantProjectList, setImportantProjectList] = useState<
     ShowProject[]
   >([]);
   const [interestingProjectList, setInterestingProjectList] = useState<
     number[]
   >([1, 2, 3, 4, 5, 6, 7, 8]);
+
+  //listado de organizaciones
   const [organizationList, setOrganizationList] = useState<Organization[]>([]);
 
+  //listado de categorías
   const [showCategoryList, setShowCategoryList] = useState(false);
 
+  //establece si está en modo busqueda
   const [onSearch, setOnSearch] = useState(false);
-  // const onSearchCategory = useRef(false);
+
+  //controla la actualización de la home
   const [refreshing, setRefreshing] = useState(false);
-  const [isAllCharged, setIsAllCharged] = useState(false);
+
+  //establece los mensajes de error
   const [errMessage, setErrMessage] = useState('');
+
+  //almacena el ID de la categoría seleccionada
   const [categorySelectedId, setCategorySelectedId] = useState<number[]>([]);
 
+  //hook que se emplea para establecer el texto de la barra de busqueda
   const {onChange, form} = useForm({
     searchText: '',
   });
 
-  const {signIn, signOut, signUp, errorMessage, removeError, recoveryPass} =
-    useContext(AuthContext);
+  //hook que controla el cierre de sesión y errores
+  const {signOut, errorMessage} = useContext(AuthContext);
 
+  // booleans que controlan la visibilidad de los modales
   const [menuVisible, setMenuVisible] = useState(false);
   const [guestModal, setGuestModal] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
+  const [showGuideHome, setShowGuideHome] = useState(false);
+  const [showGuideProject, setShowGuideProject] = useState(false);
+  const [showGuideOrganization, setShowGuideOrganization] = useState(false);
 
   const mostrarMenu = () => {
     setMenuVisible(true);
@@ -119,6 +134,35 @@ export const Home = ({navigation}: Props) => {
 
   const hideGuestModal = () => {
     setGuestModal(false);
+  };
+
+  const showGuideModal = () => {
+    setShowGuide(true);
+  };
+
+  const hideGuideModal = () => {
+    setShowGuide(false);
+  };
+  const showGuideHomeModal = () => {
+    setShowGuideHome(true);
+  };
+
+  const hideGuideHomeModal = () => {
+    setShowGuideHome(false);
+  };
+  const showGuideProjectModal = () => {
+    setShowGuideProject(true);
+  };
+
+  const hideGuideProjectModal = () => {
+    setShowGuideProject(false);
+  };
+  const showGuideORganizationModal = () => {
+    setShowGuideOrganization(true);
+  };
+
+  const hideGuideOrganizationModal = () => {
+    setShowGuideOrganization(false);
   };
 
   //#endregion
@@ -148,10 +192,7 @@ export const Home = ({navigation}: Props) => {
   useEffect(() => {
     setLoading(true);
     categoryListApi();
-    // projectListApi();
-    // organizationListApi();
     setCategoriesSelected([]);
-    //aquí estaba el setIsAllCharged(true);
   }, []);
 
   /**
@@ -169,12 +210,12 @@ export const Home = ({navigation}: Props) => {
   //se usa para que cuando una categoría esté seleccionada, se filtren proyectos si coinciden con la categoría
   useEffect(() => {
     categorySelectedFilter();
-    // console.log("Añadiendo el nuevo" + JSON.stringify(categorySelectedId))
     if (categorySelectedId.length <= 0) {
       setOnSearch(false);
     }
   }, [categorySelectedId]);
 
+  // control de errores
   useEffect(() => {
     if (errorMessage.length === 0) return;
   }, [errorMessage]);
@@ -213,6 +254,10 @@ export const Home = ({navigation}: Props) => {
     }
   };
 
+  /**
+   * Comprueba si la categoría está seleccionada, sino, la selecciona
+   * @param item categoría seleccionada
+   */
   const setCheckCategories = (item: Topic) => {
     // Verificar si el elemento ya está seleccionado
     if (categoriesSelected.includes(item)) {
@@ -226,6 +271,9 @@ export const Home = ({navigation}: Props) => {
     categoryFilter(item.id);
   };
 
+  /**
+   * Metodo que filtra los proyectos dadas las categorías
+   */
   const categorySelectedFilter = () => {
     //si no hay categorías y estaba mostrandolas, se pone el on search a false
     if (categorySelectedId.length <= 0 && onSearch) {
@@ -281,6 +329,12 @@ export const Home = ({navigation}: Props) => {
     }
   };
 
+  /**
+   * separa la lista en el numero de columnas
+   * @param data proyectos
+   * @param columns numero de columnas 
+   * @returns devuelve la lista separada
+   */
   const splitDataIntoRows = (data: ShowProject[], columns: number) => {
     const rows = [];
     for (let i = 0; i < data.length; i += columns) {
@@ -289,8 +343,11 @@ export const Home = ({navigation}: Props) => {
     return rows;
   };
 
-  const rows = splitDataIntoRows(newProjectList, 2);
-
+  /**
+   * separa la lista en el numero de columnas para llenar el listado de nuevos proyectos
+   * @param list proyectos
+   * @param chunkSize numero por el que separar
+   */
   const chunkArray = (list: ShowProject[], chunkSize: number) => {
     if (list.length > 5) {
       setNewProjectListSliced(list.slice(0, chunkSize));
@@ -300,6 +357,10 @@ export const Home = ({navigation}: Props) => {
   };
 
   //#region ApiCalls
+  /**
+   * establece el mensaje de error
+   * @param errMsg mensaje que viene de la base de datos
+   */
   const setErrorMessage = (errMsg: any) => {
     let textError = '';
     const dataError = JSON.stringify(errMsg.response.data, null);
@@ -310,9 +371,12 @@ export const Home = ({navigation}: Props) => {
     setErrMessage(textError);
   };
 
+  /**
+   * llama a la api para coger las categorías
+   * si no hay errores, llama a la api de proyectos
+   */
   const categoryListApi = async () => {
     let token;
-    console.log("Es invitado?" + isGuest);
     if (!isGuest) {
       while (!token) {
         token = await AsyncStorage.getItem('token');
@@ -321,21 +385,17 @@ export const Home = ({navigation}: Props) => {
 
     let retries = 0;
     let success = false;
-    console.log('Entra en category list api '+ token);
     try {
       const resp = await citmapApi.get<Topic[]>('/project/topics/', {
         headers: {
           Authorization: token,
         },
       });
-      //TODO ORDENAR
       setCategoryList(resp.data);
 
       success = true;
       projectListApi();
     } catch (err: any) {
-      console.log('Error en category list')
-      console.log(err.response.data);
       setErrorMessage(err);
       retries++;
       await new Promise<void>(resolve => setTimeout(resolve, RETRY_DELAY_MS));
@@ -353,6 +413,9 @@ export const Home = ({navigation}: Props) => {
     }
   };
 
+  /**
+   * Obtiene el listado de proyectos 
+   */
   const projectListApi = async () => {
     let token;
     if (!isGuest) {
@@ -370,16 +433,16 @@ export const Home = ({navigation}: Props) => {
 
       setNewProjectList(resp.data);
       chunkArray(resp.data, NUM_SLICE_NEW_PROJECT_LIST);
-      // setLoading(false);
       organizationListApi();
-      // console.log(JSON.stringify(resp.data, null, 2))
     } catch (err: any) {
-      console.log('Error en project list')
+      console.log('Error en project list');
       console.log(err.response.data);
-    } finally {
-    }
+    } 
   };
 
+  /**
+   * obtiene el listado de organizaciones
+   */
   const organizationListApi = async () => {
     let token;
     if (!isGuest) {
@@ -395,7 +458,8 @@ export const Home = ({navigation}: Props) => {
       });
       setOrganizationList(resp.data);
       setLoading(false);
-    } catch {
+    } catch(err: any) {
+      console.log(err)
     } finally {
     }
   };
@@ -469,16 +533,12 @@ export const Home = ({navigation}: Props) => {
 
   //#endregion
 
+  //muestra el modal de información en modo invitado
   const toastInfoGuest = () => {
-    // Toast.show({
-    //   type: 'info',
-    //   text1: 'Registrate para disfrutar de la app al máximo.',
-    //   // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-    //   // text2: errMessage,
-    // });
     showGuestModal();
   };
 
+  // oculta el modal de info de invitado y redirige al loggin 
   const toLogginIfGuest = () => {
     hideGuestModal();
     signOut();
@@ -486,6 +546,10 @@ export const Home = ({navigation}: Props) => {
 
   //#endregion
 
+  /**
+   * 
+   * @returns devuelve un renderizado generico cuando no hay proyectos que mostrar
+   */
   const returnRenderNoProyects = () => {
     return (
       <>
@@ -520,6 +584,11 @@ export const Home = ({navigation}: Props) => {
       </>
     );
   };
+
+  /**
+   * 
+   * @returns devuelve un renderizado generico cuando no hay organizaciones que mostrar
+   */
   const returnRenderNoOrganizations = () => {
     return (
       <>
@@ -555,9 +624,6 @@ export const Home = ({navigation}: Props) => {
     );
   };
 
-  // if (!isAllCharged) {
-  //   return <LoadingScreen />;
-  // }
 
   return (
     <>
@@ -666,9 +732,6 @@ export const Home = ({navigation}: Props) => {
                             categoryImage={0}
                             onPress={() => {
                               onCategoryPress();
-                              // Condición para mostrar u ocultar la barra de pestañas
-                              // const newTabBarVisibility = !navigation.dangerouslyGetState().routes[0].state?.index;
-                              // navigation.setParams({ tabBarVisible: newTabBarVisibility });
                             }}
                           />
                         </View>
@@ -719,7 +782,6 @@ export const Home = ({navigation}: Props) => {
                           justifyContent: 'center',
                           // top: 1,
                         }}>
-                        {/* <IconBootstrap name={'stars'} size={20} color={'blue'} /> */}
                         <Stars
                           width={RFPercentage(2.5)}
                           height={RFPercentage(2.5)}
@@ -782,7 +844,6 @@ export const Home = ({navigation}: Props) => {
                                         });
                                       } else {
                                         toastInfoGuest();
-                                        // signOut();
                                       }
                                     }}
                                   />
@@ -841,7 +902,6 @@ export const Home = ({navigation}: Props) => {
                           justifyContent: 'center',
                           top: 1,
                         }}>
-                        {/* <IconBootstrap name={'stars'} size={20} color={'blue'} /> */}
                         <PeopleFill
                           width={RFPercentage(2.5)}
                           height={RFPercentage(2.5)}
@@ -1434,6 +1494,7 @@ export const Home = ({navigation}: Props) => {
                         paddingHorizontal: widthPercentageToDP(2),
                         borderRadius: 10,
                       }}>
+                      {/* hacer logout */}
                       <TouchableOpacity
                         style={{
                           marginTop: heightPercentageToDP(1),
@@ -1442,7 +1503,19 @@ export const Home = ({navigation}: Props) => {
                         onPress={signOut}>
                         <Text>{fontLanguage.Home[0].logout}</Text>
                       </TouchableOpacity>
-                      {/* Otras opciones de menú aquí */}
+                      {/* mostrar onboarding */}
+                      <TouchableOpacity
+                        style={{
+                          marginBottom: heightPercentageToDP(1),
+                          marginTop: heightPercentageToDP(0.7),
+                        }}
+                        onPress={() => {
+                          showGuideModal();
+                          ocultarMenu();
+                        }}>
+                        <Text>{fontLanguage.global[0].show_onboarding}</Text>
+                      </TouchableOpacity>
+                      {/* cancelar */}
                       <TouchableOpacity
                         style={{
                           marginBottom: heightPercentageToDP(1),
@@ -1465,6 +1538,131 @@ export const Home = ({navigation}: Props) => {
               label={fontLanguage.modals[0].guest_label_1}
               subLabel={fontLanguage.modals[0].guest_label_2}
             />
+            <GuideModal
+              hideModal={hideGuideHomeModal}
+              visible={showGuideHome}
+              onPress={() => console.log('pressed')}
+            />
+            <ProyectGuideModal
+              hideModal={hideGuideProjectModal}
+              visible={showGuideProject}
+              onPress={() => console.log('pressed')}
+            />
+            <OrganizationGuideModal
+              hideModal={hideGuideOrganizationModal}
+              visible={showGuideOrganization}
+              onPress={() => console.log('pressed')}
+            />
+
+            <Modal
+              visible={showGuide}
+              transparent
+              animationType="fade"
+              // onRequestClose={hideGuideModal}
+            >
+              <TouchableWithoutFeedback onPressOut={hideGuideModal}>
+                <View
+                  style={{
+                    // backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    alignSelf: 'center',
+                    flex: 1,
+                  }}>
+                  <TouchableWithoutFeedback>
+                    <View
+                      style={{
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        alignSelf: 'center',
+                        backgroundColor: 'white',
+                        width: widthPercentageToDP(50),
+                        borderRadius: 10,
+                        shadowColor: '#000',
+                        shadowOffset: {
+                          width: 0,
+                          height: 0.1,
+                        },
+                        shadowOpacity: 0.2,
+                        shadowRadius: 1.41,
+                        elevation: 5,
+                      }}>
+                      <View
+                        style={{
+                          backgroundColor: 'white',
+                          // paddingHorizontal: widthPercentageToDP(2),
+                          borderRadius: 10,
+                        }}>
+                        <Text
+                          style={{
+                            fontSize: FontSize.fontSizeText18,
+                            color: Colors.primaryDark,
+                            marginVertical: '5%',
+                            // borderBottomColor: 'black'
+                            fontWeight: '400',
+                          }}>
+                          {fontLanguage.global[0].onboarding_title}
+                        </Text>
+                        {/* guía home */}
+                        <TouchableOpacity
+                          style={{
+                            marginTop: heightPercentageToDP(1),
+                            marginBottom: heightPercentageToDP(0.7),
+                          }}
+                          onPress={() => {
+                            showGuideHomeModal();
+                            hideGuideModal();
+                          }}>
+                          <Text>
+                            {fontLanguage.global[0].show_onboarding_home}
+                          </Text>
+                        </TouchableOpacity>
+                        {/* guía proyecto */}
+                        <TouchableOpacity
+                          style={{
+                            marginBottom: heightPercentageToDP(1),
+                            marginTop: heightPercentageToDP(0.7),
+                          }}
+                          onPress={() => {
+                            showGuideProjectModal();
+                            hideGuideModal();
+                          }}>
+                          <Text>
+                            {fontLanguage.global[0].show_onboarding_project}
+                          </Text>
+                        </TouchableOpacity>
+                        {/* guía organization */}
+                        <TouchableOpacity
+                          style={{
+                            marginBottom: heightPercentageToDP(1),
+                            marginTop: heightPercentageToDP(0.7),
+                          }}
+                          onPress={() => {
+                            showGuideORganizationModal();
+                            hideGuideModal();
+                          }}>
+                          <Text>
+                            {
+                              fontLanguage.global[0]
+                                .show_onboarding_organization
+                            }
+                          </Text>
+                        </TouchableOpacity>
+                        {/* cancelar */}
+                        <TouchableOpacity
+                          style={{
+                            marginBottom: heightPercentageToDP(1),
+                            marginTop: heightPercentageToDP(0.7),
+                          }}
+                          onPress={hideGuideModal}>
+                          <Text>{fontLanguage.global[0].cancel_button}</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </TouchableWithoutFeedback>
+                </View>
+              </TouchableWithoutFeedback>
+            </Modal>
           </View>
         </SafeAreaView>
       </KeyboardAvoidingView>

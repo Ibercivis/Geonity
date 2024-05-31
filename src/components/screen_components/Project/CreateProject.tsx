@@ -49,7 +49,12 @@ import Delete from '../../../assets/icons/project/trash.svg';
 import {QuestionCard} from '../../utility/QuestionCard';
 import {IconTemp} from '../../IconTemp';
 import {useForm} from '../../../hooks/useForm';
-import {DeleteModal, InfoModal, SaveProyectModal} from '../../utility/Modals';
+import {
+  DeleteModal,
+  InfoModal,
+  ProyectGuideModal,
+  SaveProyectModal,
+} from '../../utility/Modals';
 import {CommonActions} from '@react-navigation/native';
 import {Spinner} from '../../utility/Spinner';
 import {
@@ -109,6 +114,13 @@ export const CreateProject = ({navigation, route}: Props) => {
   const [infoModal, setInfoModal] = useState(false);
   const showModalInfo = () => setInfoModal(true);
   const hideModalInfo = () => setInfoModal(false);
+
+  const [guideModal, setGuideModal] = useState(false);
+  const showModalGuide = () => setGuideModal(true);
+  const hideModalGuide = () => {
+    setGuideModal(false);
+    onSetDontShowAgain();
+  };
 
   //controla el estado del scroll
   const scrollViewRef = useRef<ScrollView | null>(null);
@@ -211,11 +223,18 @@ export const CreateProject = ({navigation, route}: Props) => {
       name: fontLanguage.question_card[0].image_type,
       icon: 'camera-outline',
     },
+    {
+      id: 13,
+      type: 'DATE',
+      name: fontLanguage.question_card[0].date_time,
+      icon: 'camera-outline',
+    },
   ];
 
   //#endregion
 
   useEffect(() => {
+    showModalAtStart();
     categoryListApi();
   }, []);
 
@@ -488,6 +507,34 @@ export const CreateProject = ({navigation, route}: Props) => {
   //#endregion
 
   //#region METHODS
+
+  //#region GUIDE CONTROL
+
+  /**
+   * este metodo coge del almacenamiento el valor para saber si puede mostrar el modal o no
+   * Si el valor no existe o es 1, significa que entra por primera vez y habrá de mostrarse
+   */
+  const showModalAtStart = async () => {
+    const canShow = await AsyncStorage.getItem('infoproyect');
+    console.log(canShow);
+    if (canShow == null) {
+      showModalGuide();
+    } else if (parseInt(canShow) === 1) {
+      showModalGuide();
+    } else {
+      setGuideModal(false);
+    }
+  };
+
+  /**
+   * establece y guarda el muestreo del modal onboarding
+   */
+  const onSetDontShowAgain = async () => {
+    let showmodal = '0';
+    await AsyncStorage.setItem('infoproyect', showmodal);
+  };
+
+  //#endregion
 
   //#region FIRST
 
@@ -874,7 +921,7 @@ export const CreateProject = ({navigation, route}: Props) => {
         correct = false;
       }
     });
-    console.log(JSON.stringify(updatedQuestions, null, 2))
+    console.log(JSON.stringify(updatedQuestions, null, 2));
     try {
       const userInfo = await citmapApi.get<User>(
         '/users/authentication/user/',
@@ -2380,6 +2427,11 @@ export const CreateProject = ({navigation, route}: Props) => {
                 fontLanguage.create_project[0].modals.delete_proyect_sublabel
               }
               helper={false}
+            />
+            <ProyectGuideModal
+              hideModal={hideModalGuide}
+              visible={guideModal}
+              onPress={() => console.log('pressed')}
             />
           </ScrollView>
           {showCategoryList && (

@@ -94,6 +94,9 @@ export const OrganizationPage = (props: Props) => {
 
   //#region API CALLS
 
+  /**
+   * obtiene la organización
+   */
   const getOrganizationApi = async () => {
     let token;
 
@@ -102,28 +105,14 @@ export const OrganizationPage = (props: Props) => {
     }
 
     try {
-      // const resp = await citmapApi.get<Organization>(
-      //   `/organization/${props.route.params.id}`,
-      //   {
-      //     headers: {
-      //       Authorization: token,
-      //     },
-      //   },
-      // );
 
       const resp = await fetch(
         `${baseURL}/organization/${props.route.params.id}`,
         {
           method: 'GET',
           headers: {
-            // Accept: 'application/json',
-            // 'Content-Type': 'application/json',
             Authorization: token,
           },
-          // body: JSON.stringify({
-          //   firstParam: 'yourValue',
-          //   secondParam: 'yourOtherValue',
-          // }),
         },
       );
       const userInfo = await citmapApi.get<User>(
@@ -150,6 +139,9 @@ export const OrganizationPage = (props: Props) => {
     }
   };
 
+  /**
+   * listado de proyectos que pertenecen a la organización
+   */
   const projectListApi = async () => {
     let token;
 
@@ -180,7 +172,6 @@ export const OrganizationPage = (props: Props) => {
 
       const filteredProjects: ShowProject[] = Array.from(filteredProjectsSet);
 
-      console.log(JSON.stringify(filteredProjects, null, 2));
       setProjectList(filteredProjects);
     } catch (err) {
       console.log('lo que falla es project list api ' + err);

@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
   Modal,
   ScrollView,
 } from 'react-native';
+import * as RNFS from 'react-native-fs';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 import {Question} from '../../interfaces/interfaces';
 import {InputText} from './InputText';
@@ -33,6 +34,8 @@ import {baseURL, imageUrl} from '../../api/citmapApi';
 import {useLanguage} from '../../hooks/useLanguage';
 import {ImageZoom} from '@likashefqet/react-native-image-zoom';
 import ImageViewer from 'react-native-image-zoom-viewer';
+import {RNCamera} from 'react-native-camera';
+import DatePicker from 'react-native-date-picker';
 
 interface Props {
   //   onChangeText?: (fieldName: string, value: any) => void;
@@ -77,6 +80,10 @@ export const CardAnswerMap = ({
   const [imageModal, setImageModal] = useState<any>();
 
   const {permissions} = useContext(PermissionsContext);
+
+  const [isType3, setIsType3] = useState(false);
+
+  const [date, setDate] = useState(new Date());
 
   const image = [
     {
@@ -172,10 +179,11 @@ export const CardAnswerMap = ({
                   response.assets[0].fileSize < 4 * 1024 * 1024
                 ) {
                   const newImage = response.assets;
-                  console.log(JSON.stringify(newImage, null, 2));
+                  // console.log(JSON.stringify(newImage, null, 2));
+                  console.log('data:image/jpeg;base64,' + newImage[0].base64);
                   setImages(newImage);
-                  console.log(JSON.stringify(newImage[0].uri, null, 2));
-                  console.log(JSON.stringify(newImage[0].type, null, 2));
+                  // console.log(JSON.stringify(newImage[0].uri, null, 2));
+                  // console.log(JSON.stringify(newImage[0].type, null, 2));
                   const texto: string = getFormattedDateTime();
                   onChangeText({
                     uri: newImage[0].uri, // Debes ajustar esto según la estructura de response
@@ -230,6 +238,10 @@ export const CardAnswerMap = ({
             showModal(true);
           });
         break;
+      case 4: // camera nativa
+        setIsType3(true);
+        setImageTypeNumber(2);
+        break;
     }
 
     hideModalImageType();
@@ -250,9 +262,40 @@ export const CardAnswerMap = ({
     showModalImageMax();
   };
 
+  const camera = useRef<any>();
+
+  const takePicture = async () => {
+    if (camera.current) {
+      try {
+        const options = {quality: 0.5, base64: true};
+        const data = await camera.current.takePictureAsync(options);
+
+        // Aquí data.uri contiene la URI de la imagen capturada
+        const newImage = data.base64;
+        setImages(newImage);
+        console.log('data:image/jpeg;base64,' + newImage);
+        // console.log(JSON.stringify(data, null, 2));
+        // Guardar la URI de la imagen en el estado
+        onChangeText({
+          uri: data.uri,
+          type: 'image/jpeg', // Tipo MIME de la imagen (puedes ajustarlo según necesites)
+          name: 'cover.jpg', // Nombre de archivo de la imagen (puedes cambiarlo)
+        });
+
+        // Guardar la imagen en el sistema de archivos
+        // const path = `${RNFS.DocumentDirectoryPath}/imagen_capturada.jpg`;
+        // await RNFS.writeFile(path, data.base64, 'base64');
+        // console.log('Imagen guardada en:', path);
+      } catch (error) {
+        console.error('Error al tomar la foto:', error);
+      } finally {
+        setIsType3(false);
+      }
+    }
+  };
+
   //#region SECCIÓN RENDERS
   /**
-   * TODO ESTO HAY QUE SACARLO A UN COMPONENTE DIFERENTE
    * Metodo que devuelve el tipo de card
    * en el componente, cada respuesta será de un tipo u otro, así solo se permite en el input
    * poner ese tipo de dato
@@ -452,7 +495,7 @@ export const CardAnswerMap = ({
                       ]}
                       multiline={true}
                       contentStyle={{bottom: heightPercentageToDP(-0.4)}}
-                      keyboardType="number-pad"
+                      keyboardType="decimal-pad"
                       placeholder={
                         value || fontLanguage.map[0].cards.number_answer
                       }
@@ -670,8 +713,8 @@ export const CardAnswerMap = ({
                   {/* este entra en camera si está editando o creando */}
                   {imageTypeNumber === 2 &&
                     images &&
-                    images[0] &&
-                    images[0].base64 &&
+                    // images[0] &&
+                    // images[0].base64 &&
                     !onlyRead && (
                       <View
                         style={{
@@ -691,7 +734,8 @@ export const CardAnswerMap = ({
                           onPress={() => setToZoom(2)}>
                           <Image
                             source={{
-                              uri: 'data:image/jpeg;base64,' + images[0].base64,
+                              // uri: 'data:image/jpeg;base64,' + images[0].base64,
+                              uri: 'data:image/jpeg;base64,' + images,
                             }}
                             style={{
                               width: '100%',
@@ -787,6 +831,96 @@ export const CardAnswerMap = ({
             </View>
           </>
         );
+      case 'DATE':
+        let formattedDate = new Date(); 
+        let day, month, year;
+        if (value != undefined) {
+          [day, month, year] = value.split('/').map(Number); // Divide la cadena y convierte cada parte en número
+          formattedDate = new Date(year, month - 1, day);
+        }
+        return (
+          <>
+            <View style={{flexDirection: 'column'}}>
+              <View style={{flexDirection: 'row'}}>
+                <View style={{marginHorizontal: '2%', marginRight: '5%'}}>
+                  <Text
+                    style={{
+                      fontSize: FontSize.fontSizeText36,
+                      color: Colors.contentTertiaryDark,
+                    }}>
+                    {num}.
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    width: '75%',
+                    flexWrap: 'wrap',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <Text
+                    style={{
+                      flexWrap: 'wrap',
+                      fontFamily: FontFamily.NotoSansDisplayMedium,
+                      fontSize: FontSize.fontSizeText14,
+                    }}>
+                    {item.question_text}
+                  </Text>
+                </View>
+                {obligatory && (
+                  <View
+                    style={{
+                      justifyContent: 'center',
+                    }}>
+                    <Text
+                      style={{fontSize: FontSize.fontSizeText18, color: 'red'}}>
+                      *
+                    </Text>
+                  </View>
+                )}
+              </View>
+              <View style={{marginTop: '0%'}}>
+                <View
+                  style={{
+                    width: '100%',
+                    marginVertical: RFPercentage(1),
+                  }}>
+                  <View style={styles.container}>
+                    {/* <TextInput
+                      disabled={onlyRead}
+                      style={[
+                        styles.input,
+                        {
+                          borderBottomColor: '#949494',
+                          color: Colors.textColorPrimary,
+                          fontFamily: value
+                            ? FontFamily.NotoSansDisplayLight
+                            : FontFamily.NotoSansDisplayRegular,
+                        },
+                      ]}
+                      multiline={true}
+                      contentStyle={{bottom: heightPercentageToDP(-0.4)}}
+                      placeholder={
+                        value || fontLanguage.map[0].cards.text_answer
+                      }
+                      placeholderTextColor={value ? '#000000' : '#949494'}
+                      onChangeText={value => onChangeText(value)}
+                      underlineColorAndroid="transparent"
+                    /> */}
+                    <DatePicker
+                      date={value ? formattedDate : date}
+                      onDateChange={val => {
+                        onChangeText(val);
+                      }}
+                      style={{}}
+                      mode="date"
+                    />
+                  </View>
+                </View>
+              </View>
+            </View>
+          </>
+        );
       default:
         return <></>;
     }
@@ -796,6 +930,44 @@ export const CardAnswerMap = ({
   return (
     <View style={styles.card}>
       {card(question, index)}
+
+      <Provider>
+        <Portal>
+          <Modal visible={isType3} transparent={true} animationType="fade">
+            <View style={stylesCamera.container}>
+              <RNCamera
+                ref={ref => {
+                  camera.current = ref;
+                }}
+                style={stylesCamera.preview}
+                type={RNCamera.Constants.Type.back}
+                flashMode={RNCamera.Constants.FlashMode.auto}
+                androidCameraPermissionOptions={{
+                  title: 'Permission to use camera',
+                  message: 'We need your permission to use your camera',
+                  buttonPositive: 'Ok',
+                  buttonNegative: 'Cancel',
+                }}
+              />
+              <View
+                style={{
+                  flex: 0,
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                }}>
+                <TouchableOpacity
+                  onPress={() => {
+                    takePicture();
+                  }}
+                  style={stylesCamera.capture}>
+                  <Text style={{fontSize: 14}}> Capture </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+        </Portal>
+      </Provider>
+
       <Provider>
         <Portal>
           <Modal visible={imageType} transparent>
@@ -831,7 +1003,7 @@ export const CardAnswerMap = ({
                     <TouchableOpacity
                       activeOpacity={0.9}
                       style={{...stylesModal.button}}
-                      onPress={() => selectImage(3)}>
+                      onPress={() => selectImage(4)}>
                       <Text style={stylesModal.textButton}>
                         {fontLanguage.map[0].cards.camera}
                       </Text>
@@ -1023,5 +1195,27 @@ const stylesModal = StyleSheet.create({
     textAlign: 'center',
     textAlignVertical: 'center',
     alignSelf: 'center',
+  },
+});
+
+const stylesCamera = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    backgroundColor: 'black',
+  },
+  preview: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  capture: {
+    flex: 0,
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    padding: 15,
+    paddingHorizontal: 20,
+    alignSelf: 'center',
+    margin: 20,
   },
 });

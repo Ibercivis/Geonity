@@ -63,22 +63,11 @@ import ShareComponent from 'react-native-share';
 const data = [
   require('../../../assets/backgrounds/login-background.jpg'),
   require('../../../assets/backgrounds/login-background.jpg'),
-  // require('../../../assets/icons/category/Group-5.png'),
-  // require('../../../assets/icons/category/Group-6.png'),
-  // require('../../../assets/icons/category/Group-7.png'),
-  // require('../../../assets/icons/category/Group-8.png'),
-  // require('../../../assets/icons/category/Group.png'),
-  // require('../../../assets/icons/category/Group-1.png'),
-  // require('../../../assets/icons/category/Group-1.png'),
   // Agrega más imágenes y títulos según necesites
 ];
 
 interface Props extends StackScreenProps<StackParams, 'ProjectPage'> {}
 
-interface PassValidate {
-  pass: string;
-  pass2: string;
-}
 
 export const ProjectPage = (props: Props) => {
   const {fontLanguage} = useLanguage();
@@ -91,15 +80,12 @@ export const ProjectPage = (props: Props) => {
   const [waitingData, setWaitingData] = useState(false);
   const [like, setLike] = useState(false);
   const [numlike, setNumlike] = useState(0);
-  const isCarousel = useRef(null);
 
   const [project, setProject] = useState<ShowProject>();
-  const [organization, setOrganization] = useState<Organization[]>([]);
   const [creator, setCreator] = useState('');
   const [hastags, setHastags] = useState<Topic[]>([]);
   const [imagesCharged, setImagesCharged] = useState<any[]>([]);
   const [isValidPass, setIsValidPass] = useState(true);
-  const [pass, setPass] = useState<PassValidate>({pass: '', pass2: ''});
 
   //#region MODAL NEW
   /**
@@ -172,48 +158,48 @@ export const ProjectPage = (props: Props) => {
    * Metodo para compartir, en message pones lo que quieres compartir
    */
   const onShare = async () => {
-    // try {
-    //   const result = await Share.share({
-    //     message:
-    //       'https://play.google.com/store/apps/details?id=com.reactnativeplantilla',
-    //     title: 'Compartir el proyecto con:',
-    //     url: 'https://play.google.com/store/apps/details?id=com.reactnativeplantilla',
-    //   });
-    //   console.log(result);
-    //   if (result.action === Share.sharedAction) {
-    //     if (result.activityType) {
-    //       // shared with activity type of result.activityType
-    //       console.log(result.activityType);
-    //     } else {
-    //       // shared
-    //     }
-    //   } else if (result.action === Share.dismissedAction) {
-    //     // dismissed
-    //   }
-    // } catch (error: any) {}
-
     try {
-      const deepLink = 'tu_ruta_de_enlace_profundo'; // Reemplaza con tu enlace profundo
       const result = await Share.share({
-        message: deepLink,
+        message:
+          'https://play.google.com/store/apps/details?id=com.reactnativeplantilla',
         title: 'Compartir el proyecto con:',
+        url: 'https://play.google.com/store/apps/details?id=com.reactnativeplantilla',
       });
-  
       console.log(result);
-  
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
-          // Compartido con el tipo de actividad result.activityType
+          // shared with activity type of result.activityType
           console.log(result.activityType);
         } else {
-          // Compartido
+          // shared
         }
       } else if (result.action === Share.dismissedAction) {
-        // Descartado
+        // dismissed
       }
-    } catch (error: any) {
-      console.error('Error al compartir:', error);
-    }
+    } catch (error: any) {}
+
+    // try {
+    //   const deepLink = 'tu_ruta_de_enlace_profundo'; // Reemplaza con tu enlace profundo
+    //   const result = await Share.share({
+    //     message: deepLink,
+    //     title: 'Compartir el proyecto con:',
+    //   });
+  
+    //   console.log(result);
+  
+    //   if (result.action === Share.sharedAction) {
+    //     if (result.activityType) {
+    //       // Compartido con el tipo de actividad result.activityType
+    //       console.log(result.activityType);
+    //     } else {
+    //       // Compartido
+    //     }
+    //   } else if (result.action === Share.dismissedAction) {
+    //     // Descartado
+    //   }
+    // } catch (error: any) {
+    //   console.error('Error al compartir:', error);
+    // }
   };
 
   // Función para abrir el enlace profundo en la aplicación o en la tienda de aplicaciones
@@ -232,36 +218,12 @@ const openDeepLink = async (deepLink: string) => {
   }
 };
 
-  /**
-   * Metodo para descargar el proyecto
-   */
-  const onDownload = async () => {};
+
 
   /**
    * Metodo para volver atrás
    */
   const onBack = () => {
-    // props.navigation.popToTop();
-    // if (!props.route.params.fromProfile) {
-    //   props.navigation.popToTop();
-    // } else {
-    //   props.navigation.dispatch(
-    //     CommonActions.navigate({
-    //       name: 'HomeNavigator',
-    //     }),
-    //   );
-    // }
-
-    // props.navigation.dispatch(
-    //   CommonActions.reset({
-    //     index: 0,
-    //     routes: [
-    //       {
-    //         name: 'HomeNavigator',
-    //       },
-    //     ],
-    //   }),
-    // );
     if (props.route.params.isNew) {
       props.navigation.navigate('HomeScreen' as never);
     } else {
@@ -302,6 +264,9 @@ const openDeepLink = async (deepLink: string) => {
     }
   };
 
+  /**
+   * consulta los permisos
+   */
   const checkLocationPermission = async () => {
     askLocationPermission();
   };
@@ -320,10 +285,14 @@ const openDeepLink = async (deepLink: string) => {
     }
   };
 
+  /**
+   * Comprueba si necesita contraseña o no. Después, si tiene permisos de location, si no los tiene, muestra una pantalla para que se proporcionen
+   * @param value1 contiene la contraseña para participar en el proyecto, si no es privado, ni se evalua, puede ser undefined
+   * @returns 
+   */
   const navigateToMapPass = async (value1?: string) => {
     if (project?.is_private) {
       if (value1) {
-        console.log(value1);
         try {
           const token = await AsyncStorage.getItem('token');
           const isValid = await citmapApi.post(
@@ -371,6 +340,10 @@ const openDeepLink = async (deepLink: string) => {
     }
   };
 
+  /**
+   * Descarga los datos recabados del proyecto. Previamente pide el permiso de almacenamiento si no se tuviera
+   * @returns sale si hay un error con los permisos
+   */
   const downloadProjectObservations = async () => {
     try {
       let token;
@@ -424,6 +397,11 @@ const openDeepLink = async (deepLink: string) => {
     }
   };
 
+  /**
+   * Guarda los datos descargados
+   * @param fileBlob archivo
+   * @param filename nombre del archivo
+   */
   const saveFile = async (fileBlob: any, filename: any) => {
     let path: any;
     if (Platform.OS === 'ios') {
@@ -505,6 +483,10 @@ const openDeepLink = async (deepLink: string) => {
     }
   };
 
+  /**
+   * Intenta obtener los permisos, sino, muestra una alerta
+   * @returns devuelve el estado de los permisos
+   */
   const requestStoragePermission = async () => {
     // let granted: PermissionStatus;
     // if (Platform.OS === 'android') {
@@ -558,6 +540,9 @@ const openDeepLink = async (deepLink: string) => {
     return permissionStatus;
   };
 
+  /**
+   * Obtiene el proyecto a través del id dado por los parametros de la ruta
+   */
   const getProjectApi = async () => {
     setWaitingData(true);
     let token;
@@ -594,12 +579,6 @@ const openDeepLink = async (deepLink: string) => {
         },
       );
 
-      // const organiza = await citmapApi.get<Organization[]>(`/organization/`, {
-      //   headers: {
-      //     Authorization: token,
-      //   },
-      // });
-
       setCreator(creatoruser.data.username);
       // recorrer resp.administrator.map y comparar si coincide el id con el user
       let isAdmin = resp.data.administrators.find(x => x === userInfo.data.pk);
@@ -630,28 +609,14 @@ const openDeepLink = async (deepLink: string) => {
       if (props.route.params.isNew) {
         showModalSave();
       }
-
-      // if (
-      //   organiza.data?.length > 0 &&
-      //   resp.data?.organizations_write?.length > 0
-      // ) {
-      //   const newListOrga = organiza.data.filter(x =>
-      //     resp.data.organizations_write.includes(x.id),
-      //   );
-      //   setOrganization(newListOrga);
-      // } else {
-      //   Toast.show({
-      //     type: 'error',
-      //     text1: 'Error',
-      //     // text2: 'No se han podido obtener los datos, por favor reinicie la app',
-      //     text2: 'Datos no cargados de organización',
-      //   });
-      // }
     } catch (err: any) {
       console.log(err.response.data);
     }
   };
 
+  /**
+   * Obtiene las categorías y se filtran para que se pinten en el render segun el proyecto dado
+   */
   const getHastagApi = async () => {
     let token;
 
@@ -721,19 +686,6 @@ const openDeepLink = async (deepLink: string) => {
 
   return (
     <>
-      {/* {!hasPermission && wantParticipate ? (
-        <View style={stylesPermission.container}>
-          <Text>{fontLanguage.project[0].location_permission}</Text>
-          <TouchableOpacity
-            style={stylesPermission.touchable}
-            onPress={checkLocationPermission}
-            activeOpacity={0.6}>
-            <Text style={stylesPermission.touchableText}>
-              {fontLanguage.project[0].give_permissions}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      ) : ( */}
       <SafeAreaView>
         <ScrollView
           contentContainerStyle={{backgroundColor: 'white'}}

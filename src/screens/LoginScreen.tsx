@@ -42,6 +42,8 @@ import {
 import {PoliciesModal, SaveProyectModal} from '../components/utility/Modals';
 import Toast from 'react-native-toast-message';
 import {useLanguage} from '../hooks/useLanguage';
+import { CustomButtonOutline } from '../components/utility/CustomButtonOutline';
+import { GoogleSignin, statusCodes } from 'react-native-google-signin';
 
 interface Props extends StackScreenProps<any, any> {}
 
@@ -162,13 +164,13 @@ export const LoginScreen = ({navigation, route}: Props) => {
   useEffect(() => {
     setIsGuest(false);
     console.log(isGuest);
-    // GoogleSignin.configure({
-    //   offlineAccess: true,
-    //   iosClientId:
-    //     '235777853257-djkpgca69noinapgft2ua7vgq2bcieg3.apps.googleusercontent.com',
-    //   webClientId:
-    //     '235777853257-rnbdsrqchtl76jq0givh1h6l7u47rs4k.apps.googleusercontent.com',
-    // });
+    GoogleSignin.configure({
+      offlineAccess: true,
+      iosClientId:
+        '235777853257-djkpgca69noinapgft2ua7vgq2bcieg3.apps.googleusercontent.com',
+      webClientId:
+        '235777853257-rnbdsrqchtl76jq0givh1h6l7u47rs4k.apps.googleusercontent.com',
+    });
   }, []);
 
   useEffect(() => {
@@ -221,34 +223,35 @@ export const LoginScreen = ({navigation, route}: Props) => {
   };
 
   //TODO mover todo esto a un contexto para que se pueda controlar el logout desde cualquier lado
-  // const logginGoogle = async () => {
-  //   try {
-  //     setIsLoading(true);
-  //     await GoogleSignin.hasPlayServices();
-  //     const userInfo = await GoogleSignin.signIn();
-  //     setIsLoading(false);
-  //     // signIn();
-  //   } catch (error: any) {
-  //     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-  //       // user cancelled the login flow
-  //       console.log('SIGN IN CANCELLED');
-  //       console.log(error.code);
-  //     } else if (error.code === statusCodes.IN_PROGRESS) {
-  //       // operation (e.g. sign in) is in progress already
-  //       console.log('IN PROGRESS');
-  //       console.log(error.code);
-  //     } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-  //       // play services not available or outdated
-  //       console.log('PLAY SERVICES NOT AVAILABLE');
-  //       console.log(error.code);
-  //     } else {
-  //       // some other error happened
-  //       console.log('OTRO');
-  //       console.log(error);
-  //     }
-  //     setIsLoading(false);
-  //   }
-  // };
+  const logginGoogle = async () => {
+    try {
+      setIsLoading(true);
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      console.log(JSON.stringify(userInfo, null, 2))
+      setIsLoading(false);
+      // signIn();
+    } catch (error: any) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        // user cancelled the login flow
+        console.log('SIGN IN CANCELLED');
+        console.log(error.code);
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        // operation (e.g. sign in) is in progress already
+        console.log('IN PROGRESS');
+        console.log(error.code);
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        // play services not available or outdated
+        console.log('PLAY SERVICES NOT AVAILABLE');
+        console.log(error.code);
+      } else {
+        // some other error happened
+        console.log('OTRO');
+        console.log(error);
+      }
+      setIsLoading(false);
+    }
+  };
 
   //#endregion
 
@@ -1097,7 +1100,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                   </TouchableOpacity>
 
                   {/* loggin buttons */}
-                  {/* <View style={styles.loginButtonsContainer}>
+                  <View style={styles.loginButtonsContainer}>
                     <CustomButtonOutline
                       backgroundColor="white"
                       fontColor="black"
@@ -1120,8 +1123,8 @@ export const LoginScreen = ({navigation, route}: Props) => {
                           fontLanguage.login_screen[0].loggin_microsoft
                         }
                         onPress={() => console.log()}
-                      />
-                  </View> */}
+                      /> */}
+                  </View> 
 
                   {/* divider */}
                   <View>
@@ -1167,7 +1170,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                     activeOpacity={0.4}
                     style={{
                       alignSelf: 'center',
-                      marginTop: '25%',
+                      marginTop: '5%',
                       marginBottom: '20%',
                       flexDirection: 'row',
                       zIndex: 2,
@@ -1272,11 +1275,11 @@ const styles = StyleSheet.create({
   loginButtonsContainer: {
     marginHorizontal: '17%',
     marginTop: '10%',
-    marginBottom: '10%',
+    marginBottom: '5%',
     flexDirection: 'column',
     alignItems: 'center',
     backgroundColor: 'white',
-    height: '28%',
+    height: heightPercentageToDP(5), //15 para todos
   },
   child1: {
     height: '28%',

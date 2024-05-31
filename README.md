@@ -127,7 +127,7 @@ get ViewPropTypes(): $FlowFixMe {
 ```
 
 ```bash
-# limpia el proyecto para sacar a producción
+# limpia el proyecto para sacar a producción en android
 - npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/
 
 ```
@@ -461,6 +461,20 @@ get ViewPropTypes(): $FlowFixMe {
 ```bash
 # Este paquete permite establecer una o varias imagen a la que se le puede hacer zoom.
 - npm i react-native-image-zoom-viewer --save
+
+```
+41. react-native-date-picker
+
+```bash
+# Este paquete añade la opción de incluir fechas
+- npm install react-native-date-picker
+
+```
+42. react-native-dots-pagination
+
+```bash
+# Este paquete añade la opción de incluir dots
+- npm install react-native-dots-pagination
 
 ```
 

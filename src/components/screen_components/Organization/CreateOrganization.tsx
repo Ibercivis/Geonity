@@ -18,7 +18,12 @@ import {RFPercentage} from 'react-native-responsive-fontsize';
 import {HeaderComponent} from '../../HeaderComponent';
 import {CustomButton} from '../../utility/CustomButton';
 import {Colors} from '../../../theme/colors';
-import {DeleteModal, InfoModal, SaveProyectModal} from '../../utility/Modals';
+import {
+  DeleteModal,
+  InfoModal,
+  OrganizationGuideModal,
+  SaveProyectModal,
+} from '../../utility/Modals';
 import PlusImg from '../../../assets/icons/general/Plus-img.svg';
 import Person from '../../../assets/icons/general/person.svg';
 import FrontPage from '../../../assets/icons/project/image.svg';
@@ -39,7 +44,10 @@ import {useForm} from '../../../hooks/useForm';
 import {CommonActions} from '@react-navigation/native';
 import {Spinner} from '../../utility/Spinner';
 import Toast from 'react-native-toast-message';
-import {heightPercentageToDP, widthPercentageToDP} from 'react-native-responsive-screen';
+import {
+  heightPercentageToDP,
+  widthPercentageToDP,
+} from 'react-native-responsive-screen';
 import {useLanguage} from '../../../hooks/useLanguage';
 
 interface Props extends StackScreenProps<StackParams, 'CreateOrganization'> {}
@@ -94,6 +102,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
    * seteará el form y se guardará el id para luego guardarla
    */
   useEffect(() => {
+    showModalAtStart();
     UserListApi();
   }, []);
 
@@ -163,6 +172,14 @@ export const CreateOrganization = ({navigation, route}: Props) => {
   const [controlSizeImage, setControlSizeImage] = useState(false);
   const showModalControlSizeImage = () => setControlSizeImage(true);
   const hideModalControlSizeImage = () => setControlSizeImage(false);
+
+  //abre el modal de la guía
+  const [guideModal, setGuideModal] = useState(false);
+  const showModalGuide = () => setGuideModal(true);
+  const hideModalGuide = () => {
+    setGuideModal(false);
+    onSetDontShowAgain();
+  };
 
   const [deleteModal, setDelete] = useState(false);
   const showModalDelete = () => setDelete(true);
@@ -276,6 +293,30 @@ export const CreateOrganization = ({navigation, route}: Props) => {
     } catch (err) {
       console.log('hay un error: ' + err);
     }
+  };
+
+  /**
+   * este metodo coge del almacenamiento el valor para saber si puede mostrar el modal o no
+   * Si el valor no existe o es 1, significa que entra por primera vez y habrá de mostrarse
+   */
+  const showModalAtStart = async () => {
+    const canShow = await AsyncStorage.getItem('infoorganization');
+    console.log(canShow)
+    if (canShow == null) {
+      showModalGuide();
+    } else if (parseInt(canShow) === 1) {
+      showModalGuide();
+    }else{
+      setGuideModal(false)
+    }
+  };
+
+  /**
+   * establece y guarda el muestreo del modal onboarding
+   */
+  const onSetDontShowAgain = async () => {
+    let showmodal = '0';
+    await AsyncStorage.setItem('infoorganization', showmodal);
   };
 
   const openProfilePhoto = () => {
@@ -1250,7 +1291,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                                 resizeMode: 'cover',
                                 backgroundColor: 'blue',
                                 marginHorizontal: '4%',
-                                marginVertical:'2%'
+                                marginVertical: '2%',
                               }}
                             />
                           ) : (
@@ -1439,6 +1480,12 @@ export const CreateOrganization = ({navigation, route}: Props) => {
                 subLabel={fontLanguage.organization[0].delete_modal_sublabel}
                 helper={false}
               />
+
+              <OrganizationGuideModal
+                hideModal={hideModalGuide}
+                visible={guideModal}
+                onPress={() => console.log('pressed')}
+              />
             </ScrollView>
           </View>
           <Spinner visible={waitingData} />
@@ -1484,11 +1531,11 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP(80),
     height: heightPercentageToDP(7),
     alignSelf: 'center',
-    flexDirection:'row',
-    alignContent:'center',
-    alignItems:'center',
-    borderTopWidth:0,
-    borderBottomWidth:0,
+    flexDirection: 'row',
+    alignContent: 'center',
+    alignItems: 'center',
+    borderTopWidth: 0,
+    borderBottomWidth: 0,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,

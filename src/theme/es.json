@@ -12,8 +12,13 @@
         "delete_button": "Eliminar",
         "continue_button": "Continuar",
         "confirm_button": "Confirmar",
-        "apply":"Aplicar",
-        "home":"Home"
+        "apply": "Aplicar",
+        "home": "Home",
+        "onboarding_title": "Selecciona la guía",
+        "show_onboarding": "Mostrar guías",
+        "show_onboarding_home": "Guía de página principal ",
+        "show_onboarding_project": "Guía de proyectos",
+        "show_onboarding_organization": "Guía de organización"
       }
     ],
     "login_screen": [
@@ -144,8 +149,8 @@
         "delete_modal_sublabel": "Una vez borrada no podrá recuperarse",
         "no_projects": "No hay proyectos asociados",
         "info_no_projects_text": "Conforme la organización se asocie con los diferentes proyectos, se irán mostrando aquí",
-        "modal_label_created":"¡Organización creada!",
-        "modal_sublabel_created":"No olvides compartir tu proyecto para obtener una mayor participación"
+        "modal_label_created": "¡Organización creada!",
+        "modal_sublabel_created": "No olvides compartir tu proyecto para obtener una mayor participación"
       }
     ],
     "project": [
@@ -323,10 +328,44 @@
           "profile": "Perfil",
           "settings": "Ajustes"
         },
-        "log_in":"Iniciar sesión",
-        "guest_label_1":"¡Únete a Geonity ahora!",
-        "guest_label_2":"Regístrate o inicia sesión para poder participar en los proyectos y aprovechar al máximo todas las funcionalidades disponibles."
-        
+        "log_in": "Iniciar sesión",
+        "guest_label_1": "¡Únete a Geonity ahora!",
+        "guest_label_2": "Regístrate o inicia sesión para poder participar en los proyectos y aprovechar al máximo todas las funcionalidades disponibles.",
+        "guide_home": {
+          "title": "¡Bienvenid@ a Geonity!",
+          "subtitle": "A continuación vamos a presentarte las principales funcionalidades de Geonity y como utilizarlas de manera eficaz",
+          "title2": "Crea tus propios proyectos y organizaciones",
+          "subtitle2": "Para crear un proyecto u organización, deberás pulsar el botón con el símbolo '+' situado en el menú, en la parte inferior de la pantalla. A continuación se desplegará una ventana donde podrás seleccionar qué quieres crear.",
+          "title3": "¿Cómo participar en un proyecto?",
+          "subtitle3": "Busca el proyecto y dirígete a la pantalla del proyecto. Para visualizar el mapa del proyecto o participar en el, tendrás que pulsar el botón 'ver mapa'",
+          "title4": "Edita el perfil a tu medida",
+          "subtitle4": "Para escribir tu biografía o subir una foto de perfil, simplemente pulsa el botón de 'editar' situado en la parte superior derecha de tu pantalla"
+        },
+        "guide_proyect": {
+          "title": "Imagen, nombre y descripción del proyecto",
+          "subtitle_01": "Sube una imagen del proyecto representativa, junto con su nombre ",
+          "subtitle_02": " y una descripción detallada ",
+          "subtitle_03": ". Esto ayudará a los usuarios a comprender fácilmente de que trata tu proyecto.",
+          "title2": "Categorías y organizaciones",
+          "subtitle2_01": " Desde este botón podrás seleccionar las categorías que más encajan con tu proyecto. En la parte inferior aparecerán las categorías seleccionadas y podrás eliminarlas. ",
+          "subtitle2_02": " Buscador dónde añadir la organización que aparecerá junto al proyecto",
+          "title3": "Privacidad de la base de datos y del proyecto",
+          "subtitle3": "En esta pantalla puedes activar una o varias opciones de privacidad según tus necesidades.",
+          "title4": "Preguntas y tipo de respuesta",
+          "subtitle4_01": " Donde podrás escribir la pregunta, duplicarla, eliminarla y/o seleccionarla cómo obligatoria.",
+          "subtitle4_02": " Desde este botón podremos crear una pregunta nueva. ",
+          "subtitle4_03": " La ventana emergente donde podrás seleccionar el tipo de respuesta según las necesidades de la pregunta."
+        },
+        "guide_organization": {
+          "title": "Imagenes de la organización",
+          "subtitle": "Sube dos imágenes representativas de tu organización. Así podrás visualizar en el perfil, ",
+          "subtitle_01": " imagen de portada e ",
+          "subtitle_02": " imagen de perfil.",
+          "title2": "Nombre, email y biografía",
+          "subtitle2": "Ingresa el nombre de tu organización, un email de contacto y una biografía para presentarte a la comunidad de Geonity.",
+          "title3": "Integrantes",
+          "subtitle3": "Para añadir integrantes, escribe el nombre del usuario que deseas incluir. Todos los integrantes se añadirán a una lista donde podrás eliminarlos o convertirlos en administradores."
+        }
       }
     ],
     "utility": [
@@ -352,6 +391,7 @@
         "text_type": "Tipo texto",
         "number_type": "Tipo numérico",
         "image_type": "Tipo imagen",
+        "date_time": "Tipo fecha",
         "response_type": "Tipo de respuesta",
         "write_answer": "Escribe tu pregunta",
         "obligatory": "Obligatorio"

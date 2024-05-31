@@ -8,6 +8,8 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
   Linking,
+  Dimensions,
+  Image,
 } from 'react-native';
 import {
   Button,
@@ -34,12 +36,17 @@ import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from 'react-native-responsive-screen';
+import translate from '../../theme/es.json';
 import {useLanguage} from '../../hooks/useLanguage';
+import PagerView from 'react-native-pager-view';
+import Dots from 'react-native-dots-pagination';
+import Svg, {Circle, Path} from 'react-native-svg';
 
 interface Props {
   label?: string;
   subLabel?: string;
   subLabel2?: string;
+  multipleLabels?: string[];
   onPress?: () => void;
   onPress2?: () => void;
   visible: boolean;
@@ -661,6 +668,7 @@ export const InfoModal = ({
     </Provider>
   );
 };
+
 export const InfoModalMap = ({
   onPress,
   visible,
@@ -744,7 +752,7 @@ export const InfoModalMap = ({
                       height: 'auto',
                       alignItems: 'center',
                       flexDirection: 'row',
-                      marginTop:'15%',
+                      marginTop: '15%',
                       // justifyContent: 'space-between',
                     }}>
                     <Checkbox
@@ -1289,6 +1297,543 @@ export const PoliciesModal = ({
   );
 };
 
+const {width, height} = Dimensions.get('window');
+
+export const GuideModal = ({
+  onPress,
+  onPress2,
+  visible,
+  hideModal,
+  multipleLabels,
+  icon,
+  size,
+  color,
+  helper = true,
+}: Props) => {
+  //sacar cada pantalla a un switch para que funcionen los dots
+  //el skip estará el mismo en todos
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const onPageSelected = (event: any) => {
+    setCurrentIndex(event.nativeEvent.position);
+  };
+  return (
+    <Provider>
+      <Portal>
+        <Modal visible={visible} transparent>
+          <View style={stylesGuide.modalContainer}>
+            <PagerView
+              style={stylesGuide.pagerView}
+              initialPage={0}
+              onPageSelected={onPageSelected}>
+              <View key="1" style={stylesGuide.slide}>
+                <View style={stylesGuide.background}>
+                  <Svg height={height} width={width + 10}>
+                    <Path
+                      d={`M0 ${height / 54} Q${width / 7} ${height / 15}, ${
+                        width / 2.2
+                      } ${height / 8} T${width} ${
+                        height / 5.2
+                      } L${width} 0 L0 0 Z`}
+                      fill={Colors.semanticInfoLight}
+                    />
+                  </Svg>
+                </View>
+                <Image
+                  source={require('../../assets/guide/ONBOARDING_GENERAL_01.png')}
+                  style={{
+                    width: '100%',
+                    height: '40%',
+                  }}
+                  resizeMode="contain"
+                />
+                <Text style={stylesGuide.slideTextTitle}>
+                  {fontLanguage.modals[0].guide_home.title}
+                </Text>
+                <Text style={stylesGuide.slideText}>
+                  {fontLanguage.modals[0].guide_home.subtitle}
+                </Text>
+              </View>
+              <View key="2" style={stylesGuide.slide}>
+                <View style={stylesGuide.background}>
+                  <Svg height={height} width={width + 10}>
+                    <Path
+                      d={`M0 ${height / 5.2} Q${width / 4} ${height / 4.9}, ${
+                        width / 2
+                      } ${height / 4.9} T${width} ${
+                        height / 5.2
+                      } L${width} 0 L0 0 Z`}
+                      fill={Colors.semanticInfoLight}
+                    />
+                  </Svg>
+                </View>
+                <Image
+                  source={require('../../assets/guide/ONBOARDING_GENERAL_02.png')}
+                  style={{
+                    width: '80%',
+                    height: '55%',
+                    // backgroundColor: 'red',
+                    // bottom: '10%',
+                    left: '4%',
+                  }}
+                  resizeMode="contain"
+                />
+                <Text style={stylesGuide.slideTextTitle}>
+                  {fontLanguage.modals[0].guide_home.title2}
+                </Text>
+                <Text style={stylesGuide.slideText}>
+                  {fontLanguage.modals[0].guide_home.subtitle2}
+                </Text>
+              </View>
+              <View key="3" style={stylesGuide.slide}>
+                <View style={stylesGuide.background}>
+                  <Svg height={height} width={width + 10}>
+                    <Path
+                      d={`M0 ${height / 5.2} Q${width / 4} ${height / 5.5}, ${
+                        width / 2
+                      } ${height / 7} T${width} ${
+                        height / 22
+                      } L${width} 0 L0 0 Z`}
+                      fill={Colors.semanticInfoLight}
+                    />
+                  </Svg>
+                </View>
+                <Image
+                  source={require('../../assets/guide/ONBOARDING_GENERAL_03.png')}
+                  style={{
+                    width: '80%',
+                    height: '55%',
+                    left: '2%',
+                  }}
+                  resizeMode="contain"
+                />
+                <Text style={stylesGuide.slideTextTitle}>
+                  {fontLanguage.modals[0].guide_home.title3}
+                </Text>
+                <Text style={stylesGuide.slideText}>
+                  {fontLanguage.modals[0].guide_home.subtitle3}
+                </Text>
+              </View>
+              <View key="4" style={stylesGuide.slide}>
+                <View style={stylesGuide.background}>
+                  <Svg height={height} width={width + 10}>
+                    <Path
+                      d={`M0 ${height / 22} Q${width / 7.5} ${height / 70}, ${
+                        width / 2.5
+                      } ${height / 400} T${width} ${
+                        height / 45
+                      } L${width} 0 L0 0 Z`}
+                      fill={Colors.semanticInfoLight}
+                    />
+                  </Svg>
+                </View>
+                <Image
+                  source={require('../../assets/guide/ONBOARDING_GENERAL_04.png')}
+                  style={{
+                    width: '80%',
+                    height: '65%',
+                    left: '2%',
+                  }}
+                  resizeMode="contain"
+                />
+                <Text style={stylesGuide.slideTextTitle}>
+                  {fontLanguage.modals[0].guide_home.title4}
+                </Text>
+                <Text style={stylesGuide.slideText}>
+                  {fontLanguage.modals[0].guide_home.subtitle4}
+                </Text>
+              </View>
+            </PagerView>
+            <View
+              style={{position: 'absolute', bottom: '5%', alignSelf: 'center'}}>
+              <Dots
+                length={4}
+                active={currentIndex}
+                activeColor="blue"
+                passiveColor="grey"
+                alignDotsOnXAxis={true}
+                marginHorizontal={RFPercentage(0.9)}
+              />
+            </View>
+
+            <TouchableOpacity
+              onPress={hideModal}
+              style={stylesGuide.closeButton}>
+              <Text style={stylesGuide.closeButtonText}>Skip</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+      </Portal>
+    </Provider>
+  );
+};
+
+export const ProyectGuideModal = ({
+  onPress,
+  onPress2,
+  visible,
+  hideModal,
+  multipleLabels,
+  icon,
+  size,
+  color,
+  helper = true,
+}: Props) => {
+  //sacar cada pantalla a un switch para que funcionen los dots
+  //el skip estará el mismo en todos
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const onPageSelected = (event: any) => {
+    setCurrentIndex(event.nativeEvent.position);
+  };
+  return (
+    <Provider>
+      <Portal>
+        <Modal visible={visible} transparent>
+          <View style={stylesGuide.modalContainer}>
+            <PagerView
+              style={stylesGuide.pagerView}
+              initialPage={0}
+              onPageSelected={onPageSelected}>
+              <View key="1" style={stylesGuide.slide}>
+                <View style={stylesGuide.background}>
+                  <Svg height={height} width={width + 10}>
+                    <Path
+                      d={`M0 ${height / 54} Q${width / 7} ${height / 15}, ${
+                        width / 2.2
+                      } ${height / 8} T${width} ${
+                        height / 5.2
+                      } L${width} 0 L0 0 Z`}
+                      fill={Colors.semanticInfoLight}
+                    />
+                  </Svg>
+                </View>
+                <Image
+                  source={require('../../assets/guide/Onboarding_Proyecto_01.png')}
+                  style={{
+                    width: '100%',
+                    height: '50%',
+                  }}
+                  resizeMode="contain"
+                />
+                <Text style={stylesGuide.slideTextTitle}>
+                  {fontLanguage.modals[0].guide_proyect.title}
+                </Text>
+                <Text style={{width: '90%', justifyContent:'center', textAlign:'center'}}>
+                  <Text style={{color: Colors.primaryDark, fontWeight:'bold'}}>
+                    01{' '}
+                    <Text style={stylesGuide.slideText}>
+                      {fontLanguage.modals[0].guide_proyect.subtitle_01}
+                    </Text>
+                  </Text>
+                  <Text style={{color: Colors.primaryDark, fontWeight:'bold'}}>
+                    02{' '}
+                    <Text style={stylesGuide.slideText}>
+                      {fontLanguage.modals[0].guide_proyect.subtitle_02}
+                    </Text>
+                  </Text>
+                  <Text style={{color: Colors.primaryDark, fontWeight:'bold'}}>
+                    03
+                    <Text style={stylesGuide.slideText}>
+                      {fontLanguage.modals[0].guide_proyect.subtitle_03}
+                    </Text>
+                  </Text>
+                </Text>
+              </View>
+              <View key="2" style={stylesGuide.slide}>
+                <View style={stylesGuide.background}>
+                  <Svg height={height} width={width + 10}>
+                    <Path
+                      d={`M0 ${height / 5.2} Q${width / 4} ${height / 4.9}, ${
+                        width / 2
+                      } ${height / 4.9} T${width} ${
+                        height / 5.2
+                      } L${width} 0 L0 0 Z`}
+                      fill={Colors.semanticInfoLight}
+                    />
+                  </Svg>
+                </View>
+                <Image
+                  source={require('../../assets/guide/Onboarding_Proyecto_02.png')}
+                  style={{
+                    width: '80%',
+                    height: '55%',
+                    left: '4%',
+                  }}
+                  resizeMode="contain"
+                />
+                <Text style={stylesGuide.slideTextTitle}>
+                  {fontLanguage.modals[0].guide_proyect.title2}
+                </Text>
+                
+                <Text style={{width: '90%', justifyContent:'center', textAlign:'center'}}>
+                  <Text style={{color: Colors.primaryDark, fontWeight:'bold'}}>
+                    01 
+                    <Text style={stylesGuide.slideText}>
+                      {fontLanguage.modals[0].guide_proyect.subtitle2_01}
+                    </Text>
+                  </Text>
+                  <Text style={{color: Colors.primaryDark, fontWeight:'bold'}}>
+                    02
+                    <Text style={stylesGuide.slideText}>
+                      {fontLanguage.modals[0].guide_proyect.subtitle2_02}
+                    </Text>
+                  </Text>
+                </Text>
+              </View>
+              <View key="3" style={stylesGuide.slide}>
+                <View style={stylesGuide.background}>
+                  <Svg height={height} width={width + 10}>
+                    <Path
+                      d={`M0 ${height / 5.2} Q${width / 4} ${height / 5.5}, ${
+                        width / 2
+                      } ${height / 7} T${width} ${
+                        height / 22
+                      } L${width} 0 L0 0 Z`}
+                      fill={Colors.semanticInfoLight}
+                    />
+                  </Svg>
+                </View>
+                <Image
+                  source={require('../../assets/guide/Onboarding_Proyecto_03.png')}
+                  style={{
+                    width: '80%',
+                    height: '50%',
+                    // left: '2%',
+                  }}
+                  resizeMode="contain"
+                />
+                <Text style={stylesGuide.slideTextTitle}>
+                  {fontLanguage.modals[0].guide_proyect.title3}
+                </Text>
+                <Text style={stylesGuide.slideText}>
+                  {fontLanguage.modals[0].guide_proyect.subtitle3}
+                </Text>
+              </View>
+              <View key="4" style={stylesGuide.slide}>
+                <View style={stylesGuide.background}>
+                  <Svg height={height} width={width + 10}>
+                    <Path
+                      d={`M0 ${height / 22} Q${width / 7.5} ${height / 70}, ${
+                        width / 2.5
+                      } ${height / 400} T${width} ${
+                        height / 45
+                      } L${width} 0 L0 0 Z`}
+                      fill={Colors.semanticInfoLight}
+                    />
+                  </Svg>
+                </View>
+                <Image
+                  source={require('../../assets/guide/Onboarding_Proyecto_04.png')}
+                  style={{
+                    width: '80%',
+                    height: '65%',
+                    left: '2%',
+                  }}
+                  resizeMode="contain"
+                />
+                <Text style={stylesGuide.slideTextTitle}>
+                  {fontLanguage.modals[0].guide_proyect.title4}
+                </Text>
+                <Text style={{width: '90%', justifyContent:'center', textAlign:'center'}}>
+                  <Text style={{color: Colors.primaryDark, fontWeight:'bold'}}>
+                    01
+                    <Text style={stylesGuide.slideText}>
+                      {fontLanguage.modals[0].guide_proyect.subtitle4_01}
+                    </Text>
+                  </Text>
+
+                  <Text style={{color: Colors.primaryDark, fontWeight:'bold'}}>
+                    02
+                    <Text style={stylesGuide.slideText}>
+                      {fontLanguage.modals[0].guide_proyect.subtitle4_02}
+                    </Text>
+                  </Text>
+
+                  <Text style={{color: Colors.primaryDark, fontWeight:'bold'}}>
+                    03
+                    <Text style={stylesGuide.slideText}>
+                      {fontLanguage.modals[0].guide_proyect.subtitle4_03}
+                    </Text>
+                  </Text>
+                </Text>
+              </View>
+            </PagerView>
+            <View
+              style={{position: 'absolute', bottom: '5%', alignSelf: 'center'}}>
+              <Dots
+                length={4}
+                active={currentIndex}
+                activeColor="blue"
+                passiveColor="grey"
+                alignDotsOnXAxis={true}
+                marginHorizontal={RFPercentage(0.9)}
+              />
+            </View>
+
+            <TouchableOpacity
+              onPress={hideModal}
+              style={stylesGuide.closeButton}>
+              <Text style={stylesGuide.closeButtonText}>Skip</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+      </Portal>
+    </Provider>
+  );
+};
+
+export const OrganizationGuideModal = ({
+  onPress,
+  onPress2,
+  visible,
+  hideModal,
+  multipleLabels,
+  icon,
+  size,
+  color,
+  helper = true,
+}: Props) => {
+  //sacar cada pantalla a un switch para que funcionen los dots
+  //el skip estará el mismo en todos
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const onPageSelected = (event: any) => {
+    setCurrentIndex(event.nativeEvent.position);
+  };
+  return (
+    <Provider>
+      <Portal>
+        <Modal visible={visible} transparent>
+          <View style={stylesGuide.modalContainer}>
+            <PagerView
+              style={stylesGuide.pagerView}
+              initialPage={0}
+              onPageSelected={onPageSelected}>
+              <View key="1" style={stylesGuide.slide}>
+                <View style={stylesGuide.background}>
+                  <Svg height={height} width={width + 10}>
+                    <Path
+                      d={`M0 ${height / 54} Q${width / 7} ${height / 15}, ${
+                        width / 2.2
+                      } ${height / 8} T${width} ${
+                        height / 5.2
+                      } L${width} 0 L0 0 Z`}
+                      fill={Colors.semanticInfoLight}
+                    />
+                  </Svg>
+                </View>
+                <Image
+                  source={require('../../assets/guide/Onboarding_Organización_01.png')}
+                  style={{
+                    width: '100%',
+                    height: '50%',
+                  }}
+                  resizeMode="contain"
+                />
+                <Text style={stylesGuide.slideTextTitle}>
+                  {fontLanguage.modals[0].guide_proyect.title}
+                </Text>
+                <Text style={{width: '90%', justifyContent:'center', textAlign:'center'}}>
+                  <Text style={stylesGuide.slideText}>
+                  {fontLanguage.modals[0].guide_organization.subtitle}
+                </Text>
+                <Text style={{color: Colors.primaryDark, fontWeight:'bold'}}>01</Text>
+                <Text style={stylesGuide.slideText}>
+                  {fontLanguage.modals[0].guide_organization.subtitle_01}
+                </Text>
+                <Text style={{color: Colors.primaryDark, fontWeight:'bold'}}>02</Text>
+                <Text style={stylesGuide.slideText}>
+                  {fontLanguage.modals[0].guide_organization.subtitle_02}
+                </Text>
+                </Text>
+                
+              </View>
+              <View key="2" style={stylesGuide.slide}>
+                <View style={stylesGuide.background}>
+                  <Svg height={height} width={width + 10}>
+                    <Path
+                      d={`M0 ${height / 5.2} Q${width / 4} ${height / 4.9}, ${
+                        width / 2
+                      } ${height / 4.9} T${width} ${
+                        height / 5.2
+                      } L${width} 0 L0 0 Z`}
+                      fill={Colors.semanticInfoLight}
+                    />
+                  </Svg>
+                </View>
+                <Image
+                  source={require('../../assets/guide/Onboarding_Organización_02.png')}
+                  style={{
+                    width: '80%',
+                    height: '55%',
+                    // backgroundColor: 'red',
+                    // bottom: '10%',
+                    // left: '4%',
+                  }}
+                  resizeMode="contain"
+                />
+                <Text style={stylesGuide.slideTextTitle}>
+                  {fontLanguage.modals[0].guide_organization.title2}
+                </Text>
+                <Text style={stylesGuide.slideText}>
+                  {fontLanguage.modals[0].guide_organization.subtitle2}
+                </Text>
+              </View>
+              <View key="3" style={stylesGuide.slide}>
+                <View style={stylesGuide.background}>
+                  <Svg height={height} width={width + 10}>
+                    <Path
+                      d={`M0 ${height / 5.2} Q${width / 4} ${height / 5.5}, ${
+                        width / 2
+                      } ${height / 7} T${width} ${
+                        height / 22
+                      } L${width} 0 L0 0 Z`}
+                      fill={Colors.semanticInfoLight}
+                    />
+                  </Svg>
+                </View>
+                <Image
+                  source={require('../../assets/guide/Onboarding_Organización_03.png')}
+                  style={{
+                    width: '80%',
+                    height: '55%',
+                    left: '2%',
+                  }}
+                  resizeMode="contain"
+                />
+                <Text style={stylesGuide.slideTextTitle}>
+                  {fontLanguage.modals[0].guide_organization.title3}
+                </Text>
+                <Text style={stylesGuide.slideText}>
+                  {fontLanguage.modals[0].guide_organization.subtitle3}
+                </Text>
+              </View>
+            </PagerView>
+            <View
+              style={{position: 'absolute', bottom: '5%', alignSelf: 'center'}}>
+              <Dots
+                length={3}
+                active={currentIndex}
+                activeColor="blue"
+                passiveColor="grey"
+                alignDotsOnXAxis={true}
+                marginHorizontal={RFPercentage(0.9)}
+              />
+            </View>
+
+            <TouchableOpacity
+              onPress={hideModal}
+              style={stylesGuide.closeButton}>
+              <Text style={stylesGuide.closeButtonText}>Skip</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+      </Portal>
+    </Provider>
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -1339,5 +1884,67 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     textAlignVertical: 'center',
     alignSelf: 'center',
+  },
+});
+
+const stylesGuide = StyleSheet.create({
+  background: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+  },
+  modalContainer: {
+    flex: 1,
+    // width: '100%',
+    // height: '100%',
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    // alignItems: 'center',
+  },
+  pagerView: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'transparent',
+  },
+  slide: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '95%',
+    // padding:'5%'
+  },
+  slideText: {
+    fontSize: FontSize.fontSizeText14,
+    textAlign: 'center',
+    padding: '5%',
+    color: 'black',
+    fontWeight:'normal'
+    // backgroundColor: 'green',
+  },
+  slideTextTitle: {
+    fontSize: FontSize.fontSizeText20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    padding: '5%',
+    color: 'black',
+    // backgroundColor: 'yellow',
+  },
+  closeButton: {
+    paddingHorizontal: widthPercentageToDP(1.5),
+    paddingVertical: widthPercentageToDP(0.5),
+    backgroundColor: 'white',
+    borderRadius: 5,
+    position: 'absolute',
+    // bottom: 20,
+    top: heightPercentageToDP(3),
+    right: widthPercentageToDP(5),
+  },
+  closeButtonText: {
+    color: 'black',
+    fontSize: FontSize.fontSizeText15,
   },
 });

@@ -1,7 +1,7 @@
 import React, {useEffect, useLayoutEffect, useRef, useState} from 'react';
 import {useLocation} from '../../../hooks/useLocation';
 import {LoadingScreen} from '../../../screens/LoadingScreen';
-import Mapbox from '@rnmapbox/maps';
+import Mapbox, {AtmosphereLayerStyle, Callout} from '@rnmapbox/maps';
 import {useForm} from '../../../hooks/useForm';
 import {
   Button,
@@ -24,6 +24,7 @@ import Plus from '../../../assets/icons/map/plus-map.svg';
 import Compass from '../../../assets/icons/map/Compass.svg';
 import CardMap from '../../../assets/icons/map/card-map.svg';
 import Info from '../../../assets/icons/map/info-circle.svg';
+import Tile from '../../../assets/icons/map/tiles.svg';
 import Back from '../../../assets/icons/map/chevron-left-map.svg';
 import MarkEnabled from '../../../assets/icons/map/mark-asset.svg';
 import MarkDisabled from '../../../assets/icons/map/mark-disabled.svg';
@@ -88,30 +89,6 @@ export const ParticipateMap = ({navigation, route}: Props) => {
   const {fontLanguage} = useLanguage();
   const {currentISODateTime} = useDateTime();
   const nav = useNavigation();
-
-  // useLayoutEffect(() => {
-  //   navigation.getParent()?.setOptions({
-  //     tabBarStyle: {
-  //       display: "none",
-  //     }
-  //   });
-  //   return () => navigation.getParent()?.setOptions({
-  //     tabBarStyle: undefined
-  //   });
-  // }, [navigation]);
-
-  // useEffect(() => {
-  //   nav.getParent()?.setOptions({
-  //     tabBarStyle: {
-  //       // display: "none",
-  //       opacity: 0,
-  //     },
-  //   });
-  //   return () =>
-  //     nav.getParent()?.setOptions({
-  //       tabBarStyle: undefined,
-  //     });
-  // }, [nav]);
 
   //#region VARIABLES
   // map refs
@@ -227,6 +204,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     data: [],
     images: [],
   });
+
   const [showSelectedObservation, setShowSelectedObservation] =
     useState<Observation>({
       id: 0,
@@ -243,10 +221,6 @@ export const ParticipateMap = ({navigation, route}: Props) => {
       images: [],
     });
 
-  // TODO gestionar lo de las imagenes
-  const [imageObservation, setImageObservation] = useState<any>();
-  const [imageObservationBlob, setImageObservationBlob] = useState<any>();
-
   // map controll
   const [isCreatingObservation, setIsCreatingObservation] = useState(false);
   const [colorMark, setColorMark] = useState('#FC5561');
@@ -256,6 +230,8 @@ export const ParticipateMap = ({navigation, route}: Props) => {
   const [onlyRead, setOnlyRead] = useState(false);
 
   const [waitingData, setWaitingData] = useState(true);
+
+  const [tile, setTile] = useState('mapbox://styles/mapbox/streets-v12');
 
   // map variables
 
@@ -301,9 +277,6 @@ export const ParticipateMap = ({navigation, route}: Props) => {
   }, []);
 
   useEffect(() => {
-    // if (userInfo.pk !== showSelectedObservation.creator) {
-    //   setOnlyRead(true);
-    // }
     if (showSelectedObservation) {
       handleEdit();
     }
@@ -454,6 +427,9 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     }
   };
 
+  /**
+   * establece y guarda el muestreo del modal informativo
+   */
   const onSetDontShowAgain = async () => {
     let showmodal = start == true ? '1' : '0';
     await AsyncStorage.setItem('showmodalmap', showmodal);
@@ -518,6 +494,38 @@ export const ParticipateMap = ({navigation, route}: Props) => {
 
         form.images!.push(newImageObservation);
       }
+    } else if (type === 'DATE') {
+      let val: Date = value;
+      let day = val.getDate(); // Obtiene el día
+      let month = val.getMonth() + 1; // Obtiene el mes (agregando 1 porque los meses en JavaScript van de 0 a 11)
+      let year = val.getFullYear();
+      let formattedDate = `${day}/${month < 10 ? '0' : ''}${month}/${year}`;
+      console.log(formattedDate);
+      // Clona el array existente en form.data si existe, o crea uno nuevo si es nulo.
+      const newDataArray: ObservationDataForm[] = form.data
+        ? [...form.data]
+        : [];
+
+      // Busca si ya existe un elemento en newDataArray con la misma clave (id).
+      const existingElement = newDataArray.find(
+        item => item.key === id.toString(),
+      );
+
+      if (existingElement) {
+        // Si ya existe un elemento con la misma clave (id), actualiza su valor.
+        existingElement.value = formattedDate;
+        existingElement.type = type;
+      } else {
+        // Si no existe un elemento con la misma clave (id), crea uno nuevo y agrégalo.
+        newDataArray.push({
+          key: id.toString(),
+          value: formattedDate,
+          type: type,
+        });
+      }
+      // console.log(JSON.stringify(newDataArray, null, 2));
+      // Actualiza form.data con el nuevo array de elementos.
+      form.data = newDataArray;
     } else {
       // Clona el array existente en form.data si existe, o crea uno nuevo si es nulo.
       const newDataArray: ObservationDataForm[] = form.data
@@ -662,6 +670,9 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     }
   };
 
+  /**
+   * Valida y guarda una nueva observación
+   */
   const onSaveObservation = async () => {
     if (canSave) {
       let validate = true;
@@ -862,6 +873,9 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     }
   };
 
+  /**
+   * Valida y edita una observación
+   */
   const onEditObservation = async () => {
     setWaitingData(true);
     const token = await AsyncStorage.getItem('token');
@@ -1002,6 +1016,9 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     }
   };
 
+  /**
+   * Borra una observación propia
+   */
   const onDeleteObservation = async () => {
     let token;
     while (!token) {
@@ -1078,6 +1095,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
   //#endregion
 
   //#region BUTTONS
+
   /**
    * cuando le das al boton para añadir un marcador, se crea por debajo la nueva observation
    * además, se actualizará la lista de observaciones
@@ -1152,6 +1170,18 @@ export const ParticipateMap = ({navigation, route}: Props) => {
       zoomLevel: 16,
     });
   };
+
+  /**
+   * cambia el tileset del mapa, variando entre vistas
+   */
+  const changeTile = () => {
+    if (tile === 'mapbox://styles/mapbox/streets-v12') {
+      setTile('mapbox://styles/mapbox/satellite-streets-v12');
+    } else {
+      setTile('mapbox://styles/mapbox/streets-v12');
+    }
+  };
+
   //#endregion
 
   //#region UPDATE MAP
@@ -1164,7 +1194,6 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     // setObservationList(observationListcopy)
     // getProjectApi()
     mapViewRef.current?.forceUpdate();
-    console.log('entra en el touch end para hacer force update');
   };
 
   //#endregion
@@ -1205,7 +1234,9 @@ export const ParticipateMap = ({navigation, route}: Props) => {
   //   // );
   // }
 
-  
+  //#region  METODOS CLUSTERING
+
+  //#endregion
 
   return (
     <>
@@ -1224,6 +1255,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                       ref={element => (mapViewRef.current = element!)}
                       key={mapUpdateFlag ? 'mapUpdate' : 'mapNoUpdate'}
                       style={{flex: 1}}
+                      styleURL={tile} //streets-v12 es el normal
                       logoEnabled={false}
                       scaleBarEnabled={false}
                       compassEnabled={false}
@@ -1235,6 +1267,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                       onLongPress={data => {
                         addMarkLongPress(data);
                       }}>
+                      {/* <Mapbox.Atmosphere style={terrainStyles.AtmosphereLayerStyle}/> */}
                       <Camera
                         ref={reference => (cameraRef.current = reference!)}
                         zoomLevel={15}
@@ -1256,6 +1289,13 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                         allowUpdates={true}
                       />
                       <Mapbox.UserLocation visible animated />
+                      {/* <Clusterer
+                        data={retPoints()}
+                        region={region}
+                        options={DEFAULT_OPTIONS}
+                        mapDimensions={MAP_DIMENSIONS} renderItem={function (item: supercluster.PointOrClusterFeature<supercluster.AnyProps, supercluster.AnyProps>, index: number, array: supercluster.PointOrClusterFeature<supercluster.AnyProps, supercluster.AnyProps>[]): React.ReactElement<any, string | React.JSXElementConstructor<any>> {
+                          throw new Error('Function not implemented.');
+                        } }                      /> */}
                       {observationList.length > 0 &&
                         observationList.map((x, index) => {
                           if (x.geoposition.point) {
@@ -1409,6 +1449,7 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                         </MarkerView>
                       )}
                     </MapView>
+
                     {showConfirmMark && (
                       <View style={styles.showConfirmMarkStyle}>
                         <View
@@ -1529,6 +1570,22 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                       }}
                       onPress={() => showModalInfo()}>
                       <Info width={RFPercentage(4)} height={RFPercentage(4)} />
+                    </TouchableOpacity>
+                    {/* TILE */}
+                    <TouchableOpacity
+                      style={{
+                        position: 'absolute',
+                        right: '3%',
+                        top: '25%',
+                        backgroundColor: 'white',
+                        borderRadius: 50,
+                        padding: '1%',
+                        alignContent: 'center',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                      onPress={() => changeTile()}>
+                      <Tile width={RFPercentage(4)} height={RFPercentage(4)} />
                     </TouchableOpacity>
                   </View>
                 ) : (
@@ -1682,9 +1739,9 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                           }
                         })}
                         {/* si es igual al creator y no está creando, está editando
-                      si es diferente al creador y no está creando, está viendo
-                      si no, significa que está creando
-                  */}
+                        si es diferente al creador y no está creando, está viendo
+                        si no, significa que está creando
+                        */}
                         {userInfo.pk === showSelectedObservation.creator &&
                         !isCreatingObservation ? (
                           <>
@@ -1875,3 +1932,11 @@ const styles = StyleSheet.create({
     paddingVertical: '5%',
   },
 });
+const terrainStyles = {
+  defaultTerrain: {
+    style: Mapbox.Terrain,
+  },
+  AtmosphereLayerStyle: {
+    style: Mapbox.Atmosphere,
+  },
+};

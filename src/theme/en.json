@@ -13,7 +13,12 @@
         "continue_button": "Continue",
         "confirm_button": "Confirm",
         "apply": "Apply",
-        "home":"Home"
+        "home":"Home",
+        "onboarding_title":"Select the guide",
+        "show_onboarding":"Show guides",
+        "show_onboarding_home": "Show home guide",
+        "show_onboarding_project": "Show project guide",
+        "show_onboarding_organization": "Show organization guide"
       }
     ],
     "login_screen": [
@@ -326,7 +331,43 @@
 
         "log_in": "Log in",
         "guest_label_1": "Join Geonity now!",
-        "guest_label_2": "Sign up or log in to participate in projects and make the most of all available features."
+        "guest_label_2": "Sign up or log in to participate in projects and make the most of all available features.",
+        "guide_home": {
+          "title": "Welcome to Geonity!",
+          "subtitle": "Next, we will introduce you to the main features of Geonity and how to use them effectively.",
+          "title2": "Create your own projects and organizations",
+          "subtitle2": "To create a project or organization, you should tap the button with the '+' symbol located in the menu at the bottom of the screen. Then, a window will appear where you can select what you want to create.",
+          "title3": "How to participate in a project?",
+          "subtitle3": "Search for the project and go to the project's screen. To view the project map or participate in it, you will have to tap the 'view map' button.",
+          "title4": "Customize your profile",
+          "subtitle4": "To write your biography or upload a profile picture, simply tap the 'edit' button located in the top right corner of your screen."
+        },
+        "guide_proyect": {
+          "title": "Project Image, Name, and Description",
+          "subtitle_01": "Upload a representative project image along with its name ",
+          "subtitle_02": " and a detailed description ",
+          "subtitle_03": ". This will help users easily understand what your project is about.",
+          "title2": "Categories and Organizations",
+          "subtitle2_01": "From this button, you can select the categories that best fit your project. The selected categories will appear at the bottom and you can remove them. ",
+          "subtitle2_02": " Search bar to add the organization that will appear alongside the project.",
+          "title3": "Database and Project Privacy",
+          "subtitle3": "On this screen, you can enable one or more privacy options according to your needs.",
+          "title4": "Questions and Response Types",
+          "subtitle4_01": " Where you can write the question, duplicate it, delete it, and/or mark it as mandatory.",
+          "subtitle4_02": " From this button, we can create a new question. ",
+          "subtitle4_03": " The pop-up window where you can select the type of response according to the question's needs."
+        },
+        "guide_organization": {
+          "title": "Organization Images",
+          "subtitle": "Upload two representative images of your organization. This way, you can visualize in the profile, ",
+          "subtitle_01": " cover image and ",
+          "subtitle_02": " profile image.",
+          "title2": "Name, Email, and Biography",
+          "subtitle2": "Enter the name of your organization, a contact email, and a biography to introduce yourself to the Geonity community.",
+          "title3": "Members",
+          "subtitle3": "To add members, type the name of the user you want to include. All members will be added to a list where you can remove them or make them administrators."
+        }
+        
       }
     ],
     "utility": [
@@ -352,6 +393,7 @@
         "text_type": "Text type",
         "number_type": "Numeric type",
         "image_type": "Image type",
+        "date_time": "Date type",
         "response_type": "Response type",
         "write_answer": "Write your question",
         "obligatory": "Mandatory"

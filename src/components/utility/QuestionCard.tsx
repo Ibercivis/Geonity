@@ -75,6 +75,9 @@ export const QuestionCard = ({
       case 'IMG': // IMG
       setLocalResponseTypeText(fontLanguage.question_card[0].image_type);
         break;
+      case 'DATE': // DATE
+      setLocalResponseTypeText(fontLanguage.question_card[0].date_time);
+        break;
       default:
         setLocalResponseTypeText(fontLanguage.question_card[0].response_type);
         break;
@@ -134,13 +137,6 @@ export const QuestionCard = ({
               justifyContent: 'space-between',
               alignItems: 'center',
             }}>
-            {/* <TouchableOpacity
-              style={{
-                marginHorizontal: RFPercentage(0.5),
-              }}
-              onPress={onDuplicate}>
-              <Paperclip height={RFPercentage(1.8)} width={RFPercentage(1.8)} />
-            </TouchableOpacity> */}
             <TouchableOpacity
               style={{
                 marginHorizontal: RFPercentage(0.5),
