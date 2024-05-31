@@ -1,4 +1,8 @@
-![Alt text](gnd.png)
+<!-- ![Alt text](gnd.png) -->
+<div align="center">
+  <img src="gnd.png" alt="Alt text">
+</div>
+
 This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
 # Getting Started
