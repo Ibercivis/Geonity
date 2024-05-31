@@ -9,9 +9,9 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { Colors } from '../theme/colors';
-import {FontSize} from '../theme/fonts';
-import {Size} from '../theme/size';
+import { Colors } from '../../theme/colors';
+import {FontSize} from '../../theme/fonts';
+import {Size} from '../../theme/size';
 import { RFPercentage } from 'react-native-responsive-fontsize';
 
 /**

@@ -15,7 +15,7 @@ import {
   View,
 } from 'react-native';
 import {RFPercentage} from 'react-native-responsive-fontsize';
-import {HeaderComponent} from '../../HeaderComponent';
+import {HeaderComponent} from '../../utility/HeaderComponent';
 import {CustomButton} from '../../utility/CustomButton';
 import {Colors} from '../../../theme/colors';
 import {

@@ -7,7 +7,7 @@ import citmapApi from '../../../api/citmapApi';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Organization} from '../../../interfaces/interfaces';
 import {RFPercentage} from 'react-native-responsive-fontsize';
-import {HeaderComponent} from '../../HeaderComponent';
+import {HeaderComponent} from '../../utility/HeaderComponent';
 import {StackParams} from '../../../navigation/HomeNavigator';
 import {StackScreenProps} from '@react-navigation/stack';
 import { useLanguage } from '../../../hooks/useLanguage';

@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, Animated, ActivityIndicator, StyleProp, ImageStyle} from 'react-native';
-import {useAnimation} from '../hooks/useAnimation';
+import {useAnimation} from '../../hooks/useAnimation';
 import {useState} from 'react';
 
 //componente que permite al pasarle una url de una imagen + un estilo, hacer una pequeña animación para mostrarlo

@@ -3,11 +3,11 @@ import React from 'react';
 import {Header} from '@rneui/base';
 import {Dimensions, Text, TouchableOpacity, View} from 'react-native';
 import {IconTemp} from './IconTemp';
-import {Size} from '../theme/size';
-import {FontFamily, FontSize} from '../theme/fonts';
-import Back from '../assets/icons/general/chevron-left.svg';
+import {Size} from '../../theme/size';
+import {FontFamily, FontSize} from '../../theme/fonts';
+import Back from '../../assets/icons/general/chevron-left.svg';
 import {RFPercentage} from 'react-native-responsive-fontsize';
-import { Colors } from '../theme/colors';
+import { Colors } from '../../theme/colors';
 
 interface Props {
   onPressLeft: () => void;

@@ -1,7 +1,7 @@
 import React from 'react';
 import {TouchableOpacity, View} from 'react-native';
-import {Size} from '../theme/size';
-import {globalStyles} from '../theme/theme';
+import {Size} from '../../theme/size';
+import {globalStyles} from '../../theme/theme';
 import {IconTemp} from './IconTemp';
 
 interface Props {

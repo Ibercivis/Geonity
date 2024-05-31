@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {HeaderComponent} from '../../HeaderComponent';
+import {HeaderComponent} from '../../utility/HeaderComponent';
 import {StackScreenProps} from '@react-navigation/stack';
 import {
   FlatList,
@@ -47,7 +47,7 @@ import PlusBlue from '../../../assets/icons/project/plus-circle-blue.svg';
 import UserMissing from '../../../assets/icons/profile/User-image.svg';
 import Delete from '../../../assets/icons/project/trash.svg';
 import {QuestionCard} from '../../utility/QuestionCard';
-import {IconTemp} from '../../IconTemp';
+import {IconTemp} from '../../utility/IconTemp';
 import {useForm} from '../../../hooks/useForm';
 import {
   DeleteModal,

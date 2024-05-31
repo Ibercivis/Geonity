@@ -11,7 +11,7 @@ import {
 import {Colors} from '../../theme/colors';
 import {FontFamily, FontSize} from '../../theme/fonts';
 import {Size} from '../../theme/size';
-import {IconTemp} from '../IconTemp';
+import {IconTemp} from './IconTemp';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 
 interface Props {

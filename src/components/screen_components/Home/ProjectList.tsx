@@ -18,7 +18,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Project, ShowProject} from '../../../interfaces/interfaces';
 import {useForm} from '../../../hooks/useForm';
 import {RFPercentage} from 'react-native-responsive-fontsize';
-import {HeaderComponent} from '../../HeaderComponent';
+import {HeaderComponent} from '../../utility/HeaderComponent';
 import {StackParams} from '../../../navigation/HomeNavigator';
 import {StackScreenProps} from '@react-navigation/stack';
 import {HasTag, Topic} from '../../../interfaces/appInterfaces';

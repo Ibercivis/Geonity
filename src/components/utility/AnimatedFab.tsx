@@ -1,18 +1,12 @@
 import React from 'react';
 import {
-  StyleProp,
-  ViewStyle,
-  Animated,
   StyleSheet,
   Platform,
-  ScrollView,
-  Text,
   SafeAreaView,
-  I18nManager,
 } from 'react-native';
 import {AnimatedFAB} from 'react-native-paper';
 import {StyleProps} from 'react-native-reanimated';
-import { Size } from '../theme/size';
+import { Size } from '../../theme/size';
 
 interface Props {
   animatedValue?: string;

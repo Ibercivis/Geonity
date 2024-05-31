@@ -3,7 +3,7 @@ import {TouchableOpacity, Text, View, StyleSheet} from 'react-native';
 import {Colors} from '../../theme/colors';
 import {FontFamily, FontSize} from '../../theme/fonts';
 import {Size} from '../../theme/size';
-import {IconTemp} from '../IconTemp';
+import {IconTemp} from './IconTemp';
 import { ImageView } from './ImageView';
 
 interface Props {

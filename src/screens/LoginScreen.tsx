@@ -1100,7 +1100,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                   </TouchableOpacity>
 
                   {/* loggin buttons */}
-                  <View style={styles.loginButtonsContainer}>
+                  {/* <View style={styles.loginButtonsContainer}>
                     <CustomButtonOutline
                       backgroundColor="white"
                       fontColor="black"
@@ -1108,7 +1108,7 @@ export const LoginScreen = ({navigation, route}: Props) => {
                       label={fontLanguage.login_screen[0].loggin_google}
                       onPress={() => logginGoogle()}
                     />
-                    {/* <CustomButtonOutline
+                    <CustomButtonOutline
                         backgroundColor="white"
                         fontColor="black"
                         iconLeft="apple"
@@ -1123,8 +1123,8 @@ export const LoginScreen = ({navigation, route}: Props) => {
                           fontLanguage.login_screen[0].loggin_microsoft
                         }
                         onPress={() => console.log()}
-                      /> */}
-                  </View> 
+                      />
+                  </View>  */}
 
                   {/* divider */}
                   <View>

@@ -25,7 +25,7 @@ import {
 } from '../../../interfaces/interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import citmapApi, {imageUrl} from '../../../api/citmapApi';
-import {HeaderComponent} from '../../HeaderComponent';
+import {HeaderComponent} from '../../utility/HeaderComponent';
 import {useForm} from '../../../hooks/useForm';
 import {RFPercentage} from 'react-native-responsive-fontsize';
 import Geo from '../../../assets/icons/general/geo-alt-fill.svg';
