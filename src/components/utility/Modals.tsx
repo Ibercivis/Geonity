@@ -974,29 +974,61 @@ export const PassModal = ({
                       onChangeText={value => setPassword(value)}
                     />
                   </View>
-                  <TouchableOpacity
-                    activeOpacity={0.5}
+                  <View
                     style={{
-                      backgroundColor: 'white',
-                      marginTop: '4%',
-                      borderWidth: 1,
-                      borderRadius: 10,
-                      paddingHorizontal: RFPercentage(3),
-                      paddingVertical: RFPercentage(1),
-                    }}
-                    onPress={() => {
-                      setPass!(password);
+                      width: '100%',
+                      marginVertical: RFPercentage(1),
+                      flexDirection: 'row',
+                      alignItems:'center',
+                      justifyContent: 'space-evenly'
                     }}>
-                    <Text
+                    <TouchableOpacity
+                      activeOpacity={0.5}
                       style={{
-                        color: 'black',
-                        fontSize: FontSize.fontSizeText13,
-                        justifyContent: 'center',
-                        fontFamily: FontFamily.NotoSansDisplayRegular,
+                        backgroundColor: 'white',
+                        marginTop: '4%',
+                        borderWidth: 1,
+                        borderRadius: 10,
+                        paddingHorizontal: RFPercentage(3),
+                        paddingVertical: RFPercentage(1),
+                      }}
+                      onPress={() => {
+                        setPass!(password);
                       }}>
-                      {fontLanguage.modals[0].accept_button_text}
-                    </Text>
-                  </TouchableOpacity>
+                      <Text
+                        style={{
+                          color: 'black',
+                          fontSize: FontSize.fontSizeText13,
+                          justifyContent: 'center',
+                          fontFamily: FontFamily.NotoSansDisplayRegular,
+                        }}>
+                        {fontLanguage.modals[0].accept_button_text}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      activeOpacity={0.5}
+                      style={{
+                        backgroundColor: 'white',
+                        marginTop: '4%',
+                        borderWidth: 1,
+                        borderRadius: 10,
+                        paddingHorizontal: RFPercentage(3),
+                        paddingVertical: RFPercentage(1),
+                      }}
+                      onPress={() => {
+                        hideModal()
+                      }}>
+                      <Text
+                        style={{
+                          color: 'black',
+                          fontSize: FontSize.fontSizeText13,
+                          justifyContent: 'center',
+                          fontFamily: FontFamily.NotoSansDisplayRegular,
+                        }}>
+                        {fontLanguage.modals[0].cancel_button_text}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
             </View>

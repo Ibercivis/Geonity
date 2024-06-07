@@ -940,6 +940,7 @@ export const Home = ({navigation}: Props) => {
                                         navigation.navigate('ProjectList', {
                                           title:
                                             fontLanguage.Home[0].new_project,
+                                            id: 1
                                         });
                                       } else {
                                         toastInfoGuest();
@@ -1059,6 +1060,7 @@ export const Home = ({navigation}: Props) => {
                                         title:
                                           fontLanguage.Home[0]
                                             .important_projects,
+                                            id: 2
                                       });
                                     } else {
                                       toastInfoGuest();
@@ -1184,6 +1186,7 @@ export const Home = ({navigation}: Props) => {
                                     if (!isGuest) {
                                       navigation.navigate('ProjectList', {
                                         title: fontLanguage.Home[0].interesting,
+                                        id: 3
                                       });
                                     } else {
                                       toastInfoGuest();

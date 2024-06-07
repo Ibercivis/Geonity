@@ -49,8 +49,113 @@ export const ProjectList = (props: Props) => {
           Authorization: token,
         },
       });
-      setProjectList(resp.data);
-    } catch {}
+      // setProjectList(resp.data);
+      sortProject(resp.data);
+    } catch (err){
+      console.log(JSON.stringify(err, null, 2))
+    }
+  };
+
+  /**
+   * 1- ordena por fecha
+   * 2- ordena por contribuciones
+   * 3- ordena por los que coincidan con los gustos del user
+   * @param list listado de proyectos
+   */
+  const sortProject = (list: ShowProject[]) => {
+    switch (props.route.params.id) {
+      case 1:
+        const sortedList = [...list].sort((a, b) => {
+          if (!a.created_at || !b.created_at) return 0; // Manejar casos donde created_at puede ser undefined
+          return (
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          );
+        });
+        setProjectList(sortedList);
+        break;
+      case 2:
+        const sortedListbycontributions = [...list].sort((a, b) => {
+          if (a.contributions === undefined || b.contributions === undefined)
+            return 0; // Manejar casos donde contributions puede ser undefined
+          return (b.contributions || 0) - (a.contributions || 0);
+        });
+
+        setProjectList(sortedListbycontributions);
+        break;
+      case 3:
+        //ahora aquí se recorre el proyecto para ver si se le ha dado like
+        //si se le ha dado like, se guarda el topic
+        //se hace otra ordenación de listado en base a si tienen ese topic o no
+        const sortedListbyTags = [...list];
+
+        //primero se filtran para ver si le has dado like o no
+        const bytagFiltered = sortedListbyTags.filter(
+          tags => tags.is_liked_by_user,
+        );
+        // Extraer los arrays de números de cada topic
+        const topicArrays = bytagFiltered.map(topic => topic.topic);
+
+        // Encontrar los números en común
+        const commonNumbers = findCommonNumbers(topicArrays);
+        let uniqueNumbers: number[] = [];
+
+        // Si no hay números en común, encontrar todos los números únicos
+        if (commonNumbers.length === 0) {
+          uniqueNumbers = findAllUniqueNumbers(topicArrays);
+          const compareByuniqueNumbers = (
+            a: ShowProject,
+            b: ShowProject,
+          ): number => {
+            const countuniqueNumbers = (topic: number[]): number => {
+              return topic.filter(num => uniqueNumbers.includes(num)).length;
+            };
+
+            const countA = countuniqueNumbers(a.topic);
+            const countB = countuniqueNumbers(b.topic);
+
+            // Ordenar en base a la cantidad de números comunes
+            if (countA !== countB) {
+              return countB - countA; // Orden descendente por cantidad de números comunes
+            }
+
+            // Si tienen la misma cantidad de números comunes, mantener el orden original
+            return sortedListbyTags.indexOf(a) - sortedListbyTags.indexOf(b);
+          };
+
+          // Ordenar sortedListbyTags usando la función de comparación personalizada
+          const sortedListinteresting = sortedListbyTags.sort(
+            compareByuniqueNumbers,
+          );
+          setProjectList(sortedListinteresting);
+        } else {
+          const compareByCommonNumbers = (
+            a: ShowProject,
+            b: ShowProject,
+          ): number => {
+            const countCommonNumbers = (topic: number[]): number => {
+              return topic.filter(num => commonNumbers.includes(num)).length;
+            };
+
+            const countA = countCommonNumbers(a.topic);
+            const countB = countCommonNumbers(b.topic);
+
+            // Ordenar en base a la cantidad de números comunes
+            if (countA !== countB) {
+              return countB - countA; // Orden descendente por cantidad de números comunes
+            }
+
+            // Si tienen la misma cantidad de números comunes, mantener el orden original
+            return sortedListbyTags.indexOf(a) - sortedListbyTags.indexOf(b);
+          };
+
+          // Ordenar sortedListbyTags usando la función de comparación personalizada
+          const sortedListinteresting = sortedListbyTags.sort(
+            compareByCommonNumbers,
+          );
+          setProjectList(sortedListinteresting);
+        }
+        break;
+    }
   };
 
   const getHastagApi = async () => {
@@ -79,6 +184,18 @@ export const ProjectList = (props: Props) => {
       );
       projectListApi();
     } catch (err) {}
+  };
+
+  // Función para encontrar números en común
+  const findCommonNumbers = (arrays: number[][]): number[] => {
+    if (arrays.length === 0) return [];
+    return arrays.reduce((acc, curr) => acc.filter(num => curr.includes(num)));
+  };
+
+  // Función para encontrar todos los números sin duplicados
+  const findAllUniqueNumbers = (arrays: number[][]): number[] => {
+    const allNumbers = arrays.flat();
+    return Array.from(new Set(allNumbers));
   };
 
   return (

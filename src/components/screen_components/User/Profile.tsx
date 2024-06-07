@@ -1111,9 +1111,6 @@ export const Profile = ({navigation}: Props) => {
     return `${day}/${month}/${year} - ${hours}:${minutes}`;
   };
 
-  const writeForm = () => {
-    setObject(userProfile);
-  };
 
   const rightRenderIconHeader = () => {
     if (userEdit) {
@@ -1155,9 +1152,6 @@ export const Profile = ({navigation}: Props) => {
     }
   };
 
-  const showModalGenre = () => setModalVisibleGenre(true);
-  const showModalSave = () => setModalVisibleSave(true);
-  const hideModalSave = () => setModalVisibleSave(false);
   const hideModalGenre = () => setModalVisibleGenre(false);
   const showModalOrganization = () => setModalVisibleOrganization(true);
   const hideModalOrganization = () => setModalVisibleOrganization(false);
