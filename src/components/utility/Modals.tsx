@@ -64,7 +64,7 @@ interface Props {
   onPressDontShowAgain?: () => void;
 }
 
-const {fontLanguage} = useLanguage();
+const {fontLanguage, deviceLanguage} = useLanguage();
 
 export const GenderSelectorModal = ({
   onPress,
@@ -1402,7 +1402,7 @@ export const GuideModal = ({
                   </Svg>
                 </View>
                 <Image
-                  source={require('../../assets/guide/ONBOARDING_GENERAL_02.png')}
+                  source={deviceLanguage === 'es_ES' ? require('../../assets/guide/ONBOARDING_GENERAL_02.png') : require('../../assets/guide/Onboarding_General_01_en.png')}
                   style={{
                     width: '80%',
                     height: '55%',
@@ -1433,7 +1433,7 @@ export const GuideModal = ({
                   </Svg>
                 </View>
                 <Image
-                  source={require('../../assets/guide/ONBOARDING_GENERAL_03.png')}
+                  source={deviceLanguage === 'es_ES' ? require('../../assets/guide/ONBOARDING_GENERAL_03.png') : require('../../assets/guide/Onboarding_General_02_en.png')}
                   style={{
                     width: '80%',
                     height: '55%',
@@ -1462,7 +1462,7 @@ export const GuideModal = ({
                   </Svg>
                 </View>
                 <Image
-                  source={require('../../assets/guide/ONBOARDING_GENERAL_04.png')}
+                  source={deviceLanguage === 'es_ES' ? require('../../assets/guide/ONBOARDING_GENERAL_04.png') : require('../../assets/guide/Onboarding_General_03_en.png')}
                   style={{
                     width: '80%',
                     height: '65%',
@@ -1549,7 +1549,7 @@ export const ProyectGuideModal = ({
                   </Svg>
                 </View>
                 <Image
-                  source={require('../../assets/guide/Onboarding_Proyecto_01.png')}
+                  source={deviceLanguage === 'es_ES' ? require('../../assets/guide/Onboarding_Proyecto_01.png'):require('../../assets/guide/Onboarding_Proyecto_01_en.png')}
                   style={{
                     width: '100%',
                     height: '50%',
@@ -1599,7 +1599,7 @@ export const ProyectGuideModal = ({
                   </Svg>
                 </View>
                 <Image
-                  source={require('../../assets/guide/Onboarding_Proyecto_02.png')}
+                  source={deviceLanguage === 'es_ES' ? require('../../assets/guide/Onboarding_Proyecto_02.png') : require('../../assets/guide/Onboarding_Proyecto_02_en.png')}
                   style={{
                     width: '80%',
                     height: '55%',
@@ -1645,7 +1645,7 @@ export const ProyectGuideModal = ({
                   </Svg>
                 </View>
                 <Image
-                  source={require('../../assets/guide/Onboarding_Proyecto_03.png')}
+                  source={deviceLanguage === 'es_ES' ? require('../../assets/guide/Onboarding_Proyecto_03.png') : require('../../assets/guide/Onboarding_Proyecto_03_en.png')}
                   style={{
                     width: '80%',
                     height: '50%',
@@ -1674,7 +1674,7 @@ export const ProyectGuideModal = ({
                   </Svg>
                 </View>
                 <Image
-                  source={require('../../assets/guide/Onboarding_Proyecto_04.png')}
+                  source={deviceLanguage === 'es_ES' ? require('../../assets/guide/Onboarding_Proyecto_04.png') : require('../../assets/guide/Onboarding_Proyecto_04_en.png')}
                   style={{
                     width: '80%',
                     height: '65%',
@@ -1785,7 +1785,7 @@ export const OrganizationGuideModal = ({
                   </Svg>
                 </View>
                 <Image
-                  source={require('../../assets/guide/Onboarding_Organización_01.png')}
+                  source={deviceLanguage === 'es_ES' ? require('../../assets/guide/Onboarding_Organización_01.png') : require('../../assets/guide/Onboarding_Organización_01_en.png')}
                   style={{
                     width: '100%',
                     height: '50%',
@@ -1832,7 +1832,7 @@ export const OrganizationGuideModal = ({
                   </Svg>
                 </View>
                 <Image
-                  source={require('../../assets/guide/Onboarding_Organización_02.png')}
+                  source={deviceLanguage === 'es_ES' ? require('../../assets/guide/Onboarding_Organización_02.png') : require('../../assets/guide/Onboarding_Organización_02_en.png')}
                   style={{
                     width: '80%',
                     height: '55%',
@@ -1863,7 +1863,7 @@ export const OrganizationGuideModal = ({
                   </Svg>
                 </View>
                 <Image
-                  source={require('../../assets/guide/Onboarding_Organización_03.png')}
+                  source={deviceLanguage === 'es_ES' ? require('../../assets/guide/Onboarding_Organización_03.png') : require('../../assets/guide/Onboarding_Organización_03_en.png')}
                   style={{
                     width: '80%',
                     height: '55%',

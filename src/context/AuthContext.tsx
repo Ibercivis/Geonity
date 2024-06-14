@@ -3,7 +3,6 @@ import {authReducer} from './authReducer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   LoginData,
-  LoginResponse,
   RegisterData,
   RegisterResponse,
   User,
@@ -45,8 +44,6 @@ type AuthContextProps = {
   recoveryPass: (email: string) => void;
   changePass: (pass1: string, pass2: string) => void;
   isGuest: boolean;
-  // setUsername: (userName: string) => void;
-  // setPassword: (password: string) => void;
 };
 
 //crea el contexto
@@ -63,7 +60,6 @@ export const AuthProvider = ({children}: any) => {
   const checkToken = async () => {
     const token = await AsyncStorage.getItem('token');
     if (!token) return action({type: 'notAuthenticated'});
-    const key = 'Token ' + token;
     let keyToken;
     try {
       const resp = await citmapApi.get('/users/authentication/user/', {
@@ -72,20 +68,16 @@ export const AuthProvider = ({children}: any) => {
         },
       });
       keyToken = JSON.stringify(resp.config.headers.Authorization, null, 1);
-      // console.log(keyToken);
       if (resp.status !== 200) {
         await AsyncStorage.removeItem('token');
         return action({type: 'notAuthenticated'});
       } else {
-        // console.log(JSON.stringify(resp.status, null, 2));
         await AsyncStorage.setItem('token', token);
         action({
           type: 'signIn',
           payload: {
             token: token,
             isGuest: false,
-
-            // user: resp.data.usuario,
           },
         });
       }
@@ -233,6 +225,7 @@ export const AuthProvider = ({children}: any) => {
       });
     }
   };
+
   const changePass = async (pass1: string, pass2: string) => {
     try {
       const token = await AsyncStorage.getItem('token');

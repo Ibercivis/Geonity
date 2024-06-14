@@ -146,13 +146,6 @@ export const ParticipateMap = ({navigation, route}: Props) => {
   const [questions, setQuestions] = useState<Question[]>([]);
 
   /**
-   * cada observation es una MARCA en el mapa
-   * cada observation tiene un id de FIELDFORM asociado
-   * esta observation será la que, si se selecciona una marca, se pintará en la pantalla del formulario
-   * NO EDITABLE
-   */
-  const [observation, setObservation] = useState<Observation>();
-  /**
    * lista de observations que van filtradas por el fieldform asociado
    */
   const [observationList, setObservationList] = useState<Observation[]>([]);
@@ -270,6 +263,9 @@ export const ParticipateMap = ({navigation, route}: Props) => {
     };
   }, []);
 
+  /**
+   * muestra el modal inicial informativo
+   */
   useEffect(() => {
     if (hasLocation) {
       showModalAtStart();
@@ -376,36 +372,6 @@ export const ParticipateMap = ({navigation, route}: Props) => {
       }
       setObservationList(newDataParse);
     } catch {}
-  };
-
-  const getObservationById = async (id: number) => {
-    const token = await AsyncStorage.getItem('token');
-    try {
-      const resp = await citmapApi.get<Observation>(`/observations/${id}`, {
-        headers: {
-          Authorization: token,
-        },
-      });
-      setObservation(resp.data);
-    } catch {}
-  };
-
-  const getCreatorApi = async () => {
-    const token = await AsyncStorage.getItem('token');
-    try {
-      const userInfo = await citmapApi.get<User>(
-        '/users/authentication/user/',
-        {
-          headers: {
-            Authorization: token,
-          },
-        },
-      );
-      setUserInfo(userInfo.data);
-    } catch (err) {
-      console.log('error en coger el creator');
-      console.log(err);
-    }
   };
 
   //#endregion
@@ -1102,15 +1068,12 @@ export const ParticipateMap = ({navigation, route}: Props) => {
    */
   const addMarkPlus = () => {
     const coords = initialPositionArray;
-    // console.log(JSON.stringify(coords, null, 2));
-    //TODO añadir a una nueva lista
     createNewObservation(coords);
     setShowConfirmMark(true);
   };
 
   const addMarkLongPress = (feature: any) => {
     const coords = feature.geometry.coordinates;
-    //TODO añadir a una nueva lista
     createNewObservation(coords);
     setShowConfirmMark(true);
   };
@@ -1186,53 +1149,13 @@ export const ParticipateMap = ({navigation, route}: Props) => {
 
   //#region UPDATE MAP
   const [mapUpdateFlag, setMapUpdateFlag] = useState(true);
+
   // Ejemplo de cómo actualizar el estado cuando ocurra algún evento
   const updateMap = () => {
-    // Realiza las operaciones necesarias...
-    // setMapUpdateFlag(prevFlag => !prevFlag); // Cambia el estado para forzar la actualización
-    // setObservationList([])
-    // setObservationList(observationListcopy)
-    // getProjectApi()
     mapViewRef.current?.forceUpdate();
   };
 
   //#endregion
-
-  // if (!hasLocation) {
-  //   return <LoadingScreen />;
-  //   // return (
-  //   //   <View style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
-  //   //     <Text
-  //   //       style={{
-  //   //         color: Colors.textColorPrimary,
-  //   //         marginBottom: RFPercentage(3),
-  //   //       }}>
-  //   //       {fontLanguage.map[0].enable_gps}
-  //   //     </Text>
-  //   //     <TouchableOpacity
-  //   //       style={{
-  //   //         minWidth: RFPercentage(8),
-  //   //         marginBottom: RFPercentage(2),
-  //   //         marginTop: RFPercentage(2),
-  //   //         backgroundColor: 'white',
-  //   //         padding: RFPercentage(1),
-  //   //         borderRadius: 10,
-  //   //         paddingVertical: '5%',
-  //   //         shadowColor: '#000',
-  //   //         shadowOffset: {
-  //   //           width: 0,
-  //   //           height: 0.1,
-  //   //         },
-  //   //         shadowOpacity: 0.2,
-  //   //         shadowRadius: 1.41,
-  //   //         elevation: 5,
-  //   //       }}
-  //   //       onPress={getCurrentLocation}>
-  //   //       <Text>{fontLanguage.map[0].recharge_screen}</Text>
-  //   //     </TouchableOpacity>
-  //   //   </View>
-  //   // );
-  // }
 
   //#region  METODOS CLUSTERING
 
@@ -1845,17 +1768,6 @@ export const ParticipateMap = ({navigation, route}: Props) => {
                     label={fontLanguage.map[0].modal.delete_label}
                   />
                 </View>
-                {/* <View>
-            <SaveProyectModal
-              visible={errorValidate}
-              hideModal={hideModalCValidate}
-              onPress={hideModalCValidate}
-              size={RFPercentage(8)}
-              color={Colors.semanticWarningDark}
-              label="Hay campos obligatorios sin rellenar."
-              helper={false}
-            />
-          </View> */}
                 <Toast position="bottom" />
                 <Spinner visible={waitingData} />
               </>

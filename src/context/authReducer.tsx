@@ -1,5 +1,3 @@
-import React from 'react';
-import {User} from '../interfaces/appInterfaces';
 import {AuthState} from './AuthContext';
 
 type AuthAction =

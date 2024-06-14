@@ -256,9 +256,6 @@ export const CreateProject = ({navigation, route}: Props) => {
     }
   }, [inputValueOrganization]);
 
-  useEffect(() => {
-    // console.log(JSON.stringify(images));
-  }, [images]);
 
   useEffect(() => {
     let count = 0;
@@ -555,6 +552,10 @@ export const CreateProject = ({navigation, route}: Props) => {
     }
   };
 
+  /**
+   * Filtra las organizaciones segun el texto que se pasa por parametro
+   * @param text texto para el filtrado
+   */
   const handleInputChangeOrganization = (text: string) => {
     setInputValueOrganization(text);
     setSuggestions(
@@ -686,6 +687,10 @@ export const CreateProject = ({navigation, route}: Props) => {
     setIsSwitchOnProject(!isSwitchOnProject);
   };
 
+  /**
+   * Metodo que valida la contraseña si la hay
+   * @param value valor a validar, password
+   */
   const validatePassword = (value: any) => {
     setRawPassword2(value);
     if (value === rawPassword) {
@@ -716,6 +721,9 @@ export const CreateProject = ({navigation, route}: Props) => {
     setResponseSelected(response);
   };
 
+  /**
+   * crea una nueva pregunta
+   */
   const createAnswer = () => {
     setQuestions([
       ...questions,
@@ -723,6 +731,9 @@ export const CreateProject = ({navigation, route}: Props) => {
     ]);
   };
 
+  /**
+   * borra la question
+   */
   const onDelete = (item: Question) => {
     const arrayCopy = [...questions];
     const index = questions.indexOf(item);
@@ -732,6 +743,9 @@ export const CreateProject = ({navigation, route}: Props) => {
     }
   };
 
+  /**
+   * duplica la cuestion
+   */
   const duplicate = (item: Question) => {
     const newItem: Question = {
       answer_type: item.answer_type,
@@ -778,7 +792,6 @@ export const CreateProject = ({navigation, route}: Props) => {
     let updatedForm = {...form};
 
     const updatedQuestions = [...questions];
-    // console.log(updatedQuestions)
     updatedQuestions.map(x => {
       if (x.question_text.length <= 0) {
         correct = false;
@@ -787,12 +800,8 @@ export const CreateProject = ({navigation, route}: Props) => {
     let newFieldForm: CreateFieldForm = {
       questions: updatedQuestions,
     };
-    console.log(JSON.stringify(newFieldForm, null, 2));
-    // updatedForm.field_form.questions = updatedQuestions;
     onChange(newFieldForm, 'field_form');
     updatedForm = form;
-    console.log(JSON.stringify(updatedForm.field_form, null, 2));
-
     try {
       const userInfo = await citmapApi.get<User>(
         '/users/authentication/user/',
@@ -2273,7 +2282,6 @@ export const CreateProject = ({navigation, route}: Props) => {
 
   return (
     <KeyboardAvoidingView
-      // keyboardVerticalOffset={RFPercentage(2)}
       style={{flex: 1, backgroundColor: 'transparent'}}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Ajusta la vista por encima del teclado
     >

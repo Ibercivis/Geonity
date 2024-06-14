@@ -1047,6 +1047,7 @@ export const Profile = ({navigation}: Props) => {
         setProfileImageCharged(profile.data.profile.cover);
       }
       setIsSwitchOn(profile.data.profile.visibility);
+      setIsAllCharged(true);
       getCountriesApi();
       // console.log(JSON.stringify(profile.data.profile, null, 2));
     } catch {}
@@ -1093,7 +1094,7 @@ export const Profile = ({navigation}: Props) => {
           setSelectedCountry(country);
         }
       }
-      setIsAllCharged(true);
+      // setIsAllCharged(true);
     } catch {}
   };
 
@@ -1527,10 +1528,6 @@ export const Profile = ({navigation}: Props) => {
   }
 
   //#endregion
-
-  // if (!isAllCharged) {
-  //   return <LoadingScreen />;
-  // }
 
   return (
     <>

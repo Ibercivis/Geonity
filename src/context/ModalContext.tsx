@@ -12,7 +12,6 @@ export const useModal = () => {
 
 export const ModalProvider = ({children}: any) => {
   const [modalVisible, setModalVisible] = useState(false);
-  // console.log('estado del modal ' + modalVisible)
   const changeVisibility = () => {
     setModalVisible(!modalVisible);
   };

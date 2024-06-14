@@ -412,6 +412,10 @@ export const CreateOrganization = ({navigation, route}: Props) => {
       });
   };
 
+  /**
+   * busqueda de usuario
+   * @param text texto de entrada de input
+   */
   const handleInputChangeUser = (text: string) => {
     setInputValueUser(text);
     setSuggestions(
@@ -706,7 +710,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
       setDescriptionValidate(false);
     }
 
-    //comprobar que todo está bien antes de crear
+    //comprobar que todo está bien antes de editar
     if (!valid) {
       showModalSave();
     } else {
