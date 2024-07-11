@@ -666,6 +666,7 @@ export const CreateOrganization = ({navigation, route}: Props) => {
       }
     }
   };
+  
   const onEdit = async () => {
     setWaitingData(true);
     let valid = true;

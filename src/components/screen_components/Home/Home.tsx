@@ -81,10 +81,7 @@ export const Home = ({navigation}: Props) => {
     ShowProject[]
   >([]); // listado de proyectos que te puedan interesar
 
-  
-  const [searchProyectList, setSearchProyectList] = useState<
-    ShowProject[]
-  >([]);//listado de proyectos en onsearch
+  const [searchProyectList, setSearchProyectList] = useState<ShowProject[]>([]); //listado de proyectos en onsearch
 
   //listado de organizaciones
   const [organizationList, setOrganizationList] = useState<Organization[]>([]);
@@ -149,6 +146,7 @@ export const Home = ({navigation}: Props) => {
 
   const hideGuideHomeModal = () => {
     setShowGuideHome(false);
+    onSetDontShowAgain();
   };
   const showGuideProjectModal = () => {
     setShowGuideProject(true);
@@ -163,6 +161,34 @@ export const Home = ({navigation}: Props) => {
 
   const hideGuideOrganizationModal = () => {
     setShowGuideOrganization(false);
+  };
+
+  //#endregion
+
+  //#region GUIDE CONTROL
+
+  /**
+   * este metodo coge del almacenamiento el valor para saber si puede mostrar el modal o no
+   * Si el valor no existe o es 1, significa que entra por primera vez y habrá de mostrarse
+   */
+  const showModalAtStart = async () => {
+    const canShow = await AsyncStorage.getItem('infohome');
+    console.log(canShow);
+    if (canShow == null) {
+      showGuideHomeModal();
+    } else if (parseInt(canShow) === 1) {
+      showGuideHomeModal();
+    } else {
+      setShowGuideHome(false);
+    }
+  };
+
+  /**
+   * establece y guarda el muestreo del modal onboarding
+   */
+  const onSetDontShowAgain = async () => {
+    let showmodal = '0';
+    await AsyncStorage.setItem('infohome', showmodal);
   };
 
   //#endregion
@@ -190,6 +216,7 @@ export const Home = ({navigation}: Props) => {
 
   //TODO llamada a la api para coger cada elemento
   useEffect(() => {
+    showModalAtStart();
     setLoading(true);
     categoryListApi();
     setCategoriesSelected([]);
@@ -359,7 +386,8 @@ export const Home = ({navigation}: Props) => {
 
     // Hacer una copia de la lista antes de ordenar por contributions
     const sortedListbycontributions = [...list].sort((a, b) => {
-      if (a.contributions === undefined || b.contributions === undefined) return 0; // Manejar casos donde contributions puede ser undefined
+      if (a.contributions === undefined || b.contributions === undefined)
+        return 0; // Manejar casos donde contributions puede ser undefined
       return (b.contributions || 0) - (a.contributions || 0);
     });
 
@@ -940,7 +968,7 @@ export const Home = ({navigation}: Props) => {
                                         navigation.navigate('ProjectList', {
                                           title:
                                             fontLanguage.Home[0].new_project,
-                                            id: 1
+                                          id: 1,
                                         });
                                       } else {
                                         toastInfoGuest();
@@ -1060,7 +1088,7 @@ export const Home = ({navigation}: Props) => {
                                         title:
                                           fontLanguage.Home[0]
                                             .important_projects,
-                                            id: 2
+                                        id: 2,
                                       });
                                     } else {
                                       toastInfoGuest();
@@ -1186,7 +1214,7 @@ export const Home = ({navigation}: Props) => {
                                     if (!isGuest) {
                                       navigation.navigate('ProjectList', {
                                         title: fontLanguage.Home[0].interesting,
-                                        id: 3
+                                        id: 3,
                                       });
                                     } else {
                                       toastInfoGuest();

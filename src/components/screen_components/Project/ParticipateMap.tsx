@@ -1844,11 +1844,4 @@ const styles = StyleSheet.create({
     paddingVertical: '5%',
   },
 });
-const terrainStyles = {
-  defaultTerrain: {
-    style: Mapbox.Terrain,
-  },
-  AtmosphereLayerStyle: {
-    style: Mapbox.Atmosphere,
-  },
-};
+

@@ -68,7 +68,6 @@ const data = [
 
 interface Props extends StackScreenProps<StackParams, 'ProjectPage'> {}
 
-
 export const ProjectPage = (props: Props) => {
   const {fontLanguage} = useLanguage();
   //#region estados y referencias
@@ -184,9 +183,9 @@ export const ProjectPage = (props: Props) => {
     //     message: deepLink,
     //     title: 'Compartir el proyecto con:',
     //   });
-  
+
     //   console.log(result);
-  
+
     //   if (result.action === Share.sharedAction) {
     //     if (result.activityType) {
     //       // Compartido con el tipo de actividad result.activityType
@@ -203,22 +202,21 @@ export const ProjectPage = (props: Props) => {
   };
 
   // Función para abrir el enlace profundo en la aplicación o en la tienda de aplicaciones
-const openDeepLink = async (deepLink: string) => {
-  try {
-    const supported = await Linking.canOpenURL(deepLink);
-    if (supported) {
-      await Linking.openURL(deepLink);
-    } else {
-      // Si el enlace profundo no es compatible, abre la tienda de aplicaciones
-      const storeLink = 'https://play.google.com/store/apps/details?id=com.reactnativeplantilla';
-      await Linking.openURL(storeLink);
+  const openDeepLink = async (deepLink: string) => {
+    try {
+      const supported = await Linking.canOpenURL(deepLink);
+      if (supported) {
+        await Linking.openURL(deepLink);
+      } else {
+        // Si el enlace profundo no es compatible, abre la tienda de aplicaciones
+        const storeLink =
+          'https://play.google.com/store/apps/details?id=com.reactnativeplantilla';
+        await Linking.openURL(storeLink);
+      }
+    } catch (error) {
+      console.error('Error al abrir el enlace profundo:', error);
     }
-  } catch (error) {
-    console.error('Error al abrir el enlace profundo:', error);
-  }
-};
-
-
+  };
 
   /**
    * Metodo para volver atrás
@@ -288,7 +286,7 @@ const openDeepLink = async (deepLink: string) => {
   /**
    * Comprueba si necesita contraseña o no. Después, si tiene permisos de location, si no los tiene, muestra una pantalla para que se proporcionen
    * @param value1 contiene la contraseña para participar en el proyecto, si no es privado, ni se evalua, puede ser undefined
-   * @returns 
+   * @returns
    */
   const navigateToMapPass = async (value1?: string) => {
     if (project?.is_private) {
@@ -791,11 +789,10 @@ const openDeepLink = async (deepLink: string) => {
               }}>
               <View
                 style={{
-                  // marginTop: '15%',
                   flexDirection: 'row',
                   alignContent: 'center',
                   alignItems: 'center',
-                  justifyContent: 'space-between',
+                  justifyContent: 'flex-start',
                   flex: 1,
                 }}>
                 {/* personas */}
@@ -803,6 +800,8 @@ const openDeepLink = async (deepLink: string) => {
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'space-around',
+
+                    marginRight: '5%',
                   }}>
                   {/* <IconBootstrap name={'plus'} size={20} color={'black'} /> */}
                   <People
@@ -827,6 +826,8 @@ const openDeepLink = async (deepLink: string) => {
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'space-around',
+
+                    marginRight: '5%',
                   }}>
                   {/* <HeartFill
                       width={RFPercentage(2.5)}
@@ -858,7 +859,7 @@ const openDeepLink = async (deepLink: string) => {
                 </TouchableOpacity>
 
                 {/* boton de compartir */}
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   style={{
                     marginLeft: RFPercentage(1),
                     marginRight: RFPercentage(7),
@@ -872,7 +873,7 @@ const openDeepLink = async (deepLink: string) => {
                     height={RFPercentage(2.5)}
                     color={'#ff0000'}
                   />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
               {/* participar */}
               <View
