@@ -53,24 +53,19 @@ get ViewPropTypes(): $FlowFixMe {
 
 ```
 
-```bash
-# sacar a producción en android
-- 1- en android studio le damos al desplegable "Build" -> "Generate signed bundle/APK"
-- 2- en la ventana que se abre, le damos a la opción "Android app bundle"
-- 3- elegimos la carpeta que contendrá la keystore y luego escribimos las contraseñas pertinentes
-- 4- seleccionamos la carpeta de destino y en la build variant "release"
-- 5- una vez se genere podremos encontrar el bundle de la aplicación en la carpeta seleccionada 
+## Subir a producción Android
+1. En android studio le damos al desplegable "Build" -> "Generate signed bundle/APK"
+2. En la ventana que se abre, le damos a la opción "Android app bundle"
+3. Elegimos la carpeta que contendrá la keystore y luego escribimos las contraseñas pertinentes
+4. Seleccionamos la carpeta de destino y en la build variant "release"
+5. Una vez se genere podremos encontrar el bundle de la aplicación en la carpeta seleccionada 
 
-```
+## Subir a producción iOS
+1. En xCode cambiar el dispositivo a arrancar por "Any iOS device (arm64) 
+2. Abrir el menú desplegable de "Product" y luego pulsar en "Archive"
+3. Una vez se muestre la ventana de "ARchives" le damos a "Distribute App" -> "Custom" -> "App Store Connect" y seguimos los pasos segun convenga
+4. Ahora ya podrás editar la información de la versión en la pagina de App Connect.
 
-```bash
-# sacar a producción en ios
-- 1- en xCode cambiar el dispositivo a arrancar por "Any iOS device (arm64) 
-- 2- abrir el menú desplegable de "Product" y luego pulsar en "Archive"
-- 3- una vez se muestre la ventana de "ARchives" le damos a "Distribute App" -> "Custom" -> "App Store Connect" y seguimos los pasos segun convenga
-- 4- ahora ya podrás editar la información de la versión en la pagina de App Connect.
-
-```
 
 <!--
 ## Login Android
@@ -83,11 +78,11 @@ get ViewPropTypes(): $FlowFixMe {
 ```
 -->
 
-## Geonity-ios
+<!-- ## Geonity-ios
 instalada librería opcional npm install --save rn-fetch-blob para ver si con esto descarga bien en ios, sino, borrar librería
 
 iOs version of Geonity app
-ios-deploy - package instalado en ios, eliminar en android
+ios-deploy - package instalado en ios, eliminar en android -->
 
 ## Librerías
 
