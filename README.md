@@ -53,6 +53,25 @@ get ViewPropTypes(): $FlowFixMe {
 
 ```
 
+```bash
+# sacar a producción en android
+- 1- en android studio le damos al desplegable "Build" -> "Generate signed bundle/APK"
+- 2- en la ventana que se abre, le damos a la opción "Android app bundle"
+- 3- elegimos la carpeta que contendrá la keystore y luego escribimos las contraseñas pertinentes
+- 4- seleccionamos la carpeta de destino y en la build variant "release"
+- 5- una vez se genere podremos encontrar el bundle de la aplicación en la carpeta seleccionada 
+
+```
+
+```bash
+# sacar a producción en ios
+- 1- en xCode cambiar el dispositivo a arrancar por "Any iOS device (arm64) 
+- 2- abrir el menú desplegable de "Product" y luego pulsar en "Archive"
+- 3- una vez se muestre la ventana de "ARchives" le damos a "Distribute App" -> "Custom" -> "App Store Connect" y seguimos los pasos segun convenga
+- 4- ahora ya podrás editar la información de la versión en la pagina de App Connect.
+
+```
+
 <!--
 ## Login Android
 ```bash
