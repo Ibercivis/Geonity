@@ -1,0 +1,622 @@
+{
+  "@@locale": "es",
+
+  "cancel": "Cancelar",
+  "confirm": "Confirmar",
+  "save": "Guardar",
+  "delete": "Borrar",
+  "edit": "Editar",
+  "close": "Cerrar",
+  "back": "Volver",
+  "finish": "Finalizar",
+  "accept": "Aceptar",
+  "reject": "Rechazar",
+  "send": "Enviar",
+  "invite": "Invitar",
+  "yes": "Sí",
+  "no": "No",
+  "error": "Error",
+  "success": "Éxito",
+  "next": "Siguiente",
+  "insert": "Insertar",
+
+  "qrScannerTitle": "Escanear código",
+  "qrScannerCodeDetected": "Código detectado",
+  "qrScannerConfirmCode": "¿Es este el código correcto?",
+  "qrScannerInstructions": "Apunta al código QR o código de barras",
+
+  "appTitle": "Geonity",
+  "appSubtitle": "Observaciones geolocalizadas",
+
+  "loginTitle": "Iniciar sesión",
+  "loginEmailLabel": "Email",
+  "loginEmailHint": "tu@email.com",
+  "loginEmailRequired": "Introduce tu email",
+  "loginUsernameLabel": "Username/Email",
+  "loginUsernameHint": "usuario o email",
+  "loginPasswordLabel": "Contraseña",
+  "loginErrorMessage": "Error al iniciar sesión. Verifica tus credenciales.",
+  "loginUsernameRequired": "Por favor ingresa tu usuario o email",
+  "loginPasswordRequired": "Por favor ingresa tu contraseña",
+  "loginPasswordMinLength": "La contraseña debe tener al menos 6 caracteres",
+  "loginNoAccount": "¿No tienes cuenta? ",
+  "loginRegister": "Regístrate",
+
+  "registerTitle": "Crear cuenta",
+  "registerEmailHint": "tu@email.com",
+  "registerEmailInvalid": "Email no válido",
+  "registerPasswordLabel": "Contraseña",
+  "registerPasswordRequired": "Introduce una contraseña",
+  "registerPasswordMinLength": "Mínimo 8 caracteres",
+  "registerPasswordRepeatLabel": "Repetir contraseña",
+  "registerPasswordRepeatRequired": "Repite la contraseña",
+  "registerPasswordMismatch": "Las contraseñas no coinciden",
+  "registerCheckEmail": "Revisa tu email para confirmar tu cuenta",
+  "registerCreateAccount": "Crear cuenta",
+  "registerAlreadyHaveAccount": "¿Ya tienes cuenta? ",
+  "registerSignIn": "Inicia sesión",
+
+  "navProjects": "Proyectos",
+  "navOrganizations": "Organizaciones",
+  "navProfile": "Perfil",
+
+  "createNewTitle": "Crear nuevo",
+  "createNewProject": "Nuevo Proyecto",
+  "createNewOrganization": "Nueva Organización",
+
+  "logout": "Cerrar sesión",
+
+  "dangerZone": "Zona de peligro",
+  "deleteAccount": "Eliminar cuenta",
+  "deleteAccountTitle": "Eliminar cuenta",
+  "deleteAccountMessage": "Esta acción es irreversible. Tu cuenta será eliminada permanentemente.",
+  "deleteAccountKeepObservations": "Mantener mis observaciones",
+  "deleteAccountObservationsWarning": "Si desactivas esta opción, todas tus observaciones serán eliminadas.",
+
+  "invitationsTitle": "Invitaciones",
+  "invitationsCount": "Invitaciones ({count})",
+  "@invitationsCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "invitationsEmpty": "No tienes invitaciones pendientes",
+  "invitationAccepted": "¡Invitación aceptada!",
+  "invitationRejected": "Invitación rechazada",
+  "invitationToProject": "proyecto",
+  "invitationToOrganization": "institución",
+
+  "searchProjects": "Buscar proyectos",
+  "searchResults": "RESULTADOS DE BÚSQUEDA",
+  "searchResultsCount": "\"{query}\" - {count} resultado",
+  "@searchResultsCount": {
+    "placeholders": {
+      "query": {},
+      "count": {}
+    }
+  },
+  "searchResultsCountPlural": "\"{query}\" - {count} resultados",
+  "@searchResultsCountPlural": {
+    "placeholders": {
+      "query": {},
+      "count": {}
+    }
+  },
+
+  "myProjects": "Mis proyectos",
+  "exploreProjects": "Explorar proyectos",
+  "filterByCategory": "Filtrar por categoría",
+
+  "projectCreatedBy": "Creado por: {creator}",
+  "@projectCreatedBy": {
+    "placeholders": {
+      "creator": {}
+    }
+  },
+  "projectInstitutions": "Instituciones",
+  "projectLoadError": "No se pudo cargar el proyecto",
+  "projectDeleteConfirmTitle": "¿Borrar proyecto?",
+  "projectDeleteConfirmMessage": "Esta acción no se puede deshacer.",
+  "projectDeleted": "Proyecto eliminado",
+  "projectDeleteError": "Error al eliminar el proyecto",
+  "projectAvailableOffline": "Proyecto disponible sin conexión",
+  "projectOfflineDeleteTitle": "Eliminar datos offline",
+  "projectOfflineDeleteMessage": "Se eliminarán los datos y el mapa descargado. Las observaciones pendientes de sincronizar no se perderán.",
+  "projectUpdated": "Proyecto actualizado exitosamente",
+  "projectCreated": "Proyecto creado exitosamente",
+  "projectUpdateError": "Error al actualizar el proyecto",
+  "projectCreateError": "Error al crear el proyecto",
+  "editProjectTitle": "Editar Proyecto",
+  "newProjectTitle": "Nuevo Proyecto",
+  "whatToEdit": "¿Qué deseas editar?",
+  "addCoverImage": "Añadir imagen de portada",
+  "projectDescriptionLabel": "Descripción *",
+  "projectDescriptionRequired": "Por favor ingresa una descripción",
+  "globalProjectSubtitle": "El proyecto está abierto a todo el mundo",
+  "addCountry": "Añadir país",
+  "projectPasswordLabel": "Contraseña del proyecto *",
+  "projectPasswordRequired": "La contraseña es obligatoria para proyectos privados",
+
+  "offlineProjectsShown": "Sin conexión — mostrando proyectos guardados offline",
+
+  "organizationsTitle": "Organizaciones",
+  "organizationLoadError": "No se pudo cargar la organización",
+  "organizationDeleteConfirmTitle": "¿Borrar organización?",
+  "organizationDeleteConfirmMessage": "Esta acción no se puede deshacer.",
+  "organizationDeleted": "Organización eliminada",
+  "organizationDeleteError": "Error al eliminar la organización",
+  "organizationLeaveConfirmTitle": "Abandonar organización",
+  "organizationLeaveConfirmMessage": "¿Estás seguro de que quieres abandonar esta organización?",
+  "organizationLeft": "Has abandonado la organización",
+  "organizationLeaveError": "Error al abandonar la organización",
+
+  "organizationProjects": "Proyectos",
+  "organizationMembers": "Miembros",
+  "organizationRoleCreator": "Creador",
+  "organizationRoleAdministrator": "Administrador",
+  "organizationRoleMember": "Miembro",
+
+  "createOrganizationTitle": "Crear organización",
+  "editOrganizationTitle": "Editar organización",
+  "organizationNameLabel": "Nombre de la organización",
+  "organizationNameHint": "Escribe el nombre de la organización...",
+  "organizationNameRequired": "Por favor ingresa el nombre de la organización",
+  "organizationBiographyLabel": "Biografía",
+  "organizationBiographyHint": "Presenta tu organización en la biografía",
+  "organizationProfileImage": "Imagen del perfil",
+  "organizationCoverImage": "Imagen de portada",
+  "organizationCreated": "Organización creada exitosamente",
+  "organizationUpdated": "Organización actualizada exitosamente",
+  "organizationCreateError": "Error al crear la organización",
+  "organizationUpdateError": "Error al actualizar la organización",
+
+  "adminAndInvitationsTitle": "Administradores e Invitaciones",
+  "administrators": "Administradores",
+  "inviteAsAdminInstruction": "Invita a otros usuarios como administradores del proyecto",
+  "emailExampleHint": "correo@ejemplo.com",
+  "creator": "Creador",
+  "administrator": "Administrador",
+
+  "inviteMemberTitle": "Invitar miembro",
+  "inviteMemberEmailLabel": "Email",
+  "inviteMemberEmailHint": "usuario@ejemplo.com",
+  "inviteMemberRoleLabel": "Rol",
+  "inviteMemberEmailInvalid": "Por favor ingresa un email válido",
+  "invitationSent": "Invitación enviada correctamente",
+  "invitationSendError": "Error al enviar la invitación",
+  "invitationSendInstruction": "Invita a otros usuarios a la organización",
+  "invitationsSentLabel": "Invitaciones enviadas:",
+  "invitationsExpireInfo": "Las invitaciones expiran en 7 días",
+
+  "manageMembersTitle": "Gestión de Miembros",
+  "currentManagement": "Gestión actual",
+  "pendingInvitations": "Invitaciones pendientes",
+  "invitedBy": "Invitado por {name}",
+  "@invitedBy": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "expires": "Expira: {date}",
+  "@expires": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "statusPending": "Pendiente",
+  "emailRequired": "Por favor, introduce un correo electrónico",
+  "emailValidRequired": "Por favor, introduce un correo electrónico válido",
+  "emailAlreadyInvited": "Este correo ya ha sido invitado",
+
+  "mapTitle": "Mapa",
+  "mapInteractive": "Interactive map will appear here",
+  "mapNoObservations": "Este proyecto no tiene mapa de observaciones",
+  "mapNoFieldForm": "El proyecto no cuenta con un formulario de campo configurado para registrar observaciones.",
+  "mapGettingLocation": "Obteniendo ubicación...",
+  "mapLocationServicesDisabled": "Los servicios de ubicación están desactivados",
+  "mapLocationPermissionDenied": "Permisos de ubicación denegados",
+  "mapLocationPermissionPermanentlyDenied": "Los permisos de ubicación están permanentemente denegados",
+  "mapLocationError": "Error al obtener la ubicación: {error}",
+  "@mapLocationError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "fuzzyPrivacyNote": "Por razones de privacidad, se muestra la zona aproximada de observación.",
+  "observationAdminValues": "Valores de administración",
+  "offlinePendingBadge": "{count} obs. pendientes de envío",
+  "@offlinePendingBadge": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "offlineModeBadge": "Modo sin conexión",
+
+  "observationTitle": "Observación #{id}",
+  "@observationTitle": {
+    "placeholders": {
+      "id": {}
+    }
+  },
+  "observationDate": "Fecha",
+  "observationCoordinates": "Coordenadas",
+  "observationUser": "Usuario",
+  "observationDescription": "Descripción",
+  "observationAdditionalData": "Datos adicionales",
+  "observationImages": "Imágenes ({count})",
+  "@observationImages": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "observationCenterOnMap": "Centrar en el mapa",
+  "observationImageLoadError": "Error al cargar la imagen",
+  "profileObservationDefault": "Observación",
+
+  "addObservationTitle": "Nueva observación",
+  "addObservationSubmit": "Enviar observación",
+  "addObservationLocationError": "Error al obtener ubicación: {error}",
+  "@addObservationLocationError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "observationCreated": "Observación creada exitosamente",
+  "observationCreateError": "Error al crear la observación",
+  "offlineObservationSaved": "Sin conexión — Observación guardada, se enviará al recuperar señal",
+  "selectAtLeastOneOption": "Selecciona al menos una opción",
+
+  "fieldRequired": "Campo requerido",
+  "fieldEnter": "Ingresa {label}",
+  "@fieldEnter": {
+    "placeholders": {
+      "label": {}
+    }
+  },
+  "fieldSelect": "Selecciona {label}",
+  "@fieldSelect": {
+    "placeholders": {
+      "label": {}
+    }
+  },
+  "fieldSelectDate": "Selecciona fecha",
+  "fieldAddImage": "Agregar imagen",
+  "fieldScanCode": "Escanea un código",
+
+  "imagePickerTitle": "Seleccionar imagen",
+  "imagePickerTakePhoto": "Tomar foto",
+  "imagePickerChooseGallery": "Elegir de galería",
+
+  "profileEditTitle": "Editar Perfil",
+  "profileCoverImage": "Imagen de portada",
+  "profileCoverImageChange": "Toca para cambiar imagen",
+  "profileCoverImageAdd": "Toca para agregar imagen de portada",
+  "profileFirstName": "Nombre",
+  "profileFirstNameRequired": "Por favor ingresa tu nombre",
+  "profileLastName": "Apellido",
+  "profileLastNameRequired": "Por favor ingresa tu apellido",
+  "profileBiography": "Biografía",
+  "profileBiographyHint": "Cuéntanos sobre ti...",
+  "profileCountry": "País",
+  "profileCountrySearch": "Buscar país",
+  "profileCountrySearchHint": "Empieza a escribir...",
+  "profileCountrySelect": "Selecciona tu país",
+  "profilePublic": "Perfil público",
+  "profilePublicDescription": "Permite que otros usuarios vean tu perfil",
+  "profileSaveChanges": "Guardar Cambios",
+  "profileUpdated": "Perfil actualizado exitosamente",
+  "profileUpdateError": "Error al actualizar el perfil",
+
+  "languageTitle": "Idioma",
+  "languageSpanish": "Español",
+  "languageEnglish": "English",
+  "languagePortuguese": "Português",
+  "languageItalian": "Italiano",
+  "languageSystem": "Idioma del sistema",
+
+  "themeTitle": "Tema",
+  "themeLight": "Claro",
+  "themeDark": "Oscuro",
+  "themeSystem": "Automático",
+
+  "collaboratingOrganizations": "{count} organizaciones colaboradoras",
+  "@collaboratingOrganizations": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+
+  "myObservations": "Mis Observaciones ({count})",
+  "@myObservations": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "myOrganizations": "Mis Organizaciones ({count})",
+  "@myOrganizations": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+
+  "timeAgoMoment": "Hace un momento",
+  "timeAgoMinutes": "Hace {minutes} min",
+  "@timeAgoMinutes": {
+    "placeholders": {
+      "minutes": {}
+    }
+  },
+  "timeAgoHours": "Hace {hours}h",
+  "@timeAgoHours": {
+    "placeholders": {
+      "hours": {}
+    }
+  },
+  "timeAgoDays": "Hace {days}d",
+  "@timeAgoDays": {
+    "placeholders": {
+      "days": {}
+    }
+  },
+  "timeAgoWeeks": "Hace {weeks} sem",
+  "@timeAgoWeeks": {
+    "placeholders": {
+      "weeks": {}
+    }
+  },
+  "timeAgoMonths": "Hace {months} mes",
+  "@timeAgoMonths": {
+    "placeholders": {
+      "months": {}
+    }
+  },
+  "timeAgoMonthsPlural": "Hace {months} meses",
+  "@timeAgoMonthsPlural": {
+    "placeholders": {
+      "months": {}
+    }
+  },
+  "timeAgoYears": "Hace {years} año",
+  "@timeAgoYears": {
+    "placeholders": {
+      "years": {}
+    }
+  },
+  "timeAgoYearsPlural": "Hace {years} años",
+  "@timeAgoYearsPlural": {
+    "placeholders": {
+      "years": {}
+    }
+  },
+
+  "roleMember": "Miembro",
+  "roleAdministrator": "Administrador",
+  "leave": "Abandonar",
+  "leaveOrganization": "Abandonar organización",
+  "leaveOrganizationConfirm": "¿Estás seguro de que quieres abandonar esta organización?",
+  "leftOrganization": "Has abandonado la organización",
+  "leaveOrganizationError": "Error al abandonar la organización",
+
+  "inviteMember": "Invitar miembro",
+  "sendInvitation": "Enviar invitación",
+  "enterValidEmail": "Por favor ingresa un email válido",
+
+  "deleteOrganizationQuestion": "¿Borrar organización?",
+  "deleteOrganizationConfirm": "Esta acción no se puede deshacer.",
+  "deleteOrganizationError": "Error al eliminar la organización",
+
+  "errorLoadingOrganization": "No se pudo cargar la organización",
+  "errorLoadingProfile": "Error al cargar el perfil",
+
+  "gettingLocation": "Obteniendo ubicación...",
+  "locationServicesDisabled": "Los servicios de ubicación están desactivados",
+  "locationPermissionDenied": "Permisos de ubicación denegados",
+  "locationPermissionDeniedPermanently": "Los permisos de ubicación están permanentemente denegados",
+  "errorGettingLocation": "Error al obtener la ubicación: {error}",
+  "@errorGettingLocation": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "centerOnMap": "Centrar en el mapa",
+
+  "selectImage": "Seleccionar imagen",
+  "takePhoto": "Tomar foto",
+  "chooseFromGallery": "Elegir de galería",
+  "addImage": "Agregar imagen",
+  "tapToChangeImage": "Toca para cambiar imagen",
+  "tapToAddCoverImage": "Toca para agregar imagen de portada",
+
+  "selectLowercase": "Selecciona {label}",
+  "@selectLowercase": {
+    "placeholders": {
+      "label": {}
+    }
+  },
+
+  "selectTopics": "Seleccionar Temas",
+  "privateProject": "Proyecto privado",
+  "privateProjectSubtitle": "Requiere contraseña para unirse",
+  "privateDatabase": "Base de datos privada",
+  "privateDatabaseSubtitle": "Los datos no se pueden descargar",
+  "privateProjectsRequirePassword": "Los proyectos privados requieren contraseña",
+  "saveBasicInfo": "Guardar información básica",
+  "saveBasicInfoSubtitle": "Nombre, descripción, privacidad, etc.",
+  "editFormFields": "Editar campos del formulario",
+  "editFormFieldsSubtitle": "Añadir, editar o eliminar campos",
+  "projectHasObservations": "⚠️ Este proyecto tiene {count} observaciones",
+  "@projectHasObservations": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+
+  "addOption": "Añadir opción",
+  "cannotDeleteFieldWithObservations": "No se puede eliminar un campo que tiene observaciones",
+  "noFieldTypesAvailable": "No hay tipos de campo disponibles",
+  "cannotChangeFieldTypeWithObservations": "No se puede cambiar el tipo de un campo que tiene observaciones",
+  "selectFieldType": "Seleccionar tipo de campo",
+  "fieldMustHaveOptions": "El campo \"{fieldName}\" de tipo CHOICE debe tener al menos una opción",
+  "@fieldMustHaveOptions": {
+    "placeholders": {
+      "fieldName": {}
+    }
+  },
+  "jsonToSend": "JSON a enviar",
+  "noChanges": "Sin cambios",
+  "noChangesDetected": "No se detectaron cambios en los campos del formulario.\\n\\nNo se enviará field_form al backend.",
+  "cannotChangeRequiredWithObservations": "No se puede cambiar el estado obligatorio de un campo que tiene observaciones",
+  "newFieldsCannotBeRequiredWithObservations": "Los campos nuevos no pueden ser obligatorios cuando ya hay observaciones",
+
+  "enterEmail": "Por favor, introduce un correo electrónico",
+  "enterValidEmailFormat": "Por favor, introduce un correo electrónico válido",
+  "updateInstitutionsError": "Error al actualizar las instituciones",
+  "institutionsUpdated": "Instituciones actualizadas correctamente",
+
+  "confirmationMessageTitle": "Mensaje de confirmación",
+  "insertLinkTitle": "Insertar enlace",
+  "linkTextLabel": "Texto del enlace",
+  "linkUrlLabel": "URL",
+  "editTab": "Editar",
+  "previewTab": "Previsualizar",
+  "messageHint": "Escribe el mensaje aquí...",
+  "messageEmptyPreview": "Sin contenido para previsualizar",
+  "messageInfo": "Este mensaje aparecerá al usuario tras añadir una observación",
+  "tooltipBold": "Negrita",
+  "tooltipItalic": "Cursiva",
+  "tooltipLink": "Enlace",
+  "tooltipList": "Lista",
+
+  "addLanguageTitle": "Añadir idioma",
+  "translationLanguageLabel": "Idioma de traducción",
+  "translationSelectLanguage": "Selecciona un idioma",
+  "translationSelectLanguageHint": "Selecciona un idioma para ver los campos a traducir",
+  "translationDescriptionLabel": "Descripción",
+  "translationPostMessageLabel": "Mensaje post-observación",
+  "translationOptionLabel": "Opción: \"{key}\"",
+  "@translationOptionLabel": {
+    "placeholders": {
+      "key": {}
+    }
+  },
+  "translationHint": "Traducción en {lang}...",
+  "@translationHint": {
+    "placeholders": {
+      "lang": {}
+    }
+  },
+  "translationSectionProject": "Proyecto",
+  "translationNameLabel": "Nombre",
+  "translationSectionQuestions": "Preguntas del formulario",
+  "translationQuestionHeader": "Pregunta {number}",
+  "@translationQuestionHeader": {
+    "placeholders": {
+      "number": {"type": "int"}
+    }
+  },
+  "translationQuestionTextLabel": "Texto de la pregunta",
+  "translationHelpTextLabel": "Texto de ayuda",
+  "translationSectionOptions": "OPCIONES",
+  "skip": "Omitir",
+  "update": "Actualizar",
+  "create": "Crear",
+
+  "projectNameLabel": "Nombre del proyecto *",
+  "projectNameRequired": "Por favor ingresa un nombre",
+  "searchHint": "Buscar...",
+  "selectOrganizationsDialog": "Seleccionar Organizaciones",
+  "topicsLabel": "Temas",
+  "organizationsLabel": "Organizaciones",
+  "globalLabel": "Global",
+  "noTopicsAvailable": "No hay temas disponibles",
+  "selectTopicsAction": "Seleccionar temas",
+  "noOrganizationsAvailable": "No hay organizaciones disponibles",
+  "selectOrganizationsAction": "Seleccionar organizaciones",
+  "fuzzyGeoposition": "Geoposición aproximada",
+  "fuzzyGeopositionSubtitle": "Las observaciones se muestran como zonas aproximadas, no como puntos exactos",
+  "optionLabelRequired": "Texto *",
+  "optionLabelHint": "Ej: Preocupación menor",
+  "optionValueLabel": "Valor (opcional)",
+  "optionValueHint": "Ej: lc",
+  "optionsLabel": "Opciones",
+  "soonExpiry": "Pronto",
+  "userFallback": "Usuario",
+  "retry": "Reintentar",
+  "viewMap": "Ver mapa",
+  "adminBadge": "Admin",
+  "downloadCsv": "Descargar CSV",
+  "projectObservationsShare": "Observaciones del proyecto",
+  "downloadErrorCode": "Error al descargar: {code}",
+  "@downloadErrorCode": {
+    "placeholders": {
+      "code": {}
+    }
+  },
+  "csvDownloadError": "Error al descargar el CSV",
+  "noFieldFormError": "Este proyecto no tiene formulario de campo",
+  "offlineDataDeleted": "Datos offline eliminados",
+  "offlineDownloadError": "Error al descargar: {error}",
+  "@offlineDownloadError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "removeOfflineTooltip": "Eliminar offline",
+  "makeOfflineTooltip": "Hacer disponible offline",
+  "deleteAccountError": "Error al eliminar la cuenta",
+  "myProfile": "Mi Perfil",
+  "profileObservations": "Observaciones",
+  "profileProjects": "Proyectos",
+  "profileOrganizationsLabel": "Organizaciones",
+  "createdProjectsCount": "Proyectos Creados ({count})",
+  "@createdProjectsCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "participatedProjectsCount": "Proyectos en los que Participo ({count})",
+  "@participatedProjectsCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "likedProjectsCount": "Proyectos que me Gustan ({count})",
+  "@likedProjectsCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "additionalData": "Datos adicionales",
+  "fieldLabelFallback": "Campo {key}",
+  "@fieldLabelFallback": {
+    "placeholders": {
+      "key": {}
+    }
+  },
+  "boolYes": "Sí",
+  "boolNo": "No",
+  "other": "Otro",
+  "specify": "Especifica...",
+  "noOptionsDefined": "Sin opciones definidas",
+  "backendDown": "Servidor caído",
+  "noConnectionTitle": "Sin conexión",
+  "backendDownMessage": "El servidor no responde.\nPor favor contacte con la Fundación Ibercivis.",
+  "noConnectionMessage": "Por favor comprueba tu conexión a internet\ne inténtalo de nuevo.",
+  "emailFieldLabel": "Email",
+  "roleLabel": "Rol",
+  "inviteMemberHint": "usuario@ejemplo.com",
+  "membersLabel": "Miembros",
+  "projectsLabel": "Proyectos",
+  "observationsInZone": "Observaciones en esta zona",
+  "selectType": "Seleccionar tipo",
+  "more": "Más...",
+  "profileImageLabel": "Imagen del perfil",
+  "coverImageLabel": "Imagen de portada",
+  "noName": "Sin nombre",
+  "fieldNameHint": "Nombre del campo",
+  "noObservationMap": "Este proyecto no tiene mapa de observaciones",
+  "observationZone": "Zona de observaciones",
+  "helpTextHint": "Texto de ayuda (opcional)",
+  "noOptionsAdded": "No hay opciones. Añade al menos una opción.",
+  "projectPasswordWrong": "Contraseña incorrecta."
+}
