@@ -153,14 +153,14 @@ if ! $PROD; then
 ## DEBUG ${NEW_VERSION} (${DATE})
 
 ${FORMATTED}
-# ── Instrucciones ──────────────────────────────────────────────────────────────
-# Edita el texto anterior en inglés.
-# Guarda y cierra el editor para continuar.
+;; ── Instrucciones ──────────────────────────────────────────────────────────────
+;; Edita el texto anterior en inglés.
+;; Guarda y cierra el editor para continuar.
 EOF
 
   ${EDITOR:-nano} "$DRAFT"
 
-  ENTRY=$(grep -v '^#' "$DRAFT")
+  ENTRY=$(grep -v '^;;' "$DRAFT")
   rm -f "$DRAFT"
 
   if [ -z "$(echo "$ENTRY" | tr -d '[:space:]')" ]; then
@@ -192,7 +192,8 @@ fi
 # ── MODO PRODUCCIÓN ───────────────────────────────────────────────────────────
 
 NEW_PATCH=$((PATCH + 1))
-NEW_VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}+1"
+NEW_BUILD=$((BUILD + 1))
+NEW_VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}+${NEW_BUILD}"
 
 echo "=== Changelog PRODUCCIÓN: $CURRENT → $NEW_VERSION ==="
 
@@ -221,15 +222,15 @@ cat > "$DRAFT" <<EOF
 ## ${MAJOR}.${MINOR}.${NEW_PATCH} (${DATE})
 
 ${AGGREGATED}
-# ── Instrucciones ──────────────────────────────────────────────────────────────
-# Lo anterior es la agregación de los debugs. Edítalo en inglés para que sea
-# un texto limpio y legible para el usuario final.
-# Elimina duplicados, tecnicismos, y agrupa por tema.
-# Guarda y cierra para continuar.
+;; ── Instrucciones ──────────────────────────────────────────────────────────────
+;; Lo anterior es la agregación de los debugs. Edítalo en inglés para que sea
+;; un texto limpio y legible para el usuario final.
+;; Elimina duplicados, tecnicismos, y agrupa por tema.
+;; Guarda y cierra para continuar.
 EOF
 
 ${EDITOR:-nano} "$DRAFT"
-EN_ENTRY=$(grep -v '^#' "$DRAFT")
+EN_ENTRY=$(grep -v '^;;' "$DRAFT")
 rm -f "$DRAFT"
 
 if [ -z "$(echo "$EN_ENTRY" | tr -d '[:space:]')" ]; then

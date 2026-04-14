@@ -1,3 +1,13 @@
+## 1.0.2 (2026-04-14)
+
+- Updated permissions
+- Improved changelog management
+- Improved changelog management
+- fix:Fuzzy mode fixed
+- fix:Fuzzy mode fixed
+- Initial commit — Geonity Flutter app
+
+---
 
 
 - fix:Fuzzy mode fixed
