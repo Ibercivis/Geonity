@@ -33,18 +33,17 @@ Example: `git commit -m "feat: add dark mode in settings"`
 Use this for QA / internal testing.
 
 ```bash
-# 1. Generate the debug changelog (once per build)
+# 1. Generate changelog → bumps build number automatically
 ./generate_changelog.sh
+# → bumps 1.0.0+7 to 1.0.0+8
 # → opens editor with grouped commits
-# → saves to assets/changelog/debug/debug_<version>+<build>.md
-# → creates git tag: debug-<version>+<build>
+# → saves to assets/changelog/debug/debug_1.0.0+8.md
+# → creates git tag: debug-1.0.0+8
 
-# 2. Build and upload
+# 2. Build and upload (no version bump here)
 ./deploy.sh debug android   # APK → server
 ./deploy.sh debug ios       # Runner.app → server
 ```
-
-Bumps the **build number** only (e.g. `1.0.0+6` → `1.0.0+7`).
 
 ---
 
@@ -53,27 +52,27 @@ Bumps the **build number** only (e.g. `1.0.0+6` → `1.0.0+7`).
 Use this for App Store / Play Store releases.
 
 ```bash
-# 1. Generate the production changelog
+# 1. Generate changelog → bumps patch version automatically
 ./generate_changelog.sh --prod
-# → aggregates all debug entries for current version
+# → bumps 1.0.0+8 to 1.0.1+1
+# → aggregates all debug entries for 1.0.0
 # → opens editor to write clean, user-facing release notes in English
 # → saves to assets/changelog/changelog.md (prepended)
-# → creates git tag: v<version>
+# → creates git tag: v1.0.1
+# → archives debug changelogs to debug/archived/
 
-# 2. Build and upload
+# 2. Build and upload (no version bump here)
 ./deploy.sh prod android    # AAB → server
 ./deploy.sh prod ios        # IPA → server
 ./deploy.sh prod all        # AAB + IPA → server
 ```
 
-Bumps the **patch version** and resets build to 1 (e.g. `1.0.0+7` → `1.0.1+1`).
-
 ---
 
 ## Safety rules
 
+- `generate_changelog.sh` owns the version bump — `deploy.sh` never touches `pubspec.yaml`.
 - `deploy.sh` **will abort** if the changelog for the current version is missing.
-- If the build fails, `pubspec.yaml` is **automatically reverted**.
 - After a prod release, debug changelog files are **archived** to `assets/changelog/debug/archived/`.
 
 ---
