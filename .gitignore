@@ -46,3 +46,12 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Changelogs de debug (internos de QA, no van en el bundle)
+assets/changelog/debug/
+
+# DevTools (configuración local, auto-generada)
+devtools_options.yaml
+
+# Notas internas
+TODO.md
