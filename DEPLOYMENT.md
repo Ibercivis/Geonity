@@ -62,9 +62,10 @@ Use this for App Store / Play Store releases.
 # → archives debug changelogs to debug/archived/
 
 # 2. Build and upload (no version bump here)
-./deploy.sh prod android    # AAB → server
-./deploy.sh prod ios        # IPA → server
-./deploy.sh prod all        # AAB + IPA → server
+./deploy.sh prod android           # APK arm64 → scp to server (direct distribution)
+./deploy.sh prod android --store   # AAB → ready for Play Store (manual upload)
+./deploy.sh prod ios               # IPA → scp to server
+./deploy.sh prod all               # APK arm64 + IPA → scp to server
 ```
 
 ---

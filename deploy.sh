@@ -3,43 +3,52 @@
 # Compila y sube la app. La versión ya debe estar bumpeada por generate_changelog.sh.
 #
 # Uso:
-#   ./deploy.sh debug android          → APK debug
-#   ./deploy.sh debug ios              → IPA debug
-#   ./deploy.sh prod android           → AAB release
-#   ./deploy.sh prod ios               → IPA release
-#   ./deploy.sh prod all               → AAB + IPA release
+#   ./deploy.sh debug android              → APK debug → scp servidor
+#   ./deploy.sh debug ios                  → IPA debug → scp servidor
+#   ./deploy.sh prod android               → APK arm64 release → scp servidor
+#   ./deploy.sh prod android --store       → AAB release → listo para Play Store
+#   ./deploy.sh prod ios                   → IPA release → scp servidor
+#   ./deploy.sh prod all                   → APK arm64 + IPA → scp servidor
 
 set -e
 
 if [[ "${1}" == "--help" || "${1}" == "-h" ]]; then
   cat <<'EOF'
-Uso: ./deploy.sh [MODE] [PLATFORM]
+Uso: ./deploy.sh [MODE] [PLATFORM] [--store]
 
 Compila y sube la app al servidor.
 La versión ya debe estar bumpeada por generate_changelog.sh.
 
 Modos:
   debug    Compila APK/IPA de debug con la versión actual de pubspec.yaml.
-  prod     Compila AAB/IPA de release con la versión actual de pubspec.yaml.
+  prod     Compila release con la versión actual de pubspec.yaml.
 
 Plataformas:
-  android  Compila para Android  (debug → APK, prod → AAB)
-  ios      Compila para iOS      (debug → Runner.app, prod → IPA)
-  all      Compila para ambas plataformas (solo disponible en modo prod)
+  android  Compila para Android
+  ios      Compila para iOS
+  all      Compila para ambas plataformas (solo en modo prod)
 
 Opciones:
+  --store    (solo prod android) Genera AAB para Play Store en lugar de
+             APK arm64 para el servidor. El fichero queda en:
+               build/app/outputs/bundle/release/app-release.aab
+             y NO se sube por scp — hay que subirlo manualmente a Play Console.
   --help, -h   Muestra esta ayuda.
 
 Comportamiento:
   - Aborta si el changelog para la versión actual no existe.
-  - Si la compilación falla, no modifica pubspec.yaml (ya no hace bump).
+  - Sin --store: compila APK arm64 y lo sube por scp al servidor.
+  - Con --store: compila AAB y lo deja listo en build/ para Play Store.
 
 Flujo correcto:
-  1. ./generate_changelog.sh [--prod]   ← bumpa versión + genera changelog
-  2. ./deploy.sh [debug|prod] [platform] ← compila y sube
+  1. ./generate_changelog.sh [--prod]        ← bumpa versión + genera changelog
+  2. ./deploy.sh [debug|prod] [platform]     ← compila y sube al servidor
+     ./deploy.sh prod android --store        ← compila AAB para Play Store
 
 Ejemplos:
   ./deploy.sh debug android
+  ./deploy.sh prod android
+  ./deploy.sh prod android --store
   ./deploy.sh prod all
 EOF
   exit 0
@@ -47,6 +56,8 @@ fi
 
 MODE="${1:-debug}"
 PLATFORM="${2:-android}"
+STORE=false
+[[ "${3}" == "--store" ]] && STORE=true
 
 # ── Validación ────────────────────────────────────────────────────────────────
 
@@ -65,6 +76,11 @@ fi
 if [[ "$MODE" == "debug" && "$PLATFORM" == "all" ]]; then
   echo "Modo debug no admite 'all'. Usa 'android' o 'ios'."
   echo "     ./deploy.sh --help  para más información"
+  exit 1
+fi
+
+if [[ "$STORE" == true && ( "$MODE" != "prod" || "$PLATFORM" != "android" ) ]]; then
+  echo "✗ --store solo es válido con: ./deploy.sh prod android --store"
   exit 1
 fi
 
@@ -106,10 +122,14 @@ fi
 # ── Compilar ──────────────────────────────────────────────────────────────────
 
 compile_android() {
-  if [[ "$MODE" == "prod" ]]; then
-    echo "Compilando AAB (release)..."
+  if [[ "$MODE" == "prod" && "$STORE" == true ]]; then
+    echo "Compilando AAB (Play Store)..."
     flutter build appbundle --release
     OUTPUT="build/app/outputs/bundle/release/app-release.aab"
+  elif [[ "$MODE" == "prod" ]]; then
+    echo "Compilando APK release (arm64)..."
+    flutter build apk --release --target-platform android-arm64
+    OUTPUT="build/app/outputs/flutter-apk/app-release.apk"
   else
     echo "Compilando APK (debug)..."
     flutter build apk --debug
@@ -165,8 +185,20 @@ fi
 
 # ── Subir ─────────────────────────────────────────────────────────────────────
 
-$ANDROID_OK && upload "$ANDROID_OUTPUT"
-$IOS_OK     && upload "$IOS_OUTPUT"
+if $ANDROID_OK; then
+  if $STORE; then
+    echo ""
+    echo "✓ AAB listo para Play Store:"
+    echo "  $(pwd)/${ANDROID_OUTPUT}"
+    echo ""
+    echo "  Sube manualmente en: https://play.google.com/console"
+    echo "  App → Producción → Crear nueva versión → Subir AAB"
+  else
+    upload "$ANDROID_OUTPUT"
+  fi
+fi
+
+$IOS_OK && upload "$IOS_OUTPUT"
 
 echo ""
-echo "✓ Deploy completado — v${CURRENT} [${MODE}/${PLATFORM}]"
+echo "✓ Deploy completado — v${CURRENT} [${MODE}/${PLATFORM}${STORE:+ store}]"

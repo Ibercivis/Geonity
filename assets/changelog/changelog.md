@@ -1,3 +1,8 @@
+
+
+- fix:Fuzzy mode fixed
+- fix:Fuzzy mode fixed
+- Initial commit — Geonity Flutter app
 ## 1.0.1 (2026-04-14)
 - Hexagons in fuzzy mode with color based on observation density
 - Configurable success message after submitting an observation
