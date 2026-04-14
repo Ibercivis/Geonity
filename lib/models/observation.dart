@@ -28,17 +28,17 @@ class Observation {
 
   factory Observation.fromJson(Map<String, dynamic> json) {
     try {
-      // Parse geoposition (formato: "SRID=4326;POINT (latitude longitude)")
-      // Nota: El API devuelve lat lon en lugar del estándar lon lat
+      // Parse geoposition: "SRID=4326;POINT (longitude latitude)"
+      // El servidor almacena WKT estándar: POINT(lon lat).
       double lat = 0.0;
       double lon = 0.0;
-      
+
       if (json['geoposition'] != null) {
         final geoStr = json['geoposition'] as String;
         final match = RegExp(r'POINT \(([0-9.\-]+) ([0-9.\-]+)\)').firstMatch(geoStr);
         if (match != null) {
-          lat = double.parse(match.group(1)!);  // Primer valor es latitud
-          lon = double.parse(match.group(2)!);  // Segundo valor es longitud
+          lon = double.parse(match.group(1)!);  // primer valor = longitud
+          lat = double.parse(match.group(2)!);  // segundo valor = latitud
         }
       } else {
         lat = (json['latitude'] ?? json['lat'] ?? 0.0).toDouble();

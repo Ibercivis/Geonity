@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart' hide ImageSource;
 import '../l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 import '../utils/image_utils.dart';
@@ -20,6 +20,7 @@ class AddObservationScreen extends StatefulWidget {
   final double longitude;
   final List<ObservationField> fields;
   final String? postObservationMessage;
+  final bool showPostMessage;
 
   const AddObservationScreen({
     super.key,
@@ -29,6 +30,7 @@ class AddObservationScreen extends StatefulWidget {
     required this.longitude,
     required this.fields,
     this.postObservationMessage,
+    this.showPostMessage = true,
   });
 
   @override
@@ -289,6 +291,7 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
         return TextFormField(
           maxLines: fieldType == 'TEXTAREA' ? 4 : 1,
           initialValue: _formData[field.id.toString()]?.toString(),
+          textCapitalization: TextCapitalization.sentences,
           decoration: InputDecoration(
             hintText: AppLocalizations.of(context)!.fieldEnter(field.label.toLowerCase()),
             border: OutlineInputBorder(
@@ -372,6 +375,7 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
       case 'CHOICE':
         if (field.choices == null || field.choices!.isEmpty) {
           return TextFormField(
+            textCapitalization: TextCapitalization.sentences,
             decoration: InputDecoration(
               hintText: AppLocalizations.of(context)!.fieldEnter(field.label.toLowerCase()),
               border: OutlineInputBorder(
@@ -431,6 +435,7 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
               if (isOther) ...[
                 const SizedBox(height: 8),
                 TextFormField(
+                  textCapitalization: TextCapitalization.sentences,
                   decoration: InputDecoration(
                     hintText: AppLocalizations.of(context)!.specify,
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
@@ -511,6 +516,7 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
                       Padding(
                         padding: const EdgeInsets.only(left: 16, bottom: 8),
                         child: TextFormField(
+                          textCapitalization: TextCapitalization.sentences,
                           decoration: InputDecoration(
                             hintText: AppLocalizations.of(context)!.specify,
                             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
@@ -625,6 +631,7 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
 
       default:
         return TextFormField(
+          textCapitalization: TextCapitalization.sentences,
           decoration: InputDecoration(
             hintText: AppLocalizations.of(context)!.fieldEnter(field.label.toLowerCase()),
             border: OutlineInputBorder(
@@ -700,12 +707,13 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
 
   Future<void> _showPostObservationDialog() async {
     final message = widget.postObservationMessage;
-    if (message == null || message.isEmpty || !mounted) return;
+    debugPrint('[PostDialog] showPostMessage=${widget.showPostMessage} message=${message?.substring(0, message.length.clamp(0, 80))}');
+    if (!widget.showPostMessage || message == null || message.isEmpty || !mounted) return;
 
     await showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        content: MarkdownBody(data: message),
+        content: HtmlWidget(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),

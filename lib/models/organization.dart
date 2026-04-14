@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '../config/app_config.dart';
+import '../utils/multilingual_utils.dart';
 class Organization {
   final int id;
   final String principalName;
@@ -53,8 +54,8 @@ class Organization {
       principalName: json['principalName'] ?? json['principal_name'] ?? json['name'] ?? '',
       logo: logoUrl,
       cover: coverUrl,
-      description: json['description'],
-      userRole: json['user_role'],
+      description: json['description'] != null ? localizedText(json['description']) : null,
+      userRole: json['user_role'] is Map ? localizedText(json['user_role']) : json['user_role'] as String?,
     );
   }
 

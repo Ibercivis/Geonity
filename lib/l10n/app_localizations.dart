@@ -555,14 +555,56 @@ abstract class AppLocalizations {
   /// No description provided for @exploreProjects.
   ///
   /// In es, this message translates to:
-  /// **'Explorar proyectos'**
+  /// **'Explorar'**
   String get exploreProjects;
+
+  /// No description provided for @drafts.
+  ///
+  /// In es, this message translates to:
+  /// **'Borradores'**
+  String get drafts;
+
+  /// No description provided for @noDraftsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin borradores'**
+  String get noDraftsTitle;
+
+  /// No description provided for @noDraftsSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Los proyectos que guardes como borrador aparecerán aquí'**
+  String get noDraftsSubtitle;
+
+  /// No description provided for @continueDraft.
+  ///
+  /// In es, this message translates to:
+  /// **'Continuar editando'**
+  String get continueDraft;
+
+  /// No description provided for @noMyProjectsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin proyectos'**
+  String get noMyProjectsTitle;
+
+  /// No description provided for @noMyProjectsSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Únete a un proyecto o crea el tuyo'**
+  String get noMyProjectsSubtitle;
 
   /// No description provided for @filterByCategory.
   ///
   /// In es, this message translates to:
   /// **'Filtrar por categoría'**
   String get filterByCategory;
+
+  /// No description provided for @category.
+  ///
+  /// In es, this message translates to:
+  /// **'Categoría'**
+  String get category;
 
   /// No description provided for @projectCreatedBy.
   ///
@@ -1380,6 +1422,12 @@ abstract class AppLocalizations {
   /// **'Error al actualizar el perfil'**
   String get profileUpdateError;
 
+  /// No description provided for @settings.
+  ///
+  /// In es, this message translates to:
+  /// **'Configuración'**
+  String get settings;
+
   /// No description provided for @languageTitle.
   ///
   /// In es, this message translates to:
@@ -1415,6 +1463,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Idioma del sistema'**
   String get languageSystem;
+
+  /// No description provided for @appVersion.
+  ///
+  /// In es, this message translates to:
+  /// **'Versión'**
+  String get appVersion;
+
+  /// No description provided for @whatsNew.
+  ///
+  /// In es, this message translates to:
+  /// **'Novedades'**
+  String get whatsNew;
 
   /// No description provided for @themeTitle.
   ///
@@ -1842,6 +1902,12 @@ abstract class AppLocalizations {
   /// **'Mensaje de confirmación'**
   String get confirmationMessageTitle;
 
+  /// No description provided for @showPostMessageLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Mostrar mensaje tras la observación'**
+  String get showPostMessageLabel;
+
   /// No description provided for @insertLinkTitle.
   ///
   /// In es, this message translates to:
@@ -2100,6 +2166,84 @@ abstract class AppLocalizations {
   /// **'Las observaciones se muestran como zonas aproximadas, no como puntos exactos'**
   String get fuzzyGeopositionSubtitle;
 
+  /// No description provided for @publicMap.
+  ///
+  /// In es, this message translates to:
+  /// **'Mapa público'**
+  String get publicMap;
+
+  /// No description provided for @publicMapSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Activa una página de mapa pública accesible sin inicio de sesión'**
+  String get publicMapSubtitle;
+
+  /// No description provided for @projectPublished.
+  ///
+  /// In es, this message translates to:
+  /// **'Publicado'**
+  String get projectPublished;
+
+  /// No description provided for @projectDraftSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'El proyecto está en borrador. Necesita al menos 10 observaciones para publicarse.'**
+  String get projectDraftSubtitle;
+
+  /// No description provided for @projectDraftSubtitleWithCount.
+  ///
+  /// In es, this message translates to:
+  /// **'El proyecto está en borrador. Necesita al menos 10 observaciones para publicarse (actualmente tiene {count}).'**
+  String projectDraftSubtitleWithCount(int count);
+
+  /// No description provided for @projectPublishedSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'El proyecto está publicado y visible para todos.'**
+  String get projectPublishedSubtitle;
+
+  /// No description provided for @projectEnded.
+  ///
+  /// In es, this message translates to:
+  /// **'Finalizado'**
+  String get projectEnded;
+
+  /// No description provided for @projectEndedSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'El proyecto ya no acepta nuevas observaciones'**
+  String get projectEndedSubtitle;
+
+  /// No description provided for @emailOnObservation.
+  ///
+  /// In es, this message translates to:
+  /// **'Email al recibir observación'**
+  String get emailOnObservation;
+
+  /// No description provided for @emailOnObservationSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Recibe un email cada vez que llegue una observación'**
+  String get emailOnObservationSubtitle;
+
+  /// No description provided for @coverImageRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'La imagen de portada es obligatoria'**
+  String get coverImageRequired;
+
+  /// No description provided for @organizationType.
+  ///
+  /// In es, this message translates to:
+  /// **'Tipo de organización'**
+  String get organizationType;
+
+  /// No description provided for @continueLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Continuar'**
+  String get continueLabel;
+
   /// No description provided for @optionLabelRequired.
   ///
   /// In es, this message translates to:
@@ -2159,6 +2303,30 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Admin'**
   String get adminBadge;
+
+  /// No description provided for @badgeFinished.
+  ///
+  /// In es, this message translates to:
+  /// **'Finalizado'**
+  String get badgeFinished;
+
+  /// No description provided for @badgePrivate.
+  ///
+  /// In es, this message translates to:
+  /// **'Privado'**
+  String get badgePrivate;
+
+  /// No description provided for @badgeFuzzy.
+  ///
+  /// In es, this message translates to:
+  /// **'Fuzzy'**
+  String get badgeFuzzy;
+
+  /// No description provided for @badgeGlobal.
+  ///
+  /// In es, this message translates to:
+  /// **'Global'**
+  String get badgeGlobal;
 
   /// No description provided for @downloadCsv.
   ///

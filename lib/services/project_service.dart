@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -5,27 +6,30 @@ import 'package:http/http.dart' as http;
 import '../models/project.dart';
 import '../models/project_country.dart';
 import '../config/app_config.dart';
+import '../utils/api_error_utils.dart';
 import 'auth_service.dart';
-import 'locale_service.dart';
 
 class ProjectService {
   static String get baseUrl => '${AppConfig.apiUrl}/project/';
   final _authService = AuthService();
 
+  /// Set when an update/create fails with a field-level API error.
+  /// Callers can read this to show a specific message to the user.
+  String? lastError;
+
   Future<List<Project>> getProjects() async {
     try {
-      final key = await _authService.getToken();
-
       final response = await http.get(
         Uri.parse(baseUrl),
-        headers: {
-          'Content-Type': 'application/json',
-          if (key != null) 'Authorization': 'Token $key',
-        },
+        headers: await _authService.getHeaders(),
       ).timeout(const Duration(seconds: 15));
 
       debugPrint('Projects response status: ${response.statusCode}');
 
+      if (response.statusCode == 401) {
+        unawaited(_authService.handleUnauthorized());
+        return [];
+      }
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         final List<dynamic> data = decoded is List ? decoded : (decoded['results'] ?? []);
@@ -41,7 +45,6 @@ class ProjectService {
   Future<List<Project>> getMyProjects() async {
     try {
       final key = await _authService.getToken();
-
       if (key == null) {
         debugPrint('No auth token available for my_projects');
         return [];
@@ -49,12 +52,13 @@ class ProjectService {
 
       final response = await http.get(
         Uri.parse('${baseUrl}my_projects/'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Token $key',
-        },
+        headers: await _authService.getHeaders(),
       ).timeout(const Duration(seconds: 15));
 
+      if (response.statusCode == 401) {
+        unawaited(_authService.handleUnauthorized());
+        return [];
+      }
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         final List<dynamic> data = decoded is List ? decoded : (decoded['results'] ?? []);
@@ -67,16 +71,99 @@ class ProjectService {
     }
   }
 
-  Future<bool> toggleLike(int projectId) async {
+  Future<List<Project>> getMyAdminProjects() async {
     try {
       final key = await _authService.getToken();
-      
+      if (key == null) return [];
+
+      final response = await http.get(
+        Uri.parse('${baseUrl}my_admin_projects/'),
+        headers: await _authService.getHeaders(),
+      ).timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+        final List<dynamic> data = decoded is List ? decoded : (decoded['results'] ?? []);
+        return data.map((json) => Project.fromJson(json)).toList();
+      }
+      return [];
+    } catch (e) {
+      debugPrint('Error fetching my admin projects: $e');
+      return [];
+    }
+  }
+
+  Future<List<Project>> getMyParticipatingProjects() async {
+    try {
+      final key = await _authService.getToken();
+      if (key == null) return [];
+
+      final response = await http.get(
+        Uri.parse('${baseUrl}my_participating/'),
+        headers: await _authService.getHeaders(),
+      ).timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+        final List<dynamic> data = decoded is List ? decoded : (decoded['results'] ?? []);
+        return data.map((json) => Project.fromJson(json)).toList();
+      }
+      return [];
+    } catch (e) {
+      debugPrint('Error fetching my participating projects: $e');
+      return [];
+    }
+  }
+
+  Future<List<Project>> getMyLikedProjects() async {
+    try {
+      final key = await _authService.getToken();
+      if (key == null) return [];
+
+      final response = await http.get(
+        Uri.parse('${baseUrl}my_liked/'),
+        headers: await _authService.getHeaders(),
+      ).timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+        final List<dynamic> data = decoded is List ? decoded : (decoded['results'] ?? []);
+        return data.map((json) => Project.fromJson(json)).toList();
+      }
+      return [];
+    } catch (e) {
+      debugPrint('Error fetching my liked projects: $e');
+      return [];
+    }
+  }
+
+  Future<List<Project>> getDraftProjects() async {
+    try {
+      final key = await _authService.getToken();
+      if (key == null) return [];
+
+      final response = await http.get(
+        Uri.parse('${AppConfig.apiUrl}/project/drafts/'),
+        headers: await _authService.getHeaders(),
+      ).timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+        final List<dynamic> data = decoded is List ? decoded : (decoded['results'] ?? []);
+        return data.map((json) => Project.fromJson(json)).toList();
+      }
+      return [];
+    } catch (e) {
+      debugPrint('Error fetching draft projects: $e');
+      return [];
+    }
+  }
+
+  Future<bool> toggleLike(int projectId) async {
+    try {
       final response = await http.post(
         Uri.parse('${AppConfig.apiUrl}/projects/$projectId/toggle-like/'),
-        headers: {
-          'Content-Type': 'application/json',
-          if (key != null) 'Authorization': 'Token $key',
-        },
+        headers: await _authService.getHeaders(),
         body: jsonEncode({}),
       ).timeout(const Duration(seconds: 15));
 
@@ -89,14 +176,9 @@ class ProjectService {
 
   Future<Map<String, dynamic>?> getProjectDetail(int projectId) async {
     try {
-      final key = await _authService.getToken();
-      
       final response = await http.get(
         Uri.parse('${AppConfig.apiUrl}/project/$projectId/'),
-        headers: {
-          'Content-Type': 'application/json',
-          if (key != null) 'Authorization': 'Token $key',
-        },
+        headers: await _authService.getHeaders(),
       ).timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
@@ -111,18 +193,12 @@ class ProjectService {
 
   Future<Map<String, dynamic>?> getFieldForm(int fieldFormId, {bool raw = false}) async {
     try {
-      final key = await _authService.getToken();
-      final lang = LocaleService.activeLocale?.languageCode ?? 'es';
       final uri = Uri.parse('${AppConfig.apiUrl}/field_forms/$fieldFormId/')
           .replace(queryParameters: raw ? {'raw': 'true'} : null);
 
       final response = await http.get(
         uri,
-        headers: {
-          'Content-Type': 'application/json',
-          if (key != null) 'Authorization': 'Token $key',
-          if (!raw) 'Accept-Language': lang,
-        },
+        headers: await _authService.getHeaders(),
       ).timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
@@ -137,14 +213,9 @@ class ProjectService {
 
   Future<List<Project>> getProjectsByOrganization(int organizationId) async {
     try {
-      final key = await _authService.getToken();
-      
       final response = await http.get(
         Uri.parse('${AppConfig.apiUrl}/organization/$organizationId/projects/'),
-        headers: {
-          'Content-Type': 'application/json',
-          if (key != null) 'Authorization': 'Token $key',
-        },
+        headers: await _authService.getHeaders(),
       ).timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
@@ -160,14 +231,9 @@ class ProjectService {
 
   Future<bool> validatePassword(int projectId, String password) async {
     try {
-      final key = await _authService.getToken();
-      
       final response = await http.post(
         Uri.parse('${AppConfig.apiUrl}/projects/$projectId/validate-password/'),
-        headers: {
-          'Content-Type': 'application/json',
-          if (key != null) 'Authorization': 'Token $key',
-        },
+        headers: await _authService.getHeaders(),
         body: jsonEncode({'password': password}),
       ).timeout(const Duration(seconds: 15));
 
@@ -181,7 +247,6 @@ class ProjectService {
   Future<bool> deleteProject(int projectId) async {
     try {
       final key = await _authService.getToken();
-      
       if (key == null) {
         debugPrint('No auth token available');
         return false;
@@ -189,10 +254,7 @@ class ProjectService {
 
       final response = await http.delete(
         Uri.parse('${AppConfig.apiUrl}/project/$projectId/'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Token $key',
-        },
+        headers: await _authService.getHeaders(),
       ).timeout(const Duration(seconds: 15));
 
       return response.statusCode == 204 || response.statusCode == 200;
@@ -204,14 +266,9 @@ class ProjectService {
 
   Future<List<Map<String, dynamic>>> getTopics() async {
     try {
-      final key = await _authService.getToken();
-      
       final response = await http.get(
         Uri.parse('${AppConfig.apiUrl}/project/topics/'),
-        headers: {
-          'Content-Type': 'application/json',
-          if (key != null) 'Authorization': 'Token $key',
-        },
+        headers: await _authService.getHeaders(),
       ).timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
@@ -227,14 +284,9 @@ class ProjectService {
 
   Future<List<ProjectCountry>> getCountries() async {
     try {
-      final key = await _authService.getToken();
-
       final response = await http.get(
         Uri.parse('${AppConfig.apiUrl}/project/countries/'),
-        headers: {
-          'Content-Type': 'application/json',
-          if (key != null) 'Authorization': 'Token $key',
-        },
+        headers: await _authService.getHeaders(),
       ).timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
@@ -250,14 +302,9 @@ class ProjectService {
 
   Future<List<Map<String, dynamic>>> getQuestionTypes() async {
     try {
-      final key = await _authService.getToken();
-      
       final response = await http.get(
         Uri.parse('${AppConfig.apiUrl}/question_types/'),
-        headers: {
-          'Content-Type': 'application/json',
-          if (key != null) 'Authorization': 'Token $key',
-        },
+        headers: await _authService.getHeaders(),
       ).timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
@@ -280,33 +327,37 @@ class ProjectService {
     bool isPrivate = false,
     String? password,
     bool isDatabasePrivate = false,
+    bool publicMap = false,
     bool fuzzy = false,
+    bool draft = true,
+    bool ended = false,
+    bool emailOnObservation = false,
     bool isGlobal = true,
     List<String>? countries,
     Map<String, dynamic>? fieldForm,
     String? postObservationMessage,
+    bool showPostMessage = true,
   }) async {
     try {
+      lastError = null;
       final key = await _authService.getToken();
-      
       if (key == null) {
         debugPrint('No auth token available');
         return null;
       }
 
-      final request = http.MultipartRequest(
-        'POST',
-        Uri.parse(baseUrl),
-      );
+      final request = http.MultipartRequest('POST', Uri.parse(baseUrl));
+      request.headers.addAll(await _authService.getMultipartHeaders());
 
-      request.headers['Authorization'] = 'Token $key';
-      
       request.fields['name'] = name;
       request.fields['description'] = description;
       request.fields['is_private'] = isPrivate.toString();
       request.fields['private_data'] = isDatabasePrivate.toString();
+      request.fields['public_map'] = publicMap.toString();
       request.fields['fuzzy'] = fuzzy.toString();
-      if (fuzzy) request.fields['fuzzy_resolution'] = '10';
+      request.fields['draft'] = draft.toString();
+      request.fields['ended'] = ended.toString();
+      request.fields['email_on_observation'] = emailOnObservation.toString();
       request.fields['is_global'] = isGlobal.toString();
       if (!isGlobal && countries != null && countries.isNotEmpty) {
         request.fields['countries'] = jsonEncode(countries);
@@ -317,11 +368,11 @@ class ProjectService {
       if (isPrivate && password != null && password.isNotEmpty) {
         request.fields['raw_password'] = password;
       }
-      
+
       if (organizationIds != null && organizationIds.isNotEmpty) {
         request.fields['organizations_write'] = jsonEncode(organizationIds);
       }
-      
+
       if (topics != null && topics.isNotEmpty) {
         request.fields['topic'] = jsonEncode(topics);
       }
@@ -333,25 +384,22 @@ class ProjectService {
       if (postObservationMessage != null) {
         request.fields['post_observation_message'] = postObservationMessage;
       }
+      request.fields['show_post_message'] = showPostMessage.toString();
 
       if (cover != null) {
-        request.files.add(
-          await http.MultipartFile.fromPath('cover', cover.path),
-        );
+        request.files.add(await http.MultipartFile.fromPath('cover', cover.path));
       }
 
       final response = await request.send();
       final responseBody = await response.stream.bytesToString();
 
       debugPrint('Create project response: ${response.statusCode}');
-      if (response.statusCode != 201 && response.statusCode != 200) {
-        debugPrint('[createProject] ERROR body: $responseBody');
-      }
-
       if (response.statusCode == 201 || response.statusCode == 200) {
         final data = jsonDecode(responseBody);
         return data['id'] as int?;
       }
+      debugPrint('[createProject] ERROR body: $responseBody');
+      lastError = parseServerError(responseBody);
       return null;
     } catch (e) {
       debugPrint('Error creating project: $e');
@@ -369,81 +417,105 @@ class ProjectService {
     bool? isPrivate,
     String? password,
     bool? isDatabasePrivate,
+    bool? publicMap,
     bool? fuzzy,
+    bool? draft,
+    bool? ended,
+    bool? emailOnObservation,
     bool? isGlobal,
     List<String>? countries,
     Map<String, dynamic>? fieldForm,
     String? postObservationMessage,
+    bool showPostMessage = true,
   }) async {
     try {
+      lastError = null;
       final key = await _authService.getToken();
-      
       if (key == null) {
         debugPrint('No auth token available');
         return false;
       }
 
-      final request = http.MultipartRequest(
-        'PATCH',
-        Uri.parse('${AppConfig.apiUrl}/project/$projectId/'),
-      );
+      final uri = Uri.parse('${AppConfig.apiUrl}/project/$projectId/');
 
-      request.headers['Authorization'] = 'Token $key';
-      
-      request.fields['name'] = name;
-      request.fields['description'] = description;
-      
-      if (isPrivate != null) {
-        request.fields['is_private'] = isPrivate.toString();
-        if (isPrivate && password != null && password.isNotEmpty) {
-          request.fields['raw_password'] = password;
-        }
+      // description arrives as a JSON-encoded string '{"es":"..."}' — decode it so
+      // it serialises as an object (not a double-encoded string) in the JSON body.
+      dynamic descriptionValue;
+      try {
+        descriptionValue = jsonDecode(description);
+      } catch (_) {
+        descriptionValue = description;
       }
 
-      if (isDatabasePrivate != null) {
-        request.fields['private_data'] = isDatabasePrivate.toString();
-      }
-
-      if (fuzzy != null) {
-        request.fields['fuzzy'] = fuzzy.toString();
-        if (fuzzy) request.fields['fuzzy_resolution'] = '10';
-      }
-
-      if (isGlobal != null) {
-        request.fields['is_global'] = isGlobal.toString();
-        if (!isGlobal && countries != null && countries.isNotEmpty) {
-          request.fields['countries'] = jsonEncode(countries);
-        }
-      }
-
-      if (organizationIds != null) {
-        request.fields['organizations_write'] = jsonEncode(organizationIds);
-      }
-      
-      if (topics != null) {
-        request.fields['topic'] = jsonEncode(topics);
-      }
-
-      if (fieldForm != null) {
-        request.fields['field_form'] = jsonEncode(fieldForm);
-      }
-
+      dynamic postObsValue;
       if (postObservationMessage != null) {
-        request.fields['post_observation_message'] = postObservationMessage;
+        try {
+          postObsValue = jsonDecode(postObservationMessage);
+        } catch (_) {
+          postObsValue = postObservationMessage;
+        }
       }
+
+      // Build the payload as a plain Map first (booleans as actual booleans)
+      final body = <String, dynamic>{
+        'name': name,
+        'description': descriptionValue,
+        if (isPrivate != null) 'is_private': isPrivate,
+        if (isPrivate == true && password != null && password.isNotEmpty) 'raw_password': password,
+        if (isDatabasePrivate != null) 'private_data': isDatabasePrivate,
+        if (publicMap != null) 'public_map': publicMap,
+        if (fuzzy != null) 'fuzzy': fuzzy,
+        if (draft != null) 'draft': draft,
+        if (ended != null) 'ended': ended,
+        if (emailOnObservation != null) 'email_on_observation': emailOnObservation,
+        if (isGlobal != null) 'is_global': isGlobal,
+        if (isGlobal == false && countries != null && countries.isNotEmpty) 'countries': countries,
+        if (organizationIds != null) 'organizations_write': organizationIds,
+        if (topics != null) 'topic': topics,
+        if (fieldForm != null) 'field_form': fieldForm,
+        if (postObsValue != null) 'post_observation_message': postObsValue,
+        'show_post_message': showPostMessage,
+      };
+
+      http.Response response;
 
       if (cover != null) {
-        request.files.add(
-          await http.MultipartFile.fromPath('cover', cover.path),
-        );
+        // Multipart — needed for file upload; booleans sent as strings
+        final request = http.MultipartRequest('PATCH', uri);
+        request.headers.addAll(await _authService.getMultipartHeaders());
+        body.forEach((k, v) {
+          if (v is List) {
+            request.fields[k] = jsonEncode(v);
+          } else if (v is Map) {
+            request.fields[k] = jsonEncode(v);
+          } else {
+            request.fields[k] = v.toString();
+          }
+        });
+        request.files.add(await http.MultipartFile.fromPath('cover', cover.path));
+        debugPrint('[updateProject] PATCH multipart → $uri');
+        debugPrint('[updateProject] fields: ${request.fields}');
+        final streamed = await request.send();
+        response = await http.Response.fromStream(streamed);
+      } else {
+        // JSON — booleans arrive as actual booleans, matches React behaviour
+        final jsonBody = jsonEncode(body);
+        debugPrint('[updateProject] PATCH json → $uri');
+        debugPrint('[updateProject] body: $jsonBody');
+        response = await http.patch(
+          uri,
+          headers: await _authService.getHeaders(),
+          body: jsonBody,
+        ).timeout(const Duration(seconds: 15));
       }
 
-      final response = await request.send();
-      // Drain stream to avoid resource leak
-      await response.stream.drain<void>();
+      final responseBody = response.body;
+      debugPrint('[updateProject] response ${response.statusCode}: $responseBody');
 
-      debugPrint('Update project response: ${response.statusCode}');
-
+      if (response.statusCode != 200) {
+        debugPrint('[updateProject] ERROR body: $responseBody');
+        lastError = parseServerError(responseBody);
+      }
       return response.statusCode == 200;
     } catch (e) {
       debugPrint('Error updating project: $e');
@@ -453,17 +525,12 @@ class ProjectService {
 
   Future<Map<String, dynamic>> inviteAdmin(int projectId, String email) async {
     try {
-      final token = await _authService.getToken();
-      if (token == null) {
-        throw Exception('No token found');
-      }
+      final key = await _authService.getToken();
+      if (key == null) throw Exception('No token found');
 
       final response = await http.post(
         Uri.parse('${AppConfig.apiUrl}/project/$projectId/invite/'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Token $token',
-        },
+        headers: await _authService.getHeaders(),
         body: jsonEncode({'email': email}),
       ).timeout(const Duration(seconds: 15));
 
@@ -483,24 +550,18 @@ class ProjectService {
 
   Future<List<Map<String, dynamic>>> getProjectInvitations(int projectId) async {
     try {
-      final token = await _authService.getToken();
-      if (token == null) {
-        throw Exception('No token found');
-      }
+      final key = await _authService.getToken();
+      if (key == null) throw Exception('No token found');
 
       final response = await http.get(
         Uri.parse('${AppConfig.apiUrl}/project/$projectId/invitations/'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Token $token',
-        },
+        headers: await _authService.getHeaders(),
       ).timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         return data.cast<Map<String, dynamic>>();
       }
-
       return [];
     } catch (e) {
       debugPrint('Error getting project invitations: $e');
@@ -510,24 +571,19 @@ class ProjectService {
 
   Future<List<Map<String, dynamic>>> getOrganizations() async {
     try {
-      final token = await _authService.getToken();
-      if (token == null) {
-        throw Exception('No token found');
-      }
+      final key = await _authService.getToken();
+      if (key == null) throw Exception('No token found');
 
       final response = await http.get(
-        Uri.parse('${AppConfig.apiUrl}/organization/'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Token $token',
-        },
+        Uri.parse('${AppConfig.apiUrl}/organization/mine/'),
+        headers: await _authService.getHeaders(),
       ).timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
+        final decoded = jsonDecode(response.body);
+        final List<dynamic> data = decoded is List ? decoded : (decoded['results'] ?? []);
         return data.cast<Map<String, dynamic>>();
       }
-
       return [];
     } catch (e) {
       debugPrint('Error getting organizations: $e');
@@ -537,26 +593,23 @@ class ProjectService {
 
   Future<bool> updateProjectOrganizations(int projectId, List<int> organizationIds) async {
     try {
-      final token = await _authService.getToken();
-      if (token == null) {
-        throw Exception('No token found');
-      }
+      final key = await _authService.getToken();
+      if (key == null) throw Exception('No token found');
 
-      final response = await http.patch(
+      final request = http.MultipartRequest(
+        'PATCH',
         Uri.parse('${AppConfig.apiUrl}/project/$projectId/'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Token $token',
-        },
-        body: jsonEncode({
-          'organizations_write': organizationIds,
-        }),
-      ).timeout(const Duration(seconds: 15));
+      );
+      request.headers.addAll(await _authService.getMultipartHeaders());
+      request.fields['organizations_write'] = jsonEncode(organizationIds);
 
-      if (response.statusCode == 200 || response.statusCode == 204) {
+      final streamed = await request.send();
+      await streamed.stream.drain<void>();
+
+      if (streamed.statusCode == 200 || streamed.statusCode == 204) {
         return true;
       } else {
-        debugPrint('Update organizations error: ${response.statusCode}');
+        debugPrint('Update organizations error: ${streamed.statusCode}');
         return false;
       }
     } catch (e) {

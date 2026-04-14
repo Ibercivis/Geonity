@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import '../l10n/app_localizations.dart';
 import '../services/project_service.dart';
 import '../utils/multilingual_utils.dart';
@@ -32,14 +32,19 @@ class CreateProjectTranslationScreen extends StatefulWidget {
   final List<int> selectedTopicIds;
   final List<int> selectedOrganizationIds;
   final bool isPrivate;
+  final bool isPublicMap;
   final bool isDatabasePrivate;
   final bool isFuzzyGeoposition;
+  final bool isDraft;
+  final bool isEnded;
+  final bool isEmailOnObservation;
   final bool isGlobal;
   final List<String> selectedCountryCodes;
   final String? password;
   final int? projectId;
   final Map<String, dynamic>? fieldFormToSend;
   final String? postObservationMessage;
+  final bool showPostMessage;
 
   const CreateProjectTranslationScreen({
     super.key,
@@ -49,14 +54,19 @@ class CreateProjectTranslationScreen extends StatefulWidget {
     required this.selectedTopicIds,
     required this.selectedOrganizationIds,
     required this.isPrivate,
+    this.isPublicMap = false,
     required this.isDatabasePrivate,
     this.isFuzzyGeoposition = false,
+    this.isDraft = true,
+    this.isEnded = false,
+    this.isEmailOnObservation = false,
     this.isGlobal = true,
     this.selectedCountryCodes = const [],
     this.password,
     this.projectId,
     this.fieldFormToSend,
     this.postObservationMessage,
+    this.showPostMessage = true,
   });
 
   @override
@@ -71,7 +81,6 @@ class _CreateProjectTranslationScreenState
   String? _selectedLanguage;
   final Map<String, TextEditingController> _controllers = {};
   bool _isLoading = false;
-  bool _messagePreview = false;
 
   bool get _isEditMode => widget.projectId != null;
 
@@ -92,7 +101,6 @@ class _CreateProjectTranslationScreenState
   // ── Pre-populate controllers from existing multilingual translations ───────
 
   void _prepopulateFromExistingTranslations() {
-    _prepopulateField('name', widget.projectName);
     _prepopulateField('description', widget.projectDescription);
     final msg = widget.postObservationMessage;
     if (msg != null && msg.isNotEmpty) _prepopulateField('message', msg);
@@ -145,13 +153,14 @@ class _CreateProjectTranslationScreenState
   List<String> _fieldKeys() {
     final questions =
         (widget.fieldFormToSend?['questions'] as List<dynamic>?) ?? [];
-    final keys = <String>['name', 'description'];
+    final keys = <String>['description'];
     final msg = widget.postObservationMessage;
     if (msg != null && msg.isNotEmpty) keys.add('message');
     for (var i = 0; i < questions.length; i++) {
       final q = questions[i] as Map<String, dynamic>;
       keys.add('q${i}_text');
-      final help = q['question_help'] as String? ?? '';
+      final helpRaw = q['question_help'];
+      final help = helpRaw is Map ? jsonEncode(helpRaw) : (helpRaw?.toString() ?? '');
       if (help.isNotEmpty) keys.add('q${i}_help');
       final choices = q['choices'] as List<dynamic>?;
       if (choices != null) {
@@ -205,14 +214,16 @@ class _CreateProjectTranslationScreenState
         final i = entry.key;
         final q = Map<String, dynamic>.from(entry.value as Map);
 
-        q['question_text'] = jsonDecode(
-            _multilingual(q['question_text'] as String,
-                _ctrl('q${i}_text').text.trim()));
+        // question_text may be a String (from FieldData.rawName) or a Map (from _rawFieldFormData)
+        final qtRaw = q['question_text'];
+        final qtStr = qtRaw is Map ? jsonEncode(qtRaw) : (qtRaw?.toString() ?? '');
+        q['question_text'] = jsonDecode(_multilingual(qtStr, _ctrl('q${i}_text').text.trim()));
 
-        final help = q['question_help'] as String? ?? '';
+        // question_help may be a String or a Map
+        final helpRaw = q['question_help'];
+        final help = helpRaw is Map ? jsonEncode(helpRaw) : (helpRaw?.toString() ?? '');
         if (help.isNotEmpty) {
-          q['question_help'] = jsonDecode(
-              _multilingual(help, _ctrl('q${i}_help').text.trim()));
+          q['question_help'] = jsonDecode(_multilingual(help, _ctrl('q${i}_help').text.trim()));
         }
 
         if (q['choices'] != null) {
@@ -223,11 +234,13 @@ class _CreateProjectTranslationScreenState
             if (raw is Map) {
               final choice = Map<String, dynamic>.from(raw);
               final existingLabel = choice['label'];
-              final baseText = existingLabel is Map
-                  ? (existingLabel['default'] ?? existingLabel.values.first ?? '').toString()
-                  : existingLabel.toString();
+              // Pass the full existing multilingual map (JSON-encoded) so other
+              // language translations are preserved — not just the default text.
+              final labelStr = existingLabel is Map
+                  ? jsonEncode(existingLabel)
+                  : (existingLabel?.toString() ?? '');
               choice['label'] = jsonDecode(_multilingual(
-                  baseText, _ctrl('q${i}_c${j}').text.trim()));
+                  labelStr, _ctrl('q${i}_c${j}').text.trim()));
               return choice;
             } else {
               // Plain string choice → promote to {value, label} with multilingual label
@@ -251,9 +264,7 @@ class _CreateProjectTranslationScreenState
   Future<void> _save({bool skipTranslation = false}) async {
     setState(() => _isLoading = true);
 
-    final String name = skipTranslation
-        ? widget.projectName
-        : _multilingual(widget.projectName, _ctrl('name').text.trim());
+    final String name = widget.projectName;
 
     final String description = skipTranslation
         ? widget.projectDescription
@@ -286,11 +297,17 @@ class _CreateProjectTranslationScreenState
             : widget.selectedOrganizationIds,
         isPrivate: widget.isPrivate,
         password: widget.password,
+        isDatabasePrivate: widget.isDatabasePrivate,
+        publicMap: widget.isPublicMap,
         fuzzy: widget.isFuzzyGeoposition,
+        draft: widget.isDraft,
+        ended: widget.isEnded,
+        emailOnObservation: widget.isEmailOnObservation,
         isGlobal: widget.isGlobal,
         countries: widget.isGlobal ? null : widget.selectedCountryCodes,
         fieldForm: fieldForm,
         postObservationMessage: message,
+        showPostMessage: widget.showPostMessage,
       );
       resultProjectId = success ? widget.projectId : null;
     } else {
@@ -305,11 +322,17 @@ class _CreateProjectTranslationScreenState
             : widget.selectedOrganizationIds,
         isPrivate: widget.isPrivate,
         password: widget.password,
+        isDatabasePrivate: widget.isDatabasePrivate,
+        publicMap: widget.isPublicMap,
         fuzzy: widget.isFuzzyGeoposition,
+        draft: widget.isDraft,
+        ended: widget.isEnded,
+        emailOnObservation: widget.isEmailOnObservation,
         isGlobal: widget.isGlobal,
         countries: widget.isGlobal ? null : widget.selectedCountryCodes,
         fieldForm: fieldForm,
         postObservationMessage: message,
+        showPostMessage: widget.showPostMessage,
       );
       success = resultProjectId != null;
     }
@@ -331,11 +354,17 @@ class _CreateProjectTranslationScreenState
         (route) => route.isFirst,
       );
     } else {
+      final apiError = _projectService.lastError;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text(_isEditMode
-                ? AppLocalizations.of(context)!.projectUpdateError
-                : AppLocalizations.of(context)!.projectCreateError)),
+          content: Text(
+            apiError ??
+                (_isEditMode
+                    ? AppLocalizations.of(context)!.projectUpdateError
+                    : AppLocalizations.of(context)!.projectCreateError),
+          ),
+          duration: const Duration(seconds: 5),
+        ),
       );
     }
   }
@@ -348,10 +377,7 @@ class _CreateProjectTranslationScreenState
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
+        automaticallyImplyLeading: false,
         title: Text(l10n.addLanguageTitle),
       ),
       body: SafeArea(
@@ -429,13 +455,8 @@ class _CreateProjectTranslationScreenState
 
     final items = <Widget>[];
 
-    // ── Name & Description ───────────────────────────────────────────────
+    // ── Description ──────────────────────────────────────────────────────
     items.add(_sectionHeader(AppLocalizations.of(context)!.translationSectionProject));
-    items.add(_translationField(
-      label: AppLocalizations.of(context)!.translationNameLabel,
-      original: localizedText(widget.projectName),
-      controllerKey: 'name',
-    ));
     items.add(_translationField(
       label: AppLocalizations.of(context)!.translationDescriptionLabel,
       original: localizedText(widget.projectDescription),
@@ -451,9 +472,6 @@ class _CreateProjectTranslationScreenState
         original: localizedText(msg),
         controllerKey: 'message',
         maxLines: 3,
-        markdownToolbar: true,
-        isPreview: _messagePreview,
-        onTogglePreview: () => setState(() => _messagePreview = !_messagePreview),
       ));
     }
 
@@ -568,110 +586,6 @@ class _CreateProjectTranslationScreenState
     );
   }
 
-  // ── Markdown toolbar helpers ──────────────────────────────────────────────
-
-  void _wrapSelection(TextEditingController c, String before, String after, String placeholder) {
-    final text = c.text;
-    final sel = c.selection;
-    if (!sel.isValid) { _insertAtCursor(c, '$before$placeholder$after'); return; }
-    final selected = sel.textInside(text);
-    final replacement = selected.isEmpty ? '$before$placeholder$after' : '$before$selected$after';
-    final newText = text.replaceRange(sel.start, sel.end, replacement);
-    final cursorPos = selected.isEmpty ? sel.start + before.length : sel.start + replacement.length;
-    c.value = TextEditingValue(text: newText, selection: TextSelection.collapsed(offset: cursorPos));
-  }
-
-  void _insertAtCursor(TextEditingController c, String insertion) {
-    final text = c.text;
-    final sel = c.selection;
-    final offset = sel.isValid ? sel.baseOffset : text.length;
-    final newText = text.replaceRange(offset, sel.isValid ? sel.extentOffset : offset, insertion);
-    c.value = TextEditingValue(text: newText, selection: TextSelection.collapsed(offset: offset + insertion.length));
-  }
-
-  void _insertBullet(TextEditingController c) {
-    final text = c.text;
-    final sel = c.selection;
-    final offset = sel.isValid ? sel.baseOffset : text.length;
-    final lineStart = text.lastIndexOf('\n', offset > 0 ? offset - 1 : 0);
-    final insertAt = lineStart < 0 ? 0 : lineStart + 1;
-    final newText = text.replaceRange(insertAt, insertAt, '- ');
-    c.value = TextEditingValue(text: newText, selection: TextSelection.collapsed(offset: offset + 2));
-  }
-
-  Future<void> _insertLink(TextEditingController c) async {
-    String linkText = '';
-    String linkUrl = '';
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(AppLocalizations.of(context)!.insertLinkTitle),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.linkTextLabel),
-              autofocus: true,
-              onChanged: (v) => linkText = v,
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.linkUrlLabel),
-              keyboardType: TextInputType.url,
-              onChanged: (v) => linkUrl = v,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(AppLocalizations.of(context)!.cancel)),
-          ElevatedButton(onPressed: () => Navigator.pop(ctx, true), child: Text(AppLocalizations.of(context)!.insert)),
-        ],
-      ),
-    );
-    if (confirmed == true) {
-      final text = linkText.trim().isEmpty ? linkUrl.trim() : linkText.trim();
-      _insertAtCursor(c, '[$text](${linkUrl.trim()})');
-    }
-  }
-
-  Widget _markdownToolbar(TextEditingController c) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerLowest,
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(8),
-          topRight: Radius.circular(8),
-        ),
-      ),
-      child: Row(
-        children: [
-          _toolbarBtn(label: 'B', bold: true,   tooltip: AppLocalizations.of(context)!.tooltipBold,   onPressed: () => _wrapSelection(c, '**', '**', 'texto')),
-          _toolbarBtn(label: 'I', italic: true, tooltip: AppLocalizations.of(context)!.tooltipItalic, onPressed: () => _wrapSelection(c, '*',  '*',  'texto')),
-          _toolbarBtn(icon: Icons.link,                  tooltip: AppLocalizations.of(context)!.tooltipLink,  onPressed: () => _insertLink(c)),
-          _toolbarBtn(icon: Icons.format_list_bulleted,  tooltip: AppLocalizations.of(context)!.tooltipList,  onPressed: () => _insertBullet(c)),
-        ],
-      ),
-    );
-  }
-
-  Widget _toolbarBtn({String? label, IconData? icon, required String tooltip, required VoidCallback onPressed, bool bold = false, bool italic = false}) {
-    return Tooltip(
-      message: tooltip,
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(4),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          child: icon != null
-              ? Icon(icon, size: 18, color: Theme.of(context).colorScheme.onSurface)
-              : Text(label!, style: TextStyle(fontSize: 15, fontWeight: bold ? FontWeight.bold : FontWeight.normal, fontStyle: italic ? FontStyle.italic : FontStyle.normal, color: Theme.of(context).colorScheme.onSurface)),
-        ),
-      ),
-    );
-  }
-
   // ── Translation field ─────────────────────────────────────────────────────
 
   Widget _translationField({
@@ -679,30 +593,17 @@ class _CreateProjectTranslationScreenState
     required String original,
     required String controllerKey,
     int maxLines = 1,
-    bool markdownToolbar = false,
-    bool isPreview = false,
-    VoidCallback? onTogglePreview,
   }) {
     final controller = _ctrl(controllerKey);
+    final isHtml = original.contains('<') && original.contains('>');
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Label + Edit/Preview toggle
-          Row(
-            children: [
-              Text(label,
-                  style: const TextStyle(
-                      fontSize: 13, fontWeight: FontWeight.w500)),
-              if (markdownToolbar) ...[
-                const Spacer(),
-                _editPreviewToggle(isPreview: isPreview, onToggle: onTogglePreview!),
-              ],
-            ],
-          ),
+          Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
           const SizedBox(height: 4),
-          // Original — read only
+          // Original — read only, rendered as HTML if needed
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -711,111 +612,40 @@ class _CreateProjectTranslationScreenState
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
             ),
-            child: Text(
-              original,
-              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 14),
-            ),
+            child: isHtml
+                ? HtmlWidget(
+                    original,
+                    textStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      fontSize: 14,
+                    ),
+                  )
+                : Text(
+                    original,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      fontSize: 14,
+                    ),
+                  ),
           ),
           const SizedBox(height: 4),
-          // Translation — editable or preview
-          if (markdownToolbar && isPreview)
-            _markdownPreview(controller.text)
-          else ...[
-            if (markdownToolbar) _markdownToolbar(controller),
-            TextField(
-              controller: controller,
-              maxLines: markdownToolbar ? null : maxLines,
-              minLines: markdownToolbar ? maxLines : null,
-              onChanged: (_) => setState(() {}),
-              decoration: InputDecoration(
-                hintText: _selectedLanguage != null ? AppLocalizations.of(context)!.translationHint(_selectedLanguage!) : '',
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                border: markdownToolbar
-                    ? const OutlineInputBorder(
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(8),
-                          bottomRight: Radius.circular(8),
-                        ),
-                      )
-                    : OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8)),
-                filled: true,
-                
-              ),
+          // Translation input — plain text
+          TextField(
+            controller: controller,
+            maxLines: maxLines,
+            textCapitalization: TextCapitalization.sentences,
+            onChanged: (_) => setState(() {}),
+            decoration: InputDecoration(
+              hintText: _selectedLanguage != null
+                  ? AppLocalizations.of(context)!.translationHint(_selectedLanguage!)
+                  : '',
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+              filled: true,
             ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _editPreviewToggle({required bool isPreview, required VoidCallback onToggle}) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _toggleTab(label: AppLocalizations.of(context)!.editTab,    active: !isPreview, onTap: isPreview  ? onToggle : null),
-          _toggleTab(label: AppLocalizations.of(context)!.previewTab, active: isPreview,  onTap: !isPreview ? onToggle : null),
-        ],
-      ),
-    );
-  }
-
-  Widget _toggleTab({required String label, required bool active, VoidCallback? onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        decoration: BoxDecoration(
-          color: active ? Theme.of(context).colorScheme.surface : Colors.transparent,
-          borderRadius: BorderRadius.circular(6),
-          boxShadow: active
-              ? [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 4)]
-              : null,
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: active ? FontWeight.bold : FontWeight.normal,
-            color: active ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant,
           ),
-        ),
+        ],
       ),
-    );
-  }
-
-  Widget _markdownPreview(String text) {
-    if (text.trim().isEmpty) {
-      return Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-          borderRadius: BorderRadius.circular(8),
-          color: Theme.of(context).colorScheme.surface,
-        ),
-        child: Text(
-          AppLocalizations.of(context)!.messageEmptyPreview,
-          style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurfaceVariant, fontStyle: FontStyle.italic, fontSize: 13),
-        ),
-      );
-    }
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-        borderRadius: BorderRadius.circular(8),
-        color: Theme.of(context).colorScheme.surface,
-      ),
-      child: MarkdownBody(data: text),
     );
   }
 
@@ -834,18 +664,18 @@ class _CreateProjectTranslationScreenState
       ),
       child: Row(
         children: [
-          // Omitir
+          // Cancelar
           Expanded(
             child: SizedBox(
               height: 50,
               child: OutlinedButton(
-                onPressed: _isLoading ? null : () => _save(skipTranslation: true),
+                onPressed: _isLoading ? null : () => Navigator.of(context).popUntil((route) => route.isFirst),
                 style: OutlinedButton.styleFrom(
                   side: BorderSide(color: Theme.of(context).colorScheme.outline),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25)),
                 ),
-                child: Text(AppLocalizations.of(context)!.skip,
+                child: Text(AppLocalizations.of(context)!.cancel,
                     style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface)),
               ),
             ),

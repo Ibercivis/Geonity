@@ -244,10 +244,32 @@ class AppLocalizationsEs extends AppLocalizations {
   String get myProjects => 'Mis proyectos';
 
   @override
-  String get exploreProjects => 'Explorar proyectos';
+  String get exploreProjects => 'Explorar';
+
+  @override
+  String get drafts => 'Borradores';
+
+  @override
+  String get noDraftsTitle => 'Sin borradores';
+
+  @override
+  String get noDraftsSubtitle =>
+      'Los proyectos que guardes como borrador aparecerán aquí';
+
+  @override
+  String get continueDraft => 'Continuar editando';
+
+  @override
+  String get noMyProjectsTitle => 'Sin proyectos';
+
+  @override
+  String get noMyProjectsSubtitle => 'Únete a un proyecto o crea el tuyo';
 
   @override
   String get filterByCategory => 'Filtrar por categoría';
+
+  @override
+  String get category => 'Categoría';
 
   @override
   String projectCreatedBy(Object creator) {
@@ -696,6 +718,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileUpdateError => 'Error al actualizar el perfil';
 
   @override
+  String get settings => 'Configuración';
+
+  @override
   String get languageTitle => 'Idioma';
 
   @override
@@ -712,6 +737,12 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get languageSystem => 'Idioma del sistema';
+
+  @override
+  String get appVersion => 'Versión';
+
+  @override
+  String get whatsNew => 'Novedades';
 
   @override
   String get themeTitle => 'Tema';
@@ -967,6 +998,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get confirmationMessageTitle => 'Mensaje de confirmación';
 
   @override
+  String get showPostMessageLabel => 'Mostrar mensaje tras la observación';
+
+  @override
   String get insertLinkTitle => 'Insertar enlace';
 
   @override
@@ -1105,6 +1139,52 @@ class AppLocalizationsEs extends AppLocalizations {
       'Las observaciones se muestran como zonas aproximadas, no como puntos exactos';
 
   @override
+  String get publicMap => 'Mapa público';
+
+  @override
+  String get publicMapSubtitle =>
+      'Activa una página de mapa pública accesible sin inicio de sesión';
+
+  @override
+  String get projectPublished => 'Publicado';
+
+  @override
+  String get projectDraftSubtitle =>
+      'El proyecto está en borrador. Necesita al menos 10 observaciones para publicarse.';
+
+  @override
+  String projectDraftSubtitleWithCount(int count) {
+    return 'El proyecto está en borrador. Necesita al menos 10 observaciones para publicarse (actualmente tiene $count).';
+  }
+
+  @override
+  String get projectPublishedSubtitle =>
+      'El proyecto está publicado y visible para todos.';
+
+  @override
+  String get projectEnded => 'Finalizado';
+
+  @override
+  String get projectEndedSubtitle =>
+      'El proyecto ya no acepta nuevas observaciones';
+
+  @override
+  String get emailOnObservation => 'Email al recibir observación';
+
+  @override
+  String get emailOnObservationSubtitle =>
+      'Recibe un email cada vez que llegue una observación';
+
+  @override
+  String get coverImageRequired => 'La imagen de portada es obligatoria';
+
+  @override
+  String get organizationType => 'Tipo de organización';
+
+  @override
+  String get continueLabel => 'Continuar';
+
+  @override
   String get optionLabelRequired => 'Texto *';
 
   @override
@@ -1133,6 +1213,18 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get adminBadge => 'Admin';
+
+  @override
+  String get badgeFinished => 'Finalizado';
+
+  @override
+  String get badgePrivate => 'Privado';
+
+  @override
+  String get badgeFuzzy => 'Fuzzy';
+
+  @override
+  String get badgeGlobal => 'Global';
 
   @override
   String get downloadCsv => 'Descargar CSV';

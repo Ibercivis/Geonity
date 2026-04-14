@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
+import '../widgets/html_rich_editor.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
@@ -26,8 +27,9 @@ class CreateProjectScreen extends StatefulWidget {
 class _CreateProjectScreenState extends State<CreateProjectScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _descriptionController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _descriptionEditorKey = GlobalKey<HtmlRichEditorState>();
+  String? _initialDescription; // HTML cargado del servidor
   final _projectService = ProjectService();
   final _organizationService = OrganizationService();
   
@@ -35,8 +37,12 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
   List<int> _selectedOrganizationIds = [];
   List<int> _selectedTopicIds = [];
   bool _isPrivate = false;
+  bool _isPublicMap = false;
   bool _isDatabasePrivate = false;
   bool _isFuzzyGeoposition = false;
+  bool _isDraft = true;
+  bool _isEnded = false;
+  bool _isEmailOnObservation = false;
   bool _isGlobal = true;
   List<String> _selectedCountryCodes = [];
   
@@ -48,62 +54,55 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
   String? _currentCoverUrl; // Para edición
   int? _contributions; // Número de observaciones
 
-  // Raw multilingual maps: preserved from the server so other-language
-  // translations are not lost when the user edits only one language.
-  Map<String, String> _nameTranslations = {};
+  // Wizard state preserved across back-navigation
+  Map<String, dynamic>? _savedFieldForm;
+  String? _savedMessage;
+
+  // Raw multilingual map for description: preserves other-language translations
+  // when the user edits only one language.
   Map<String, String> _descriptionTranslations = {};
 
   @override
   void initState() {
     super.initState();
-    _loadInitialData().then((_) {
-      if (widget.projectId != null) {
-        _loadProjectData();
-      }
-    });
+    _loadInitialData();
   }
 
   @override
   void dispose() {
     _nameController.dispose();
-    _descriptionController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
   Future<void> _loadInitialData() async {
     try {
-      // Cargar organizaciones (puede fallar con 404)
+      // Cargar organizaciones
       try {
         final orgs = await _organizationService.getOrganizations();
-        setState(() {
-          _myOrganizations = orgs;
-        });
+        setState(() => _myOrganizations = orgs);
         debugPrint('Organizations loaded: ${orgs.length}');
       } catch (e) {
         debugPrint('Error loading organizations: $e');
-        setState(() {
-          _myOrganizations = [];
-        });
       }
-      
+
       // Cargar topics
       try {
         final topics = await _projectService.getTopics();
-        setState(() {
-          _topics = topics;
-        });
+        setState(() => _topics = topics);
         debugPrint('Topics loaded: ${topics.length}');
       } catch (e) {
         debugPrint('Error loading topics: $e');
-        setState(() {
-          _topics = [];
-        });
       }
-      
-      setState(() => _loadingData = false);
+
+      // Cargar datos del proyecto — debe hacerse ANTES de quitar el loading
+      // para evitar race condition con los switches del usuario.
+      if (widget.projectId != null) {
+        await _loadProjectData();
+      }
     } catch (e) {
       debugPrint('Error loading data: $e');
+    } finally {
       setState(() => _loadingData = false);
     }
   }
@@ -124,13 +123,16 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
       if (projectData == null) return;
       
       setState(() {
-        _nameTranslations = _parseTranslations(projectData['name']);
         _descriptionTranslations = _parseTranslations(projectData['description']);
         _nameController.text = localizedText(projectData['name']);
-        _descriptionController.text = localizedText(projectData['description']);
+        _initialDescription = localizedText(projectData['description']);
         _isPrivate = projectData['is_private'] ?? false;
+        _isPublicMap = projectData['public_map'] ?? false;
         _isDatabasePrivate = projectData['private_data'] ?? false;
         _isFuzzyGeoposition = projectData['fuzzy'] ?? projectData['is_fuzzy'] ?? false;
+        _isDraft = projectData['draft'] ?? true;
+        _isEnded = projectData['ended'] ?? false;
+        _isEmailOnObservation = projectData['email_on_observation'] ?? false;
         
         // Procesar la imagen de portada
         final cover = projectData['cover'];
@@ -182,16 +184,14 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
     return {};
   }
 
-  /// Returns the value to pass to the wizard: JSON-encoded multilingual map
-  /// Always encodes as a multilingual map with a 'default' key for the primary text.
+  /// Name is the same in all languages — return plain text.
   String _multilingualName() {
-    final plain = _nameController.text.trim();
-    return jsonEncode(Map<String, String>.from(_nameTranslations)..['default'] = plain);
+    return _nameController.text.trim();
   }
 
   String _multilingualDescription() {
-    final plain = _descriptionController.text.trim();
-    return jsonEncode(Map<String, String>.from(_descriptionTranslations)..['default'] = plain);
+    final html = _descriptionEditorKey.currentState?.getHtml() ?? '';
+    return jsonEncode(Map<String, String>.from(_descriptionTranslations)..['default'] = html);
   }
 
   Future<void> _pickImage() async {
@@ -363,6 +363,22 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
       return;
     }
 
+    final descHtml = _descriptionEditorKey.currentState?.getHtml() ?? '';
+    if (descHtml.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.projectDescriptionRequired)),
+      );
+      return;
+    }
+
+    // Cover required on create; on edit it already exists on the server
+    if (_coverImage == null && _currentCoverUrl == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.coverImageRequired)),
+      );
+      return;
+    }
+
     if (_isPrivate && _passwordController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context)!.privateProjectsRequirePassword)),
@@ -386,7 +402,13 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
         isPrivate: _isPrivate,
         password: _isPrivate ? _passwordController.text.trim() : null,
         isDatabasePrivate: _isDatabasePrivate,
+        publicMap: _isPublicMap,
         fuzzy: _isFuzzyGeoposition,
+        draft: _isDraft,
+        ended: _isEnded,
+        emailOnObservation: _isEmailOnObservation,
+        isGlobal: _isGlobal,
+        countries: _isGlobal ? null : _selectedCountryCodes,
       );
     } else {
       // Modo creación
@@ -399,7 +421,13 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
         isPrivate: _isPrivate,
         password: _isPrivate ? _passwordController.text.trim() : null,
         isDatabasePrivate: _isDatabasePrivate,
+        publicMap: _isPublicMap,
         fuzzy: _isFuzzyGeoposition,
+        draft: _isDraft,
+        ended: _isEnded,
+        emailOnObservation: _isEmailOnObservation,
+        isGlobal: _isGlobal,
+        countries: _isGlobal ? null : _selectedCountryCodes,
       );
       success = projectId != null;
     }
@@ -414,8 +442,15 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
       );
       Navigator.pop(context, true);
     } else {
+      final serverMsg = _projectService.lastError;
+      final fallback = widget.projectId != null
+          ? AppLocalizations.of(context)!.projectUpdateError
+          : AppLocalizations.of(context)!.projectCreateError;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(widget.projectId != null ? AppLocalizations.of(context)!.projectUpdateError : AppLocalizations.of(context)!.projectCreateError)),
+        SnackBar(
+          content: Text(serverMsg ?? fallback),
+          duration: const Duration(seconds: 5),
+        ),
       );
     }
   }
@@ -461,16 +496,29 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
                       selectedTopicIds: _selectedTopicIds,
                       selectedOrganizationIds: _selectedOrganizationIds,
                       isPrivate: _isPrivate,
+                      isPublicMap: _isPublicMap,
                       isDatabasePrivate: _isDatabasePrivate,
                       isFuzzyGeoposition: _isFuzzyGeoposition,
+                      isDraft: _isDraft,
+                      isEnded: _isEnded,
+                      isEmailOnObservation: _isEmailOnObservation,
                       isGlobal: _isGlobal,
                       selectedCountryCodes: _selectedCountryCodes,
                       password: _isPrivate ? _passwordController.text.trim() : null,
                       projectId: widget.projectId,
                       contributions: _contributions,
+                      initialFieldForm: _savedFieldForm,
+                      initialMessage: _savedMessage,
                     ),
                   ),
-                );
+                ).then((result) {
+                  if (result is Map && mounted) {
+                    setState(() {
+                      _savedFieldForm = result['fieldForm'] as Map<String, dynamic>?;
+                      _savedMessage = result['message'] as String?;
+                    });
+                  }
+                });
               },
             ),
           ],
@@ -546,6 +594,7 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
                     // Nombre del proyecto
                     TextFormField(
                       controller: _nameController,
+                      textCapitalization: TextCapitalization.words,
                       decoration: InputDecoration(
                         labelText: l10n.projectNameLabel,
                         border: OutlineInputBorder(
@@ -564,24 +613,15 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
                     const SizedBox(height: 16),
 
                     // Descripción
-                    TextFormField(
-                      controller: _descriptionController,
-                      decoration: InputDecoration(
-                        labelText: l10n.projectDescriptionLabel,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        filled: true,
-                        
-                        alignLabelWithHint: true,
-                      ),
-                      maxLines: 5,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return AppLocalizations.of(context)!.projectDescriptionRequired;
-                        }
-                        return null;
-                      },
+                    Text(
+                      l10n.projectDescriptionLabel,
+                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                    ),
+                    const SizedBox(height: 8),
+                    HtmlRichEditor(
+                      key: _descriptionEditorKey,
+                      initialValue: _initialDescription,
+                      minHeight: 180,
                     ),
                     const SizedBox(height: 16),
 
@@ -667,7 +707,87 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
                     ],
                     const SizedBox(height: 16),
 
-                    // Cobertura geográfica
+                    const Divider(height: 8),
+
+                    // 1. Publicado / Borrador
+                    SwitchListTile(
+                      title: Text(l10n.projectPublished),
+                      subtitle: Text(
+                        _isDraft
+                            ? (_contributions != null
+                                ? l10n.projectDraftSubtitleWithCount(_contributions!)
+                                : l10n.projectDraftSubtitle)
+                            : l10n.projectPublishedSubtitle,
+                      ),
+                      value: !_isDraft,
+                      onChanged: (_contributions == null || _contributions! < 10)
+                          ? null
+                          : (value) => setState(() => _isDraft = !value),
+                      activeColor: Colors.blue,
+                    ),
+
+                    // 2. Proyecto privado
+                    SwitchListTile(
+                      title: Text(l10n.privateProject),
+                      subtitle: Text(l10n.privateProjectSubtitle),
+                      value: _isPrivate,
+                      onChanged: (value) => setState(() => _isPrivate = value),
+                      activeColor: Colors.blue,
+                    ),
+                    if (_isPrivate) ...[
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: TextFormField(
+                          controller: _passwordController,
+                          decoration: InputDecoration(
+                            labelText: l10n.projectPasswordLabel,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            filled: true,
+                            prefixIcon: const Icon(Icons.lock),
+                          ),
+                          obscureText: true,
+                          validator: (value) {
+                            if (_isPrivate && (value == null || value.trim().isEmpty)) {
+                              return AppLocalizations.of(context)!.projectPasswordRequired;
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+
+                    // 3. Mapa público
+                    SwitchListTile(
+                      title: Text(l10n.publicMap),
+                      subtitle: Text(l10n.publicMapSubtitle),
+                      value: _isPublicMap,
+                      onChanged: (value) => setState(() => _isPublicMap = value),
+                      activeColor: Colors.blue,
+                    ),
+
+                    // 4. Base de datos privada
+                    SwitchListTile(
+                      title: Text(l10n.privateDatabase),
+                      subtitle: Text(l10n.privateDatabaseSubtitle),
+                      value: _isDatabasePrivate,
+                      onChanged: (value) => setState(() => _isDatabasePrivate = value),
+                      activeColor: Colors.blue,
+                    ),
+
+                    // 5. Modo difuso
+                    SwitchListTile(
+                      title: Text(l10n.fuzzyGeoposition),
+                      subtitle: Text(l10n.fuzzyGeopositionSubtitle),
+                      value: _isFuzzyGeoposition,
+                      onChanged: (value) => setState(() => _isFuzzyGeoposition = value),
+                      activeColor: Colors.blue,
+                    ),
+
+                    // 6. Cobertura geográfica
                     SwitchListTile(
                       title: Text(l10n.globalLabel),
                       subtitle: Text(l10n.globalProjectSubtitle),
@@ -723,70 +843,22 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
                       ),
                       const SizedBox(height: 8),
                     ],
-                    const Divider(height: 8),
 
-                    // Proyecto privado
+                    // 7. Finalizado
                     SwitchListTile(
-                      title: Text(l10n.privateProject),
-                      subtitle: Text(l10n.privateProjectSubtitle),
-                      value: _isPrivate,
-                      onChanged: (value) {
-                        setState(() {
-                          _isPrivate = value;
-                        });
-                      },
-                      activeColor: Colors.blue,
-                    ),
-                    if (_isPrivate) ...[
-                      const SizedBox(height: 8),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: TextFormField(
-                          controller: _passwordController,
-                          decoration: InputDecoration(
-                            labelText: l10n.projectPasswordLabel,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            filled: true,
-                            
-                            prefixIcon: const Icon(Icons.lock),
-                          ),
-                          obscureText: true,
-                          validator: (value) {
-                            if (_isPrivate && (value == null || value.trim().isEmpty)) {
-                              return AppLocalizations.of(context)!.projectPasswordRequired;
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                    ],
-
-                    // Base de datos privada
-                    SwitchListTile(
-                      title: Text(l10n.privateDatabase),
-                      subtitle: Text(l10n.privateDatabaseSubtitle),
-                      value: _isDatabasePrivate,
-                      onChanged: (value) {
-                        setState(() {
-                          _isDatabasePrivate = value;
-                        });
-                      },
+                      title: Text(l10n.projectEnded),
+                      subtitle: Text(l10n.projectEndedSubtitle),
+                      value: _isEnded,
+                      onChanged: (value) => setState(() => _isEnded = value),
                       activeColor: Colors.blue,
                     ),
 
-                    // Fuzzy geoposition
+                    // 8. Email al recibir observación
                     SwitchListTile(
-                      title: Text(l10n.fuzzyGeoposition),
-                      subtitle: Text(l10n.fuzzyGeopositionSubtitle),
-                      value: _isFuzzyGeoposition,
-                      onChanged: (value) {
-                        setState(() {
-                          _isFuzzyGeoposition = value;
-                        });
-                      },
+                      title: Text(l10n.emailOnObservation),
+                      subtitle: Text(l10n.emailOnObservationSubtitle),
+                      value: _isEmailOnObservation,
+                      onChanged: (value) => setState(() => _isEmailOnObservation = value),
                       activeColor: Colors.blue,
                     ),
 
@@ -835,14 +907,26 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
                           isPrivate: _isPrivate,
                           isDatabasePrivate: _isDatabasePrivate,
                           isFuzzyGeoposition: _isFuzzyGeoposition,
+                          isDraft: _isDraft,
+                          isEnded: _isEnded,
+                          isEmailOnObservation: _isEmailOnObservation,
                           isGlobal: _isGlobal,
                           selectedCountryCodes: _selectedCountryCodes,
                           password: _isPrivate ? _passwordController.text.trim() : null,
                           projectId: widget.projectId,
                           contributions: _contributions,
+                          initialFieldForm: _savedFieldForm,
+                          initialMessage: _savedMessage,
                         ),
                       ),
-                    );
+                    ).then((result) {
+                      if (result is Map && mounted) {
+                        setState(() {
+                          _savedFieldForm = result['fieldForm'] as Map<String, dynamic>?;
+                          _savedMessage = result['message'] as String?;
+                        });
+                      }
+                    });
                   }
                 },
                 style: OutlinedButton.styleFrom(

@@ -16,6 +16,7 @@ class Project {
   final bool isAdmin;
   final bool hasObservations;
   final String? postObservationMessage;
+  final bool showPostMessage;
   final bool fuzzy;
   final int fuzzyResolution;
   final int? fieldFormId;
@@ -23,6 +24,8 @@ class Project {
   final List<String> countries;
   final bool isPrivate;
   final bool isMember;
+  final bool isFinished;
+  final bool isDraft;
 
   Project({
     required this.id,
@@ -38,6 +41,7 @@ class Project {
     this.isAdmin = false,
     this.hasObservations = false,
     this.postObservationMessage,
+    this.showPostMessage = true,
     this.fuzzy = false,
     this.fuzzyResolution = 10,
     this.fieldFormId,
@@ -45,6 +49,8 @@ class Project {
     this.countries = const [],
     this.isPrivate = false,
     this.isMember = false,
+    this.isFinished = false,
+    this.isDraft = false,
   });
 
   static List<String> _parseCountries(dynamic value) {
@@ -121,6 +127,7 @@ class Project {
       postObservationMessage: json['post_observation_message'] != null
           ? localizedText(json['post_observation_message'])
           : null,
+      showPostMessage: json['show_post_message'] as bool? ?? true,
       fuzzy: (json['fuzzy'] ?? json['is_fuzzy']) as bool? ?? false,
       fuzzyResolution: json['fuzzy_resolution'] as int? ?? 10,
       fieldFormId: json['field_form'] as int?,
@@ -128,6 +135,8 @@ class Project {
       countries: _parseCountries(json['countries']),
       isPrivate: json['is_private'] as bool? ?? false,
       isMember: json['is_member'] as bool? ?? false,
+      isFinished: json['ended'] as bool? ?? false,
+      isDraft: json['draft'] as bool? ?? false,
     );
   }
 

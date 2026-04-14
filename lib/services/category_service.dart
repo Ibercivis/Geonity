@@ -11,14 +11,9 @@ class CategoryService {
 
   Future<List<Category>> getCategories() async {
     try {
-      final key = await _authService.getToken();
-      
       final response = await http.get(
         Uri.parse(baseUrl),
-        headers: {
-          'Content-Type': 'application/json',
-          if (key != null) 'Authorization': 'Token $key',
-        },
+        headers: await _authService.getHeaders(),
       ).timeout(const Duration(seconds: 15));
 
       debugPrint('Categories response status: ${response.statusCode}');

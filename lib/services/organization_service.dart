@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -5,26 +6,28 @@ import 'package:http/http.dart' as http;
 import '../models/organization.dart';
 import '../models/invitation.dart';
 import '../config/app_config.dart';
+import '../utils/api_error_utils.dart';
 import 'auth_service.dart';
 
 class OrganizationService {
   static String get baseUrl => '${AppConfig.apiUrl}/organization/';
   final _authService = AuthService();
 
+  String? lastError;
+
   Future<List<Organization>> getOrganizations() async {
     try {
-      final key = await _authService.getToken();
-      
       final response = await http.get(
         Uri.parse(baseUrl),
-        headers: {
-          'Content-Type': 'application/json',
-          if (key != null) 'Authorization': 'Token $key',
-        },
+        headers: await _authService.getHeaders(),
       );
 
       debugPrint('Organizations response status: ${response.statusCode}');
 
+      if (response.statusCode == 401) {
+        unawaited(_authService.handleUnauthorized());
+        return [];
+      }
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         return data.map((json) => Organization.fromJson(json)).toList();
@@ -36,56 +39,94 @@ class OrganizationService {
     }
   }
 
+  Future<List<Map<String, dynamic>>> getOrganizationTypes() async {
+    try {
+      final response = await http.get(
+        Uri.parse('${baseUrl}type/'),
+        headers: await _authService.getHeaders(),
+      );
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        return data.cast<Map<String, dynamic>>();
+      }
+      return [];
+    } catch (e) {
+      debugPrint('Error fetching organization types: $e');
+      return [];
+    }
+  }
+
+  Future<Map<String, dynamic>?> getOrganizationDetailRaw(int organizationId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl$organizationId/?raw=true'),
+        headers: await _authService.getHeaders(),
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error fetching organization detail (raw): $e');
+      return null;
+    }
+  }
+
   Future<bool> createOrganization({
     required String principalName,
-    required String description,
+    String? description,
+    String? url,
+    String? contactName,
+    String? contactMail,
+    List<int>? typeIds,
+    bool isGlobal = true,
+    List<String>? countries,
     File? logo,
     File? cover,
   }) async {
     try {
       final key = await _authService.getToken();
-      final userId = await _authService.getUserId();
-      
-      if (key == null || userId == null) {
-        throw Exception('No se encontró token o ID de usuario');
-      }
+      if (key == null) throw Exception('No se encontró token de autenticación');
 
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse('${baseUrl}create/'),
-      );
+      var request = http.MultipartRequest('POST', Uri.parse('${baseUrl}create/'));
+      request.headers.addAll(await _authService.getMultipartHeaders());
 
-      request.headers['Authorization'] = 'Token $key';
-      
-      // Campos obligatorios
       request.fields['principalName'] = principalName;
-      request.fields['creator'] = userId.toString();
-      
-      // Campos opcionales
-      if (description.isNotEmpty) {
+      if (description != null && description.isNotEmpty) {
         request.fields['description'] = description;
       }
-
-      // Imágenes
-      if (logo != null) {
-        request.files.add(
-          await http.MultipartFile.fromPath('logo', logo.path),
-        );
+      if (url != null && url.isNotEmpty) request.fields['url'] = url;
+      if (contactName != null && contactName.isNotEmpty) request.fields['contactName'] = contactName;
+      if (contactMail != null && contactMail.isNotEmpty) request.fields['contactMail'] = contactMail;
+      if (typeIds != null) {
+        for (final id in typeIds) {
+          request.fields['type'] = id.toString(); // multipart array workaround
+        }
+        // http package doesn't support repeated keys well; use JSON list as string if needed
+        request.fields.remove('type');
+        for (final id in typeIds) {
+          request.fields['type[${ typeIds.indexOf(id)}]'] = id.toString();
+        }
+      }
+      request.fields['is_global'] = isGlobal.toString();
+      if (!isGlobal && countries != null) {
+        for (int i = 0; i < countries.length; i++) {
+          request.fields['countries[$i]'] = countries[i];
+        }
       }
 
-      if (cover != null) {
-        request.files.add(
-          await http.MultipartFile.fromPath('cover', cover.path),
-        );
-      }
+      if (logo != null) request.files.add(await http.MultipartFile.fromPath('logo', logo.path));
+      if (cover != null) request.files.add(await http.MultipartFile.fromPath('cover', cover.path));
 
-      debugPrint('Creating organization: $principalName');
+      lastError = null;
+      debugPrint('[createOrganization] principalName=$principalName');
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
+      debugPrint('[createOrganization] status=${response.statusCode} body=${response.body}');
 
-      debugPrint('Create organization response status: ${response.statusCode}');
-      debugPrint('Create organization response body: ${response.body}');
-
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        lastError = parseServerError(response.body);
+      }
       return response.statusCode == 200 || response.statusCode == 201;
     } catch (e) {
       debugPrint('Error creating organization: $e');
@@ -96,52 +137,73 @@ class OrganizationService {
   Future<bool> updateOrganization({
     required int organizationId,
     required String principalName,
-    String description = '',
+    String? description,
+    String? url,
+    String? contactName,
+    String? contactMail,
+    List<int>? typeIds,
+    bool? isGlobal,
+    List<String>? countries,
     File? logo,
     File? cover,
   }) async {
     try {
       final key = await _authService.getToken();
-      if (key == null) {
-        debugPrint('No auth key available');
-        return false;
-      }
+      if (key == null) return false;
 
-      var request = http.MultipartRequest(
-        'PATCH',
-        Uri.parse('$baseUrl$organizationId/'),
-      );
+      final uri = Uri.parse('$baseUrl$organizationId/');
+      http.Response response;
 
-      request.headers['Authorization'] = 'Token $key';
-      
-      // Campos requeridos
-      request.fields['principalName'] = principalName;
-      
-      // Campos opcionales
-      if (description.isNotEmpty) {
-        request.fields['description'] = description;
-      }
+      if (logo != null || cover != null) {
+        // Multipart cuando hay ficheros
+        var request = http.MultipartRequest('PATCH', uri);
+        request.headers.addAll(await _authService.getMultipartHeaders());
+        request.fields['principalName'] = principalName;
+        if (description != null && description.isNotEmpty) request.fields['description'] = description;
+        if (url != null) request.fields['url'] = url;
+        if (contactName != null) request.fields['contactName'] = contactName;
+        if (contactMail != null) request.fields['contactMail'] = contactMail;
+        if (typeIds != null) {
+          for (int i = 0; i < typeIds.length; i++) {
+            request.fields['type[$i]'] = typeIds[i].toString();
+          }
+        }
+        if (isGlobal != null) request.fields['is_global'] = isGlobal.toString();
+        if (isGlobal == false && countries != null) {
+          for (int i = 0; i < countries.length; i++) {
+            request.fields['countries[$i]'] = countries[i];
+          }
+        }
+        if (logo != null) request.files.add(await http.MultipartFile.fromPath('logo', logo.path));
+        if (cover != null) request.files.add(await http.MultipartFile.fromPath('cover', cover.path));
 
-      // Imágenes (solo si se seleccionaron nuevas)
-      if (logo != null) {
-        request.files.add(
-          await http.MultipartFile.fromPath('logo', logo.path),
+        final streamed = await request.send();
+        response = await http.Response.fromStream(streamed);
+      } else {
+        // JSON cuando no hay ficheros (booleans como booleans)
+        final body = <String, dynamic>{
+          'principalName': principalName,
+          if (description != null && description.isNotEmpty) 'description': _decodeIfJson(description),
+          if (url != null) 'url': url,
+          if (contactName != null) 'contactName': contactName,
+          if (contactMail != null) 'contactMail': contactMail,
+          if (typeIds != null) 'type': typeIds,
+          if (isGlobal != null) 'is_global': isGlobal,
+          if (isGlobal == false && countries != null) 'countries': countries,
+        };
+        debugPrint('[updateOrganization] body: ${jsonEncode(body)}');
+        response = await http.patch(
+          uri,
+          headers: await _authService.getHeaders(),
+          body: jsonEncode(body),
         );
       }
 
-      if (cover != null) {
-        request.files.add(
-          await http.MultipartFile.fromPath('cover', cover.path),
-        );
+      lastError = null;
+      debugPrint('[updateOrganization] status=${response.statusCode} body=${response.body}');
+      if (response.statusCode != 200) {
+        lastError = parseServerError(response.body);
       }
-
-      debugPrint('Updating organization $organizationId: $principalName');
-      final streamedResponse = await request.send();
-      final response = await http.Response.fromStream(streamedResponse);
-
-      debugPrint('Update organization response status: ${response.statusCode}');
-      debugPrint('Update organization response body: ${response.body}');
-
       return response.statusCode == 200;
     } catch (e) {
       debugPrint('Error updating organization: $e');
@@ -149,16 +211,19 @@ class OrganizationService {
     }
   }
 
+  static dynamic _decodeIfJson(String value) {
+    try {
+      return jsonDecode(value);
+    } catch (_) {
+      return value;
+    }
+  }
+
   Future<List<Organization>> getMyOrganizations() async {
     try {
-      final key = await _authService.getToken();
-      
       final response = await http.get(
         Uri.parse('${baseUrl}mine/'),
-        headers: {
-          'Content-Type': 'application/json',
-          if (key != null) 'Authorization': 'Token $key',
-        },
+        headers: await _authService.getHeaders(),
       );
 
       debugPrint('My organizations response status: ${response.statusCode}');
@@ -176,14 +241,9 @@ class OrganizationService {
 
   Future<Map<String, dynamic>?> getOrganizationDetail(int organizationId) async {
     try {
-      final key = await _authService.getToken();
-      
       final response = await http.get(
         Uri.parse('$baseUrl$organizationId/'),
-        headers: {
-          'Content-Type': 'application/json',
-          if (key != null) 'Authorization': 'Token $key',
-        },
+        headers: await _authService.getHeaders(),
       );
 
       debugPrint('Organization detail response status: ${response.statusCode}');
@@ -212,10 +272,7 @@ class OrganizationService {
 
       final response = await http.post(
         Uri.parse('$baseUrl$organizationId/invite/'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Token $key',
-        },
+        headers: await _authService.getHeaders(),
         body: jsonEncode({
           'email': email,
           'role': role,
@@ -253,10 +310,7 @@ class OrganizationService {
 
       final response = await http.post(
         Uri.parse('$baseUrl$organizationId/leave/'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Token $key',
-        },
+        headers: await _authService.getHeaders(),
       );
 
       debugPrint('Leave organization response status: ${response.statusCode}');
@@ -279,10 +333,7 @@ class OrganizationService {
 
       final response = await http.delete(
         Uri.parse('$baseUrl$organizationId/'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Token $key',
-        },
+        headers: await _authService.getHeaders(),
       );
 
       debugPrint('Delete organization response status: ${response.statusCode}');
@@ -302,10 +353,7 @@ class OrganizationService {
 
       final response = await http.get(
         Uri.parse('$baseUrl$organizationId/invitations/'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Token $token',
-        },
+        headers: await _authService.getHeaders(),
       ).timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
@@ -325,11 +373,8 @@ class OrganizationService {
       if (token == null) return [];
 
       final response = await http.get(
-        Uri.parse('${baseUrl}invitations/pending/'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Token $token',
-        },
+        Uri.parse('${AppConfig.apiUrl}/users/invitations/'),
+        headers: await _authService.getHeaders(),
       ).timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
@@ -350,11 +395,8 @@ class OrganizationService {
       if (token == null) return false;
 
       final response = await http.post(
-        Uri.parse('${baseUrl}invitations/$invitationId/accept/'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Token $token',
-        },
+        Uri.parse('${AppConfig.apiUrl}/users/invitations/organization/$invitationId/accept/'),
+        headers: await _authService.getHeaders(),
       ).timeout(const Duration(seconds: 15));
 
       return response.statusCode == 200;
@@ -370,11 +412,8 @@ class OrganizationService {
       if (token == null) return false;
 
       final response = await http.post(
-        Uri.parse('${baseUrl}invitations/$invitationId/reject/'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Token $token',
-        },
+        Uri.parse('${AppConfig.apiUrl}/users/invitations/organization/$invitationId/reject/'),
+        headers: await _authService.getHeaders(),
       ).timeout(const Duration(seconds: 15));
 
       return response.statusCode == 200;

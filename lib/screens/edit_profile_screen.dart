@@ -195,6 +195,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               const SizedBox(height: 8),
               TextFormField(
                 controller: _firstNameController,
+                textCapitalization: TextCapitalization.words,
                 decoration: InputDecoration(
                   hintText: l10n.profileFirstName,
                   border: OutlineInputBorder(
@@ -220,6 +221,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               const SizedBox(height: 8),
               TextFormField(
                 controller: _lastNameController,
+                textCapitalization: TextCapitalization.words,
                 decoration: InputDecoration(
                   hintText: l10n.profileLastName,
                   border: OutlineInputBorder(
@@ -246,6 +248,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               TextFormField(
                 controller: _biographyController,
                 maxLines: 4,
+                textCapitalization: TextCapitalization.sentences,
                 decoration: InputDecoration(
                   hintText: l10n.profileBiographyHint,
                   border: OutlineInputBorder(

@@ -26,6 +26,7 @@ class OfflineService {
   }
 
   static Future<Database> get database async {
+    if (kIsWeb) throw UnsupportedError('Offline DB not supported on web');
     _db ??= await _initDb();
     return _db!;
   }
@@ -105,6 +106,7 @@ class OfflineService {
     required List<ObservationField> fields,
     String? postObservationMessage,
   }) async {
+    if (kIsWeb) return;
     final db = await database;
     final fieldsJson = jsonEncode(fields
         .map((f) => {
@@ -138,6 +140,7 @@ class OfflineService {
   }
 
   Future<bool> isProjectOffline(int projectId) async {
+    if (kIsWeb) return false;
     final db = await database;
     final result = await db.query(
       'offline_projects',
@@ -149,6 +152,7 @@ class OfflineService {
   }
 
   Future<Map<String, dynamic>?> getOfflineProject(int projectId) async {
+    if (kIsWeb) return null;
     final db = await database;
     final result = await db.query(
       'offline_projects',
@@ -161,6 +165,7 @@ class OfflineService {
   }
 
   Future<List<ObservationField>> getOfflineFields(int projectId) async {
+    if (kIsWeb) return [];
     final project = await getOfflineProject(projectId);
     if (project == null) return [];
     final List<dynamic> decoded =
@@ -186,6 +191,7 @@ class OfflineService {
   }
 
   Future<List<int>> getOfflineProjectIds() async {
+    if (kIsWeb) return [];
     final db = await database;
     final result =
         await db.query('offline_projects', columns: ['project_id']);
@@ -193,6 +199,7 @@ class OfflineService {
   }
 
   Future<void> removeProjectOffline(int projectId) async {
+    if (kIsWeb) return;
     final db = await database;
     await db.delete(
       'offline_projects',
@@ -213,6 +220,7 @@ class OfflineService {
     required double maxLng,
     void Function(double progress)? onProgress,
   }) async {
+    if (kIsWeb) return;
     // C4: Let exceptions propagate so the caller can show feedback.
     final tileStore = await _tileStore;
 
@@ -255,6 +263,7 @@ class OfflineService {
   }
 
   Future<void> removeMapTiles(int projectId) async {
+    if (kIsWeb) return;
     try {
       final tileStore = await _tileStore;
       await tileStore.removeRegion('project-$projectId');
@@ -279,7 +288,7 @@ class OfflineService {
       // C5: Wrap each copy in try/catch to handle permission or missing-file errors.
       try {
         final filename =
-            '${DateTime.now().millisecondsSinceEpoch}_${p.basename(image.path)}';
+            '${DateTime.now().microsecondsSinceEpoch}_${p.basename(image.path)}';
         final dest = File('${destDir.path}/$filename');
         await image.copy(dest.path);
         paths.add(dest.path);
@@ -299,6 +308,7 @@ class OfflineService {
     required Map<String, dynamic> data,
     Map<String, List<File>>? images,
   }) async {
+    if (kIsWeb) return -1;
     final db = await database;
 
     // Copy images to permanent storage so they survive cache clears
@@ -325,11 +335,13 @@ class OfflineService {
   }
 
   Future<List<Map<String, dynamic>>> getPendingObservations() async {
+    if (kIsWeb) return [];
     final db = await database;
     return db.query('pending_observations', orderBy: 'created_at ASC');
   }
 
   Future<void> removePendingObservation(int id) async {
+    if (kIsWeb) return;
     final db = await database;
     await db.delete(
       'pending_observations',
@@ -339,6 +351,7 @@ class OfflineService {
   }
 
   Future<void> incrementAttempts(int id) async {
+    if (kIsWeb) return;
     final db = await database;
     await db.rawUpdate(
       'UPDATE pending_observations SET attempts = attempts + 1 WHERE id = ?',
@@ -347,6 +360,7 @@ class OfflineService {
   }
 
   Future<int> getPendingCount() async {
+    if (kIsWeb) return 0;
     final db = await database;
     final result = await db
         .rawQuery('SELECT COUNT(*) as count FROM pending_observations');

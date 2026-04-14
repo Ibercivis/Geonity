@@ -242,10 +242,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myProjects => 'My projects';
 
   @override
-  String get exploreProjects => 'Explore projects';
+  String get exploreProjects => 'Explore';
+
+  @override
+  String get drafts => 'Drafts';
+
+  @override
+  String get noDraftsTitle => 'No drafts';
+
+  @override
+  String get noDraftsSubtitle => 'Projects you save as drafts will appear here';
+
+  @override
+  String get continueDraft => 'Continue editing';
+
+  @override
+  String get noMyProjectsTitle => 'No projects';
+
+  @override
+  String get noMyProjectsSubtitle => 'Join a project or create your own';
 
   @override
   String get filterByCategory => 'Filter by category';
+
+  @override
+  String get category => 'Category';
 
   @override
   String projectCreatedBy(Object creator) {
@@ -688,6 +709,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileUpdateError => 'Error updating profile';
 
   @override
+  String get settings => 'Settings';
+
+  @override
   String get languageTitle => 'Language';
 
   @override
@@ -704,6 +728,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get languageSystem => 'System language';
+
+  @override
+  String get appVersion => 'Version';
+
+  @override
+  String get whatsNew => 'What\'s new';
 
   @override
   String get themeTitle => 'Theme';
@@ -957,6 +987,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmationMessageTitle => 'Confirmation message';
 
   @override
+  String get showPostMessageLabel => 'Show message after observation';
+
+  @override
   String get insertLinkTitle => 'Insert link';
 
   @override
@@ -1095,6 +1128,52 @@ class AppLocalizationsEn extends AppLocalizations {
       'Observations are shown as approximate areas, not exact points';
 
   @override
+  String get publicMap => 'Public map';
+
+  @override
+  String get publicMapSubtitle =>
+      'Enable a public map page accessible without login';
+
+  @override
+  String get projectPublished => 'Published';
+
+  @override
+  String get projectDraftSubtitle =>
+      'The project is a draft. It needs at least 10 observations to be published.';
+
+  @override
+  String projectDraftSubtitleWithCount(int count) {
+    return 'The project is a draft. It needs at least 10 observations to be published (currently has $count).';
+  }
+
+  @override
+  String get projectPublishedSubtitle =>
+      'The project is published and visible to everyone.';
+
+  @override
+  String get projectEnded => 'Ended';
+
+  @override
+  String get projectEndedSubtitle =>
+      'The project no longer accepts new observations';
+
+  @override
+  String get emailOnObservation => 'Email on observation';
+
+  @override
+  String get emailOnObservationSubtitle =>
+      'Receive an email each time an observation is submitted';
+
+  @override
+  String get coverImageRequired => 'Cover image is required';
+
+  @override
+  String get organizationType => 'Organization type';
+
+  @override
+  String get continueLabel => 'Continue';
+
+  @override
   String get optionLabelRequired => 'Text *';
 
   @override
@@ -1123,6 +1202,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminBadge => 'Admin';
+
+  @override
+  String get badgeFinished => 'Finished';
+
+  @override
+  String get badgePrivate => 'Private';
+
+  @override
+  String get badgeFuzzy => 'Fuzzy';
+
+  @override
+  String get badgeGlobal => 'Global';
 
   @override
   String get downloadCsv => 'Download CSV';

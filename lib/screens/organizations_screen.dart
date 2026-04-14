@@ -27,12 +27,14 @@ class _OrganizationsPageState extends State<OrganizationsPage> {
   Future<void> _loadOrganizations() async {
     try {
       final organizations = await _organizationService.getOrganizations();
+      if (!mounted) return;
       setState(() {
         _organizations = organizations;
         _isLoading = false;
       });
     } catch (e) {
       debugPrint('Error loading organizations: $e');
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
       });

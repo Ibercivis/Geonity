@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import '../l10n/app_localizations.dart';
 import '../models/project.dart';
 import '../services/organization_service.dart';
@@ -40,7 +41,8 @@ class _OrganizationDetailScreenState extends State<OrganizationDetailScreen> {
       final userId = await _authService.getUserId();
       final orgDetail = await _organizationService.getOrganizationDetail(widget.organizationId);
       final projects = await _projectService.getProjectsByOrganization(widget.organizationId);
-      
+
+      if (!mounted) return;
       setState(() {
         _userId = userId;
         _orgData = orgDetail;
@@ -49,6 +51,7 @@ class _OrganizationDetailScreenState extends State<OrganizationDetailScreen> {
       });
     } catch (e) {
       debugPrint('Error loading organization data: $e');
+      if (!mounted) return;
       setState(() => _isLoading = false);
     }
   }
@@ -75,9 +78,10 @@ class _OrganizationDetailScreenState extends State<OrganizationDetailScreen> {
               if (!mounted) return;
 
               if (success) {
+                final msg = AppLocalizations.of(context)!.organizationLeft;
                 navigator.pop(true); // Volver a la pantalla anterior
                 messenger.showSnackBar(
-                  SnackBar(content: Text(AppLocalizations.of(context)!.organizationLeft)),
+                  SnackBar(content: Text(msg)),
                 );
               } else {
                 messenger.showSnackBar(
@@ -179,7 +183,7 @@ class _OrganizationDetailScreenState extends State<OrganizationDetailScreen> {
           ],
         ),
       ),
-    );
+    ).then((_) => emailController.dispose());
   }
 
   @override
@@ -251,10 +255,6 @@ class _OrganizationDetailScreenState extends State<OrganizationDetailScreen> {
                           MaterialPageRoute(
                             builder: (context) => CreateOrganizationScreen(
                               organizationId: widget.organizationId,
-                              initialName: principalName,
-                              initialDescription: description ?? '',
-                              initialLogo: logo,
-                              initialCover: cover,
                             ),
                           ),
                         );
@@ -558,10 +558,9 @@ class _OrganizationDetailScreenState extends State<OrganizationDetailScreen> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                child: Text(
+                child: HtmlWidget(
                   description,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 16),
+                  textStyle: const TextStyle(fontSize: 16),
                 ),
               ),
             ),

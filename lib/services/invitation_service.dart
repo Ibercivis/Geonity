@@ -14,11 +14,8 @@ class InvitationService {
       if (key == null) return [];
 
       final response = await http.get(
-        Uri.parse('${AppConfig.apiUrl}/project/invitations/pending/'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Token $key',
-        },
+        Uri.parse('${AppConfig.apiUrl}/users/invitations/'),
+        headers: await _authService.getHeaders(),
       ).timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
@@ -39,11 +36,8 @@ class InvitationService {
       if (key == null) return false;
 
       final response = await http.post(
-        Uri.parse('${AppConfig.apiUrl}/project/invitations/$invitationId/accept/'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Token $key',
-        },
+        Uri.parse('${AppConfig.apiUrl}/users/invitations/project/$invitationId/accept/'),
+        headers: await _authService.getHeaders(),
       ).timeout(const Duration(seconds: 15));
 
       return response.statusCode == 200;
@@ -59,11 +53,8 @@ class InvitationService {
       if (key == null) return false;
 
       final response = await http.post(
-        Uri.parse('${AppConfig.apiUrl}/project/invitations/$invitationId/reject/'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Token $key',
-        },
+        Uri.parse('${AppConfig.apiUrl}/users/invitations/project/$invitationId/reject/'),
+        headers: await _authService.getHeaders(),
       ).timeout(const Duration(seconds: 15));
 
       return response.statusCode == 200;

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import 'observation_service.dart';
@@ -29,6 +30,7 @@ class SyncService extends ChangeNotifier with WidgetsBindingObserver {
 
   /// Call once from main() after app initialisation.
   void start() {
+    if (kIsWeb) return;
     // C2: Register as a lifecycle observer so we sync on foreground resume.
     WidgetsBinding.instance.addObserver(this);
 
@@ -62,6 +64,7 @@ class SyncService extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   Future<void> refreshPendingCount() async {
+    if (kIsWeb) return;
     final count = await _offlineService.getPendingCount();
     if (count != _pendingCount) {
       _pendingCount = count;
@@ -71,6 +74,7 @@ class SyncService extends ChangeNotifier with WidgetsBindingObserver {
 
   /// Uploads every pending observation silently in the background.
   Future<void> syncPendingObservations() async {
+    if (kIsWeb) return;
     // C3: Atomic lock — if already syncing, wait for it to finish then return.
     if (_syncLock != null && !_syncLock!.isCompleted) return;
 

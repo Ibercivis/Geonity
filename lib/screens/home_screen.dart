@@ -16,6 +16,8 @@ import '../services/organization_service.dart';
 import '../services/invitation_service.dart';
 import '../services/connection_helper.dart';
 import '../services/offline_service.dart';
+import '../services/changelog_service.dart';
+import 'changelog_screen.dart';
 import '../utils/multilingual_utils.dart';
 import '../widgets/animated_like_button.dart';
 import '../widgets/connection_error_screen.dart';
@@ -23,8 +25,6 @@ import 'project_detail_screen.dart';
 import 'organizations_screen.dart';
 import 'map_screen.dart';
 import 'create_project_screen.dart';
-import 'create_organization_screen.dart';
-import 'organization_detail_screen.dart';
 import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -86,54 +86,10 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
-  void _showCreateDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.of(context)!.createNewTitle),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.folder, color: Colors.blue),
-              title: Text(AppLocalizations.of(context)!.createNewProject),
-              onTap: () async {
-                Navigator.pop(context);
-                final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const CreateProjectScreen(),
-                  ),
-                );
-                
-                // Si se creó el proyecto, recargar la lista
-                if (result == true && _homePageKey.currentState != null) {
-                  _homePageKey.currentState!._loadData();
-                }
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.business, color: Colors.blue),
-              title: Text(AppLocalizations.of(context)!.createNewOrganization),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const CreateOrganizationScreen(),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
-// Home Page with full content
+// ─── Home Page ───────────────────────────────────────────────────────────────
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -141,27 +97,30 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  final _authService = AuthService();
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   final _projectService = ProjectService();
   final _categoryService = CategoryService();
   final _organizationService = OrganizationService();
   final _invitationService = InvitationService();
-  
   final _offlineService = OfflineService();
+
   StreamSubscription<List<ConnectivityResult>>? _connectivitySub;
+  late final TabController _tabController;
 
   List<Project> _allProjects = [];
   List<Project> _myProjects = [];
+  List<Project> _draftProjects = [];
   List<Category> _categories = [];
   List<ProjectCountry> _countries = [];
-  List<Organization> _organizations = [];
   List<Invitation> _pendingInvitations = [];
   Set<int> _offlineProjectIds = {};
+
   bool _isLoading = true;
   bool _hasConnectionError = false;
   bool _hasInternet = true;
   bool _isOfflineMode = false;
+
   int? _selectedCategoryId;
   String? _selectedCountryCode;
   final TextEditingController _searchController = TextEditingController();
@@ -169,10 +128,16 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _tabController = TabController(length: 3, vsync: this);
     _loadData();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkChangelog());
+    // Fix 3: reload whenever connectivity is restored, not only when there was
+    // an explicit error. This covers the case where the app spent time in the
+    // background and Android dropped the connection / the token expired.
     _connectivitySub = Connectivity().onConnectivityChanged.listen((results) {
       final isOnline = !results.contains(ConnectivityResult.none);
-      if (isOnline && (_isOfflineMode || _hasConnectionError)) {
+      if (isOnline) {
         _loadData();
       }
     });
@@ -180,9 +145,30 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _tabController.dispose();
     _connectivitySub?.cancel();
     _searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _checkChangelog() async {
+    final isNew = await ChangelogService.checkAndMarkSeen();
+    if (isNew && mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const ChangelogScreen()),
+      );
+    }
+  }
+
+  // Fix 2: reload data whenever the app returns to the foreground so stale
+  // data (or an expired token) is detected immediately on resume.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _loadData();
+    }
   }
 
   Future<void> _loadData() async {
@@ -192,11 +178,9 @@ class _HomePageState extends State<HomePage> {
       _isOfflineMode = false;
     });
 
-    // Verificar conexión primero
     final connectionStatus = await ConnectionHelper.checkConnection();
 
     if (connectionStatus != ConnectionStatus.connected) {
-      // Try to show offline-saved projects instead of a blank error screen
       final offlineIds = await _offlineService.getOfflineProjectIds();
       final offlineProjects = <Project>[];
       for (final id in offlineIds) {
@@ -229,32 +213,22 @@ class _HomePageState extends State<HomePage> {
     }
 
     try {
-      debugPrint('Loading data...');
       final results = await Future.wait([
         _projectService.getProjects(),
         _projectService.getMyProjects(),
         _categoryService.getCategories(),
         _organizationService.getOrganizations(),
         _invitationService.getPendingInvitations(),
+        _projectService.getDraftProjects(),
       ]);
 
       final orgInvitations = await _organizationService
           .getPendingOrganizationInvitations()
           .catchError((_) => <Invitation>[]);
 
-      debugPrint('All projects loaded: ${results[0].length}');
-      debugPrint('My projects loaded: ${results[1].length}');
-      debugPrint('Categories loaded: ${results[2].length}');
-      debugPrint('Organizations loaded: ${results[3].length}');
-      debugPrint('Pending invitations loaded: ${results[4].length}');
-      debugPrint('Pending org invitations loaded: ${orgInvitations.length}');
-
-      // Cargar países por separado — si falla no bloquea el resto
       final countries = await _projectService.getCountries().catchError((_) => <ProjectCountry>[]);
-
       final offlineIds = await _offlineService.getOfflineProjectIds();
 
-      // Merge offline projects into myProjects so they always appear
       final apiMyProjects = results[1] as List<Project>;
       final apiMyProjectIds = apiMyProjects.map((p) => p.id).toSet();
       final mergedMyProjects = List<Project>.from(apiMyProjects);
@@ -273,15 +247,16 @@ class _HomePageState extends State<HomePage> {
         }
       }
 
+      if (!mounted) return;
       setState(() {
         _allProjects = results[0] as List<Project>;
         _myProjects = mergedMyProjects;
         _categories = results[2] as List<Category>;
-        _organizations = results[3] as List<Organization>;
         _pendingInvitations = [
           ...results[4] as List<Invitation>,
           ...orgInvitations,
         ];
+        _draftProjects = results[5] as List<Project>;
         _countries = countries;
         _offlineProjectIds = offlineIds.toSet();
         _isLoading = false;
@@ -289,10 +264,11 @@ class _HomePageState extends State<HomePage> {
       });
     } catch (e) {
       debugPrint('Error loading data: $e');
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
         _hasConnectionError = true;
-        _hasInternet = true; // Si llegó aquí, tiene internet pero el servidor falló
+        _hasInternet = true;
       });
     }
   }
@@ -300,42 +276,36 @@ class _HomePageState extends State<HomePage> {
   Future<void> _handleToggleLike(int projectId) async {
     final success = await _projectService.toggleLike(projectId);
     if (success && mounted) {
-      // Actualizar inmediatamente el estado visual en _allProjects
       setState(() {
-        final allIndex = _allProjects.indexWhere((p) => p.id == projectId);
-        if (allIndex != -1) {
-          final project = _allProjects[allIndex];
-          _allProjects[allIndex] = Project(
-            id: project.id,
-            name: project.name,
-            description: project.description,
-            coverImage: project.coverImage,
-            organization: project.organization,
-            totalLikes: project.isLiked ? project.totalLikes - 1 : project.totalLikes + 1,
-            contributions: project.contributions,
-            isLiked: !project.isLiked,
-            topics: project.topics,
-            isCreator: project.isCreator,
-            isAdmin: project.isAdmin,
-            hasObservations: project.hasObservations,
+        final idx = _allProjects.indexWhere((p) => p.id == projectId);
+        if (idx != -1) {
+          final p = _allProjects[idx];
+          _allProjects[idx] = Project(
+            id: p.id,
+            name: p.name,
+            description: p.description,
+            coverImage: p.coverImage,
+            organization: p.organization,
+            totalLikes: p.isLiked ? p.totalLikes - 1 : p.totalLikes + 1,
+            contributions: p.contributions,
+            isLiked: !p.isLiked,
+            topics: p.topics,
+            isCreator: p.isCreator,
+            isAdmin: p.isAdmin,
+            hasObservations: p.hasObservations,
           );
         }
       });
-      
-      // Recargar "Mis proyectos" desde el servidor
       try {
-        final updatedMyProjects = await _projectService.getMyProjects();
-        if (mounted) {
-          setState(() {
-            _myProjects = updatedMyProjects;
-          });
-        }
+        final updated = await _projectService.getMyProjects();
+        if (mounted) setState(() => _myProjects = updated);
       } catch (e) {
         debugPrint('Error reloading my projects: $e');
       }
     }
   }
 
+  // ─── Dialogs / Sheets ──────────────────────────────────────────────────────
 
   void _showInvitationsDialog() {
     showDialog(
@@ -371,10 +341,9 @@ class _HomePageState extends State<HomePage> {
                   itemCount: _pendingInvitations.length,
                   itemBuilder: (context, index) {
                     final invitation = _pendingInvitations[index];
-                    final typeText = invitation.isProjectInvitation 
-                        ? AppLocalizations.of(context)!.invitationToProject 
+                    final typeText = invitation.isProjectInvitation
+                        ? AppLocalizations.of(context)!.invitationToProject
                         : AppLocalizations.of(context)!.invitationToOrganization;
-                    
                     return Card(
                       margin: const EdgeInsets.only(bottom: 12),
                       elevation: 2,
@@ -385,21 +354,11 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             RichText(
                               text: TextSpan(
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Theme.of(context).colorScheme.onSurface,
-                                  height: 1.4,
-                                ),
+                                style: TextStyle(fontSize: 15, color: Theme.of(context).colorScheme.onSurface, height: 1.4),
                                 children: [
-                                  TextSpan(
-                                    text: invitation.invitedBy,
-                                    style: const TextStyle(fontWeight: FontWeight.bold),
-                                  ),
+                                  TextSpan(text: invitation.invitedBy, style: const TextStyle(fontWeight: FontWeight.bold)),
                                   TextSpan(text: ' te ha invitado a ser administrador del $typeText '),
-                                  TextSpan(
-                                    text: invitation.name,
-                                    style: const TextStyle(fontWeight: FontWeight.bold),
-                                  ),
+                                  TextSpan(text: invitation.name, style: const TextStyle(fontWeight: FontWeight.bold)),
                                 ],
                               ),
                             ),
@@ -413,12 +372,8 @@ class _HomePageState extends State<HomePage> {
                                         ? await _organizationService.rejectOrganizationInvitation(invitation.id)
                                         : await _invitationService.rejectInvitation(invitation.id);
                                     if (success) {
-                                      setState(() {
-                                        _pendingInvitations.removeWhere((i) => i.id == invitation.id);
-                                      });
-                                      if (_pendingInvitations.isEmpty && context.mounted) {
-                                        Navigator.pop(context);
-                                      }
+                                      setState(() => _pendingInvitations.removeWhere((i) => i.id == invitation.id));
+                                      if (_pendingInvitations.isEmpty && context.mounted) Navigator.pop(context);
                                       if (context.mounted) {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           SnackBar(content: Text(AppLocalizations.of(context)!.invitationRejected)),
@@ -435,12 +390,8 @@ class _HomePageState extends State<HomePage> {
                                         ? await _organizationService.acceptOrganizationInvitation(invitation.id)
                                         : await _invitationService.acceptInvitation(invitation.id);
                                     if (success) {
-                                      setState(() {
-                                        _pendingInvitations.removeWhere((i) => i.id == invitation.id);
-                                      });
-                                      if (_pendingInvitations.isEmpty && context.mounted) {
-                                        Navigator.pop(context);
-                                      }
+                                      setState(() => _pendingInvitations.removeWhere((i) => i.id == invitation.id));
+                                      if (_pendingInvitations.isEmpty && context.mounted) Navigator.pop(context);
                                       if (context.mounted) {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           SnackBar(content: Text(AppLocalizations.of(context)!.invitationAccepted)),
@@ -448,10 +399,7 @@ class _HomePageState extends State<HomePage> {
                                       }
                                     }
                                   },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blue,
-                                    foregroundColor: Colors.white,
-                                  ),
+                                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white),
                                   child: Text(AppLocalizations.of(context)!.accept),
                                 ),
                               ],
@@ -490,8 +438,7 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 12),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(AppLocalizations.of(context)!.filterByCategory,
-                  style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
+              child: Text(AppLocalizations.of(context)!.filterByCategory, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
             ),
             const SizedBox(height: 8),
             Expanded(
@@ -505,17 +452,9 @@ class _HomePageState extends State<HomePage> {
                     leading: SvgPicture.asset(cat.icon, width: 24, height: 24,
                         colorFilter: ColorFilter.mode(Colors.blue.shade700, BlendMode.srcIn)),
                     title: Text(cat.name),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (cat.projectCount > 0)
-                          Text('${cat.projectCount}', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 13)),
-                        if (isSelected) ...[
-                          const SizedBox(width: 8),
-                          Icon(Icons.check_circle, color: Colors.blue[700], size: 20),
-                        ],
-                      ],
-                    ),
+                    trailing: isSelected
+                        ? Icon(Icons.check_circle, color: Colors.blue[700], size: 20)
+                        : null,
                     onTap: () {
                       setState(() => _selectedCategoryId = isSelected ? null : cat.id);
                       Navigator.pop(context);
@@ -560,17 +499,9 @@ class _HomePageState extends State<HomePage> {
                   return ListTile(
                     leading: const Icon(Icons.public_outlined, size: 22, color: Colors.blueGrey),
                     title: Text(country.name),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (country.projectCount > 0)
-                          Text('${country.projectCount}', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 13)),
-                        if (isSelected) ...[
-                          const SizedBox(width: 8),
-                          Icon(Icons.check_circle, color: Colors.blue[700], size: 20),
-                        ],
-                      ],
-                    ),
+                    trailing: isSelected
+                        ? Icon(Icons.check_circle, color: Colors.blue[700], size: 20)
+                        : null,
                     onTap: () {
                       setState(() => _selectedCountryCode = isSelected ? null : country.code);
                       Navigator.pop(context);
@@ -585,80 +516,345 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    // Si hay error de conexión, mostrar pantalla de error
-    if (_hasConnectionError) {
-      return ConnectionErrorScreen(
-        hasInternet: _hasInternet,
-        onRetry: _loadData,
-      );
+  // ─── Filters widget (shared, applied per-tab) ──────────────────────────────
+
+  Widget _buildFilters(AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      child: Row(
+        children: [
+          // Búsqueda
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerLowest,
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+              ),
+              child: TextField(
+                controller: _searchController,
+                onChanged: (_) => setState(() {}),
+                decoration: InputDecoration(
+                  hintText: l10n.searchProjects,
+                  hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  prefixIcon: Icon(Icons.search, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  suffixIcon: _searchController.text.isNotEmpty
+                      ? IconButton(
+                          icon: Icon(Icons.clear, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                          onPressed: () { _searchController.clear(); setState(() {}); },
+                        )
+                      : null,
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          // Botón categoría
+          _IconFilterButton(
+            icon: Icons.category_outlined,
+            isActive: _selectedCategoryId != null,
+            onTap: _showCategorySheet,
+            onClear: _selectedCategoryId != null ? () => setState(() => _selectedCategoryId = null) : null,
+          ),
+          const SizedBox(width: 6),
+          // Botón país
+          _IconFilterButton(
+            icon: Icons.public_outlined,
+            isActive: _selectedCountryCode != null,
+            onTap: _showCountrySheet,
+            onClear: _selectedCountryCode != null ? () => setState(() => _selectedCountryCode = null) : null,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ─── Tab contents ──────────────────────────────────────────────────────────
+
+  Widget _buildMyProjectsTab() {
+    final l10n = AppLocalizations.of(context)!;
+    final q = _searchController.text.toLowerCase();
+    List<Project> projects = _myProjects;
+    if (_selectedCategoryId != null) {
+      projects = projects.where((p) => p.topics.contains(_selectedCategoryId)).toList();
+    }
+    if (_selectedCountryCode != null) {
+      projects = projects.where((p) =>
+          _selectedCountryCode == 'global' ? p.isGlobal : p.countries.contains(_selectedCountryCode)).toList();
+    }
+    if (q.isNotEmpty) {
+      projects = projects.where((p) =>
+          p.name.toLowerCase().contains(q) ||
+          (p.description?.toLowerCase().contains(q) ?? false) ||
+          (p.organization?.toLowerCase().contains(q) ?? false)).toList();
     }
 
-    // Filtrar proyectos
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(child: _buildFilters(l10n)),
+        if (projects.isEmpty)
+          SliverFillRemaining(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.folder_open, size: 64, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  const SizedBox(height: 16),
+                  Text(l10n.noMyProjectsTitle, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 8),
+                  Text(l10n.noMyProjectsSubtitle, textAlign: TextAlign.center,
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                ],
+              ),
+            ),
+          )
+        else
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+            sliver: SliverGrid(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 0.8,
+              ),
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final project = projects[index];
+                  return RepaintBoundary(
+                    child: _ExploreProjectCard(
+                      project: project,
+                      offlineBadge: _offlineProjectIds.contains(project.id),
+                      draftBadge: project.isDraft,
+                      onTap: () async {
+                        final result = await Navigator.push(context, MaterialPageRoute(
+                          builder: (_) => ProjectDetailScreen(projectId: project.id),
+                        ));
+                        if (result == true && mounted) _loadData();
+                      },
+                      onLike: () => _handleToggleLike(project.id),
+                      onMap: () => Navigator.push(context, MaterialPageRoute(
+                        builder: (_) => MapScreen(
+                          projectId: project.id,
+                          projectName: project.name,
+                          isPrivate: project.isPrivate,
+                          isMember: project.isMember,
+                          isFinished: project.isFinished,
+                        ),
+                      )),
+                    ),
+                  );
+                },
+                childCount: projects.length,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildExploreTab() {
+    final l10n = AppLocalizations.of(context)!;
+    final q = _searchController.text.toLowerCase();
     List<Project> displayProjects = _allProjects;
-    
-    // Filtrar por categoría si hay una seleccionada
+
     if (_selectedCategoryId != null) {
       displayProjects = displayProjects.where((p) => p.topics.contains(_selectedCategoryId)).toList();
     }
-
-    // Filtrar por país si hay uno seleccionado
     if (_selectedCountryCode != null) {
-      displayProjects = displayProjects.where((p) {
-        if (_selectedCountryCode == 'global') return p.isGlobal;
-        return p.countries.contains(_selectedCountryCode);
-      }).toList();
+      displayProjects = displayProjects.where((p) =>
+          _selectedCountryCode == 'global' ? p.isGlobal : p.countries.contains(_selectedCountryCode)).toList();
     }
-    
-    // Filtrar por búsqueda
-    final searchQuery = _searchController.text.toLowerCase();
-    if (searchQuery.isNotEmpty) {
-      displayProjects = displayProjects.where((p) {
-        return p.name.toLowerCase().contains(searchQuery) ||
-               (p.description?.toLowerCase().contains(searchQuery) ?? false) ||
-               (p.organization?.toLowerCase().contains(searchQuery) ?? false);
-      }).toList();
+    if (q.isNotEmpty) {
+      displayProjects = displayProjects.where((p) =>
+          p.name.toLowerCase().contains(q) ||
+          (p.description?.toLowerCase().contains(q) ?? false) ||
+          (p.organization?.toLowerCase().contains(q) ?? false)).toList();
     }
-    
-    // Mis proyectos vienen del endpoint my_projects (ya filtrados por backend)
-    final myProjects = _myProjects;
-    
-    return Scaffold(
-      body: Column(
-        children: [
-          if (_isOfflineMode)
-            MaterialBanner(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              content: Text(AppLocalizations.of(context)!.offlineProjectsShown,
-                  style: const TextStyle(color: Colors.white)),
-              backgroundColor: Colors.orange[700],
-              actions: [
-                TextButton(
-                  onPressed: _loadData,
-                  child: Text(AppLocalizations.of(context)!.retry, style: const TextStyle(color: Colors.white)),
-                ),
-              ],
+
+    return CustomScrollView(
+      cacheExtent: 600,
+      slivers: [
+        SliverToBoxAdapter(child: _buildFilters(l10n)),
+
+        // Grid de proyectos
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+          sliver: SliverGrid(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 16,
+              childAspectRatio: 0.8,
             ),
-          Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : RefreshIndicator(
-                    onRefresh: _loadData,
-              child: SafeArea(
-                child: CustomScrollView(
-                  cacheExtent: 600,
-                  slivers: [
-            // Header con logo y menú
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final project = displayProjects[index];
+                return RepaintBoundary(child: _ExploreProjectCard(
+                  project: project,
+                  offlineBadge: _offlineProjectIds.contains(project.id),
+                  onTap: () async {
+                    final result = await Navigator.push(context, MaterialPageRoute(
+                      builder: (_) => ProjectDetailScreen(projectId: project.id),
+                    ));
+                    if (result == true && mounted) _loadData();
+                  },
+                  onLike: () => _handleToggleLike(project.id),
+                  onMap: () => Navigator.push(context, MaterialPageRoute(
+                    builder: (_) => MapScreen(
+                      projectId: project.id,
+                      projectName: project.name,
+                      isFinished: project.isFinished,
+                    ),
+                  )),
+                ));
+              },
+              childCount: displayProjects.length,
+            ),
+          ),
+        ),
+
+        const SliverToBoxAdapter(child: SizedBox(height: 24)),
+      ],
+    );
+  }
+
+  Widget _buildDraftsTab() {
+    final l10n = AppLocalizations.of(context)!;
+    final q = _searchController.text.toLowerCase();
+    List<Project> drafts = _draftProjects;
+    if (_selectedCategoryId != null) {
+      drafts = drafts.where((p) => p.topics.contains(_selectedCategoryId)).toList();
+    }
+    if (_selectedCountryCode != null) {
+      drafts = drafts.where((p) =>
+          _selectedCountryCode == 'global' ? p.isGlobal : p.countries.contains(_selectedCountryCode)).toList();
+    }
+    if (q.isNotEmpty) {
+      drafts = drafts.where((p) =>
+          p.name.toLowerCase().contains(q) ||
+          (p.description?.toLowerCase().contains(q) ?? false)).toList();
+    }
+
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(child: _buildFilters(l10n)),
+        if (drafts.isEmpty)
+          SliverFillRemaining(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.edit_note, size: 64, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  const SizedBox(height: 16),
+                  Text(l10n.noDraftsTitle, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                    child: Text(l10n.noDraftsSubtitle, textAlign: TextAlign.center,
+                        style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                  ),
+                ],
+              ),
+            ),
+          )
+        else
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+            sliver: SliverGrid(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 0.8,
+              ),
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final project = drafts[index];
+                  return RepaintBoundary(
+                    child: _ExploreProjectCard(
+                      project: project,
+                      offlineBadge: false,
+                      draftBadge: true,
+                      onTap: () => Navigator.push(context, MaterialPageRoute(
+                        builder: (_) => ProjectDetailScreen(projectId: project.id),
+                      )),
+                      onLike: () => _handleToggleLike(project.id),
+                      onMap: () => Navigator.push(context, MaterialPageRoute(
+                        builder: (_) => MapScreen(
+                          projectId: project.id,
+                          projectName: project.name,
+                          isFinished: project.isFinished,
+                        ),
+                      )),
+                      onContinueDraft: (project.isCreator || project.isAdmin)
+                          ? () async {
+                              final result = await Navigator.push(context, MaterialPageRoute(
+                                builder: (_) => CreateProjectScreen(projectId: project.id),
+                              ));
+                              if (result == true && mounted) _loadData();
+                            }
+                          : null,
+                    ),
+                  );
+                },
+                childCount: drafts.length,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _draftPlaceholder() {
+    return Container(
+      color: Colors.orange.withValues(alpha: 0.12),
+      child: const Center(
+        child: Icon(Icons.edit_note, size: 40, color: Colors.orange),
+      ),
+    );
+  }
+
+  // ─── Build ─────────────────────────────────────────────────────────────────
+
+  @override
+  Widget build(BuildContext context) {
+    if (_hasConnectionError) {
+      return ConnectionErrorScreen(hasInternet: _hasInternet, onRetry: _loadData);
+    }
+
+    final l10n = AppLocalizations.of(context)!;
+
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        body: SafeArea(
+          child: Column(
+            children: [
+              // Offline banner
+              if (_isOfflineMode)
+                MaterialBanner(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  content: Text(l10n.offlineProjectsShown, style: const TextStyle(color: Colors.white)),
+                  backgroundColor: Colors.orange[700],
+                  actions: [
+                    TextButton(
+                      onPressed: _loadData,
+                      child: Text(l10n.retry, style: const TextStyle(color: Colors.white)),
+                    ),
+                  ],
+                ),
+
+              // Header
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 8, 4),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
                       child: Text(
-                        AppLocalizations.of(context)!.appTitle,
+                        l10n.appTitle,
                         style: TextStyle(
                           fontSize: 36,
                           fontWeight: FontWeight.bold,
@@ -666,12 +862,12 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                     ),
-                    // Campana de notificaciones
+                    // Notificaciones
                     Stack(
                       children: [
                         IconButton(
                           icon: const Icon(Icons.notifications_outlined, size: 28),
-                          onPressed: () => _showInvitationsDialog(),
+                          onPressed: _showInvitationsDialog,
                         ),
                         if (_pendingInvitations.isNotEmpty)
                           Positioned(
@@ -679,752 +875,230 @@ class _HomePageState extends State<HomePage> {
                             top: 8,
                             child: Container(
                               padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: Colors.red,
-                                shape: BoxShape.circle,
-                              ),
-                              constraints: const BoxConstraints(
-                                minWidth: 16,
-                                minHeight: 16,
-                              ),
+                              decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+                              constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
                               child: Text(
                                 '${_pendingInvitations.length}',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
                                 textAlign: TextAlign.center,
                               ),
                             ),
                           ),
                       ],
                     ),
-                    // Botón para crear proyecto
+                    // Crear proyecto
                     IconButton(
                       icon: const Icon(Icons.add_circle_outline, size: 28),
                       onPressed: () async {
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const CreateProjectScreen(),
-                          ),
-                        );
-                        
-                        // Si se creó el proyecto, recargar la lista
-                        if (result == true) {
-                          _loadData();
-                        }
+                        final result = await Navigator.push(context, MaterialPageRoute(
+                          builder: (_) => const CreateProjectScreen(),
+                        ));
+                        if (result == true && mounted) _loadData();
                       },
                     ),
                   ],
                 ),
               ),
-            ),
-            
-            // Barra de búsqueda
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainerLowest,
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-                  ),
-                  child: TextField(
-                    controller: _searchController,
-                    onChanged: (value) {
-                      setState(() {}); // Recargar al escribir
-                    },
-                    decoration: InputDecoration(
-                      hintText: AppLocalizations.of(context)!.searchProjects,
-                      hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                      prefixIcon: Icon(Icons.search, color: Theme.of(context).colorScheme.onSurfaceVariant),
-                      suffixIcon: _searchController.text.isNotEmpty
-                          ? IconButton(
-                              icon: Icon(Icons.clear, color: Theme.of(context).colorScheme.onSurfaceVariant),
-                              onPressed: () {
-                                _searchController.clear();
-                                setState(() {});
-                              },
-                            )
-                          : null,
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    ),
-                  ),
-                ),
-              ),
-            ),
 
-            // Mostrar indicador de búsqueda solo si hay búsqueda activa
-            if (searchQuery.isNotEmpty)
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.search, size: 28, color: Theme.of(context).colorScheme.onSurface),
-                          const SizedBox(width: 12),
-                          Text(
-                            AppLocalizations.of(context)!.searchResults,
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        displayProjects.length == 1
-                            ? AppLocalizations.of(context)!.searchResultsCount(searchQuery, displayProjects.length)
-                            : AppLocalizations.of(context)!.searchResultsCountPlural(searchQuery, displayProjects.length),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF2B4CE0),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
+              // TabBar
+              TabBar(
+                controller: _tabController,
+                labelColor: Colors.blue[700],
+                unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
+                indicatorColor: Colors.blue[700],
+                indicatorSize: TabBarIndicatorSize.tab,
+                labelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 13),
+                tabs: [
+                  Tab(text: l10n.myProjects),
+                  Tab(text: l10n.exploreProjects),
+                  Tab(text: l10n.drafts,
                   ),
-                ),
+                ],
               ),
 
-            // Sección Mis proyectos (siempre visible si no hay búsqueda)
-            if (searchQuery.isEmpty && myProjects.isNotEmpty)
-              SliverToBoxAdapter(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
-                      child: Row(
+              // Tab content
+              Expanded(
+                child: _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : TabBarView(
+                        controller: _tabController,
                         children: [
-                          const Icon(Icons.favorite, color: Color(0xFF2B4CE0), size: 28),
-                          const SizedBox(width: 12),
-                          Text(
-                            AppLocalizations.of(context)!.myProjects,
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
+                          RefreshIndicator(onRefresh: _loadData, child: _buildMyProjectsTab()),
+                          RefreshIndicator(onRefresh: _loadData, child: _buildExploreTab()),
+                          RefreshIndicator(onRefresh: _loadData, child: _buildDraftsTab()),
                         ],
                       ),
-                    ),
-                    SizedBox(
-                      height: 200,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        itemCount: myProjects.length,
-                        itemBuilder: (context, index) {
-                          final project = myProjects[index];
-                          return RepaintBoundary(child: Container(
-                            width: 160,
-                            margin: const EdgeInsets.only(right: 16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: GestureDetector(
-                                    onTap: () async {
-                                      final result = await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => ProjectDetailScreen(projectId: project.id),
-                                        ),
-                                      );
-                                      // Si se borró el proyecto, recargar datos
-                                      if (result == true && mounted) {
-                                        _loadData();
-                                      }
-                                    },
-                                    onLongPress: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => MapScreen(
-                                            projectId: project.id,
-                                            projectName: project.name,
-                                            isPrivate: project.isPrivate,
-                                            isMember: project.isMember,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    child: Stack(
-                                      fit: StackFit.expand,
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                                            borderRadius: BorderRadius.circular(12),
-                                            image: project.coverImage != null
-                                                ? DecorationImage(
-                                                    image: CachedNetworkImageProvider(project.coverImage!),
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                : null,
-                                          ),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(12),
-                                              gradient: LinearGradient(
-                                                begin: Alignment.topCenter,
-                                                end: Alignment.bottomCenter,
-                                                colors: [
-                                                  Colors.transparent,
-                                                  Colors.black.withOpacity(0.5),
-                                                ],
-                                              ),
-                                            ),
-                                            alignment: Alignment.bottomLeft,
-                                            padding: const EdgeInsets.all(12),
-                                            child: Text(
-                                              project.name,
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                                shadows: [
-                                                  Shadow(
-                                                    offset: Offset(0, 1),
-                                                    blurRadius: 3,
-                                                    color: Colors.black45,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        if (_offlineProjectIds.contains(project.id))
-                                          Positioned(
-                                            top: 6,
-                                            right: 6,
-                                            child: Container(
-                                              padding: const EdgeInsets.all(3),
-                                              decoration: BoxDecoration(
-                                                color: Colors.green,
-                                                borderRadius: BorderRadius.circular(4),
-                                              ),
-                                              child: const Icon(Icons.offline_pin,
-                                                  size: 14, color: Colors.white),
-                                            ),
-                                          ),
-                                        if (project.isPrivate)
-                                          Positioned(
-                                            bottom: 6,
-                                            right: 6,
-                                            child: Container(
-                                              padding: const EdgeInsets.all(3),
-                                              decoration: BoxDecoration(
-                                                color: project.isMember ? Colors.green : Colors.red,
-                                                borderRadius: BorderRadius.circular(4),
-                                              ),
-                                              child: Icon(
-                                                project.isMember ? Icons.lock_open : Icons.lock,
-                                                size: 14,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ),
-                                        if (project.isCreator || project.isAdmin)
-                                          Positioned(
-                                            top: 6,
-                                            left: 6,
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                if (project.isCreator)
-                                                  Container(
-                                                    padding: const EdgeInsets.all(3),
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.yellow.withOpacity(0.9),
-                                                      borderRadius: BorderRadius.circular(4),
-                                                    ),
-                                                    child: const Icon(Icons.workspace_premium, size: 14, color: Colors.black),
-                                                  ),
-                                                if (project.isAdmin) ...[
-                                                  if (project.isCreator) const SizedBox(width: 4),
-                                                  Container(
-                                                    padding: const EdgeInsets.all(3),
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.blue.withOpacity(0.9),
-                                                      borderRadius: BorderRadius.circular(4),
-                                                    ),
-                                                    child: const Icon(Icons.verified_user, size: 14, color: Colors.white),
-                                                  ),
-                                                ],
-                                              ],
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 8, left: 4),
-                                  child: Row(
-                                    children: [
-                                      AnimatedLikeButton(
-                                        isLiked: project.isLiked,
-                                        likes: project.totalLikes,
-                                        onPressed: () => _handleToggleLike(project.id),
-                                        iconSize: 16,
-                                        textSize: 12,
-                                      ),
-                                      const SizedBox(width: 12),
-                                      GestureDetector(
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => MapScreen(
-                                                projectId: project.id,
-                                                projectName: project.name,
-                                                postObservationMessage: project.postObservationMessage,
-                                                isPrivate: project.isPrivate,
-                                                isMember: project.isMember,
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(
-                                              Icons.location_on,
-                                              size: 16,
-                                              color: project.hasObservations ? Colors.green : Theme.of(context).colorScheme.onSurfaceVariant,
-                                            ),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              '${project.contributions}',
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ));
-                        },
-                      ),
-                    ),
-                  ],
-                ),
               ),
-
-            // Sección Explorar proyectos con categorías integradas
-            if (searchQuery.isEmpty)
-              SliverToBoxAdapter(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.explore, color: Color(0xFF2B4CE0), size: 28),
-                          const SizedBox(width: 12),
-                          Text(
-                            AppLocalizations.of(context)!.exploreProjects,
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Panel de filtros: dos selectores
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                      child: Row(
-                        children: [
-                          // Selector categoría
-                          Expanded(
-                            child: _FilterChip(
-                              icon: Icons.category_outlined,
-                              label: _selectedCategoryId != null
-                                  ? _categories.firstWhere((c) => c.id == _selectedCategoryId, orElse: () => _categories.first).name
-                                  : AppLocalizations.of(context)!.filterByCategory,
-                              isActive: _selectedCategoryId != null,
-                              onTap: () => _showCategorySheet(),
-                              onClear: _selectedCategoryId != null ? () => setState(() => _selectedCategoryId = null) : null,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          // Selector país
-                          Expanded(
-                            child: _FilterChip(
-                              icon: Icons.public_outlined,
-                              label: _selectedCountryCode != null
-                                  ? _countries.firstWhere((c) => c.code == _selectedCountryCode, orElse: () => _countries.first).name
-                                  : AppLocalizations.of(context)!.profileCountry,
-                              isActive: _selectedCountryCode != null,
-                              onTap: () => _showCountrySheet(),
-                              onClear: _selectedCountryCode != null ? () => setState(() => _selectedCountryCode = null) : null,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-            // Grid de todos los proyectos (filtrados por categoría si hay una seleccionada)
-            if (searchQuery.isEmpty)
-              SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                sliver: SliverGrid(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
-                    childAspectRatio: 0.8,
-                  ),
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final project = displayProjects[index];
-                      return RepaintBoundary(child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () async {
-                                final result = await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ProjectDetailScreen(projectId: project.id),
-                                  ),
-                                );
-                                if (result == true && mounted) {
-                                  _loadData();
-                                }
-                              },
-                              onLongPress: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => MapScreen(
-                                      projectId: project.id,
-                                      projectName: project.name,
-                                      isPrivate: project.isPrivate,
-                                      isMember: project.isMember,
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: Stack(
-                                fit: StackFit.expand,
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                                      borderRadius: BorderRadius.circular(12),
-                                      image: project.coverImage != null
-                                          ? DecorationImage(
-                                              image: CachedNetworkImageProvider(project.coverImage!),
-                                              fit: BoxFit.cover,
-                                            )
-                                          : null,
-                                    ),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(12),
-                                        gradient: LinearGradient(
-                                          begin: Alignment.topCenter,
-                                          end: Alignment.bottomCenter,
-                                          colors: [
-                                            Colors.transparent,
-                                            Colors.black.withValues(alpha: 0.5),
-                                          ],
-                                        ),
-                                      ),
-                                      alignment: Alignment.bottomLeft,
-                                      padding: const EdgeInsets.all(12),
-                                      child: Text(
-                                        project.name,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          shadows: [
-                                            Shadow(
-                                              offset: Offset(0, 1),
-                                              blurRadius: 3,
-                                              color: Colors.black45,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  if (_offlineProjectIds.contains(project.id))
-                                    Positioned(
-                                      top: 6,
-                                      right: 6,
-                                      child: Container(
-                                        padding: const EdgeInsets.all(3),
-                                        decoration: BoxDecoration(
-                                          color: Colors.green,
-                                          borderRadius: BorderRadius.circular(4),
-                                        ),
-                                        child: const Icon(Icons.offline_pin,
-                                            size: 14, color: Colors.white),
-                                      ),
-                                    ),
-                                  if (project.isPrivate)
-                                    Positioned(
-                                      bottom: 6,
-                                      right: 6,
-                                      child: Container(
-                                        padding: const EdgeInsets.all(3),
-                                        decoration: BoxDecoration(
-                                          color: project.isMember ? Colors.green : Colors.red,
-                                          borderRadius: BorderRadius.circular(4),
-                                        ),
-                                        child: Icon(
-                                          project.isMember ? Icons.lock_open : Icons.lock,
-                                          size: 14,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                  if (project.isCreator || project.isAdmin)
-                                    Positioned(
-                                      top: 6,
-                                      left: 6,
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          if (project.isCreator)
-                                            Container(
-                                              padding: const EdgeInsets.all(3),
-                                              decoration: BoxDecoration(
-                                                color: Colors.yellow.withOpacity(0.9),
-                                                borderRadius: BorderRadius.circular(4),
-                                              ),
-                                              child: const Icon(Icons.workspace_premium, size: 14, color: Colors.black),
-                                            ),
-                                          if (project.isAdmin) ...[
-                                            if (project.isCreator) const SizedBox(width: 4),
-                                            Container(
-                                              padding: const EdgeInsets.all(3),
-                                              decoration: BoxDecoration(
-                                                color: Colors.blue.withOpacity(0.9),
-                                                borderRadius: BorderRadius.circular(4),
-                                              ),
-                                              child: const Icon(Icons.verified_user, size: 14, color: Colors.white),
-                                            ),
-                                          ],
-                                        ],
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8, left: 4),
-                            child: Row(
-                              children: [
-                                AnimatedLikeButton(
-                                  isLiked: project.isLiked,
-                                  likes: project.totalLikes,
-                                  onPressed: () => _handleToggleLike(project.id),
-                                  iconSize: 16,
-                                  textSize: 12,
-                                ),
-                                const SizedBox(width: 12),
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => MapScreen(
-                                          projectId: project.id,
-                                          projectName: project.name,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(Icons.location_on, size: 16,
-                                          color: project.hasObservations ? Colors.green : Theme.of(context).colorScheme.onSurfaceVariant),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        '${project.contributions}',
-                                        style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ));
-                    },
-                    childCount: displayProjects.length,
-                  ),
-                ),
-              ),
-
-            // Lista vertical de proyectos filtrados (solo cuando hay búsqueda activa)
-            if (searchQuery.isNotEmpty)
-              SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final project = displayProjects[index];
-                      return RepaintBoundary(child: GestureDetector(
-                        onTap: () async {
-                          final result = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ProjectDetailScreen(projectId: project.id),
-                            ),
-                          );
-                          // Si se borró el proyecto, recargar datos
-                          if (result == true && mounted) {
-                            _loadData();
-                          }
-                        },
-                        child: Container(
-                        margin: const EdgeInsets.only(bottom: 16),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surface,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.2),
-                              spreadRadius: 1,
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (project.coverImage != null)
-                              Container(
-                                height: 200,
-                                decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.vertical(
-                                    top: Radius.circular(16),
-                                  ),
-                                  image: DecorationImage(
-                                    image: CachedNetworkImageProvider(project.coverImage!),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                            Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    project.name,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Theme.of(context).colorScheme.onSurface,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  if (project.organization != null)
-                                    Text(
-                                      project.organization!,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        color: Color(0xFF2B4CE0),
-                                      ),
-                                    ),
-                                  if (project.description != null) ...[
-                                    const SizedBox(height: 12),
-                                    Text(
-                                      project.description!,
-                                      maxLines: 3,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                      ),
-                                    ),
-                                  ],
-                                  const SizedBox(height: 12),
-                                  Row(
-                                    children: [
-                                      if (project.contributions > 0) ...[
-                                        Icon(Icons.people, size: 20, color: Theme.of(context).colorScheme.onSurfaceVariant),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          '${project.contributions}',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 16),
-                                      ],
-                                      Icon(Icons.favorite_border, size: 20, color: Theme.of(context).colorScheme.onSurfaceVariant),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        '${project.totalLikes}',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      ));
-                    },
-                    childCount: displayProjects.length,
-                  ),
-                ),
-              ),
-          ],
+            ],
+          ),
         ),
-              ),
-            ),
-          ),        // close Expanded
-        ],          // close Column children
-      ),            // close Column
+      ),
     );
   }
 }
+
+// ─── Explore project card (grid) ─────────────────────────────────────────────
+
+class _ExploreProjectCard extends StatelessWidget {
+  final Project project;
+  final bool offlineBadge;
+  final bool draftBadge;
+  final VoidCallback onTap;
+  final VoidCallback onLike;
+  final VoidCallback onMap;
+  final VoidCallback? onContinueDraft;
+
+  const _ExploreProjectCard({
+    required this.project,
+    required this.offlineBadge,
+    this.draftBadge = false,
+    required this.onTap,
+    required this.onLike,
+    required this.onMap,
+    this.onContinueDraft,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: GestureDetector(
+            onTap: onTap,
+            onLongPress: onMap,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(12),
+                    image: project.coverImage != null
+                        ? DecorationImage(image: CachedNetworkImageProvider(project.coverImage!), fit: BoxFit.cover)
+                        : null,
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Colors.transparent, Colors.black.withValues(alpha: 0.5)],
+                      ),
+                    ),
+                    alignment: Alignment.bottomLeft,
+                    padding: const EdgeInsets.all(12),
+                    child: Text(
+                      project.name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        shadows: [Shadow(offset: Offset(0, 1), blurRadius: 3, color: Colors.black45)],
+                      ),
+                    ),
+                  ),
+                ),
+                // ── top-right badges (column) ──
+                Positioned(
+                  top: 6, right: 6,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      if (draftBadge)
+                        _Badge(icon: Icons.visibility_off, color: const Color(0xFFF59E0B)),
+                      if (project.isFinished)
+                        _Badge(icon: Icons.archive, color: const Color(0xFF64748B)),
+                      if (project.isPrivate)
+                        _Badge(icon: Icons.lock, color: const Color(0xFFDC2626)),
+                      if (project.fuzzy)
+                        _Badge(icon: Icons.location_on, color: Colors.black.withValues(alpha: 0.6)),
+                      if (project.isGlobal)
+                        _Badge(icon: Icons.public, color: Colors.black.withValues(alpha: 0.6)),
+                      if (offlineBadge)
+                        _Badge(icon: Icons.offline_pin, color: Colors.green),
+                    ].separated(const SizedBox(height: 4)),
+                  ),
+                ),
+                // ── top-left badges (row) ──
+                if (project.isCreator || project.isAdmin)
+                  Positioned(
+                    top: 6, left: 6,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (project.isCreator)
+                          _Badge(icon: Icons.workspace_premium, color: const Color(0xFFF59E0B), size: 19),
+                        if (project.isCreator && project.isAdmin) const SizedBox(width: 4),
+                        if (project.isAdmin)
+                          _Badge(icon: Icons.shield, color: const Color(0xFF3B82F6), size: 19),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 8, left: 4, right: 4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  AnimatedLikeButton(
+                    isLiked: project.isLiked,
+                    likes: project.totalLikes,
+                    onPressed: onLike,
+                    iconSize: 16,
+                    textSize: 12,
+                  ),
+                  const SizedBox(width: 12),
+                  GestureDetector(
+                    onTap: onMap,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.location_on, size: 16,
+                            color: project.hasObservations ? Colors.green : Theme.of(context).colorScheme.onSurfaceVariant),
+                        const SizedBox(width: 4),
+                        Text('${project.contributions}',
+                            style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              if (onContinueDraft != null) ...[
+                const SizedBox(height: 6),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: onContinueDraft,
+                    icon: const Icon(Icons.edit, size: 13),
+                    label: Text(AppLocalizations.of(context)!.continueLabel, style: const TextStyle(fontSize: 11)),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      side: BorderSide(color: Colors.orange.shade300),
+                      foregroundColor: Colors.orange.shade700,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ─── Misc ─────────────────────────────────────────────────────────────────────
 
 class MapPage extends StatelessWidget {
   const MapPage({super.key});
@@ -1437,10 +1111,8 @@ class MapPage extends StatelessWidget {
         children: [
           const Icon(Icons.map, size: 80, color: Colors.green),
           const SizedBox(height: 16),
-          Text(
-            AppLocalizations.of(context)!.mapTitle,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
+          Text(AppLocalizations.of(context)!.mapTitle,
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           Text(AppLocalizations.of(context)!.mapInteractive),
         ],
@@ -1448,6 +1120,99 @@ class MapPage extends StatelessWidget {
     );
   }
 }
+
+class _IconFilterButton extends StatelessWidget {
+  final IconData icon;
+  final bool isActive;
+  final VoidCallback onTap;
+  final VoidCallback? onClear;
+
+  const _IconFilterButton({
+    required this.icon,
+    required this.isActive,
+    required this.onTap,
+    this.onClear,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isActive ? Colors.blue[700]! : Theme.of(context).colorScheme.onSurfaceVariant;
+    final bg = isActive
+        ? Colors.blue[700]!.withValues(alpha: 0.12)
+        : Theme.of(context).colorScheme.surfaceContainerLowest;
+    final border = isActive ? Colors.blue[700]! : Theme.of(context).colorScheme.outlineVariant;
+
+    return GestureDetector(
+      onTap: isActive && onClear != null ? onClear : onTap,
+      child: Container(
+        width: 42,
+        height: 42,
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: border),
+        ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Icon(icon, size: 20, color: color),
+            if (isActive)
+              Positioned(
+                top: 6,
+                right: 6,
+                child: Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: Colors.blue[700],
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Badge widget ─────────────────────────────────────────────────────────────
+
+class _Badge extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final double size;
+
+  const _Badge({required this.icon, required this.color, this.size = 16});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Icon(icon, size: size, color: Colors.white),
+    );
+  }
+}
+
+// ─── Extension: separated list ────────────────────────────────────────────────
+
+extension _WidgetListSeparated on List<Widget> {
+  List<Widget> separated(Widget separator) {
+    if (isEmpty) return this;
+    final result = <Widget>[];
+    for (int i = 0; i < length; i++) {
+      result.add(this[i]);
+      if (i < length - 1) result.add(separator);
+    }
+    return result;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 class _FilterChip extends StatelessWidget {
   final IconData icon;
@@ -1493,10 +1258,12 @@ class _FilterChip extends StatelessWidget {
             if (onClear != null)
               GestureDetector(
                 onTap: onClear,
-                child: Icon(Icons.close, size: 15, color: isActive ? Colors.white70 : Theme.of(context).colorScheme.onSurfaceVariant),
+                child: Icon(Icons.close, size: 15,
+                    color: isActive ? Colors.white70 : Theme.of(context).colorScheme.onSurfaceVariant),
               )
             else
-              Icon(Icons.expand_more, size: 16, color: isActive ? Colors.white70 : Theme.of(context).colorScheme.onSurfaceVariant),
+              Icon(Icons.expand_more, size: 16,
+                  color: isActive ? Colors.white70 : Theme.of(context).colorScheme.onSurfaceVariant),
           ],
         ),
       ),

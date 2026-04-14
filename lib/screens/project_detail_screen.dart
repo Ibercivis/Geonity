@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -175,6 +176,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
         maxLng: maxLng,
       );
 
+      if (!mounted) return;
       setState(() {
         _isOffline = true;
         _isDownloadingOffline = false;
@@ -188,6 +190,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
       }
     } catch (e) {
       debugPrint('Error making project offline: $e');
+      if (!mounted) return;
       setState(() => _isDownloadingOffline = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -301,7 +304,6 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          automaticallyImplyLeading: false,
         ),
         body: const Center(child: CircularProgressIndicator()),
       );
@@ -312,7 +314,6 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          automaticallyImplyLeading: false,
         ),
         body: Center(child: Text(AppLocalizations.of(context)!.projectLoadError)),
       );
@@ -340,6 +341,9 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
     final isDatabasePrivate = _projectData!['private_data'] ?? false;
     final isPrivate = _projectData!['is_private'] ?? false;
     final isMember = _projectData!['is_member'] ?? false;
+    final isFinished = _projectData!['ended'] as bool? ?? false;
+    final isFuzzy = (_projectData!['fuzzy'] ?? _projectData!['is_fuzzy']) as bool? ?? false;
+    final isGlobal = _projectData!['is_global'] as bool? ?? false;
 
     return Scaffold(
       body: CustomScrollView(
@@ -627,38 +631,63 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Project name with white background overlay
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerLow,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            name,
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
+                  // Project name
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          name,
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
-                        if (isPrivate) ...[
-                          const SizedBox(width: 8),
-                          Icon(
-                            isMember ? Icons.lock_open : Icons.lock,
-                            color: isMember ? Colors.green : Colors.red,
-                            size: 22,
-                          ),
-                        ],
+                      ),
+                      if (isPrivate) ...[
+                        const SizedBox(width: 8),
+                        Icon(
+                          isMember ? Icons.lock_open : Icons.lock,
+                          color: isMember ? Colors.green : Colors.red,
+                          size: 22,
+                        ),
                       ],
-                    ),
+                    ],
                   ),
 
-                  const SizedBox(height: 24),
+                  // Status badges
+                  Builder(builder: (_) {
+                    final isDraft = _projectData!['draft'] as bool? ?? false;
+                    final items = <({IconData icon, Color color, String label})>[];
+                    if (isDraft) items.add((icon: Icons.visibility_off, color: const Color(0xFFF59E0B), label: AppLocalizations.of(context)!.drafts));
+                    if (isFinished) items.add((icon: Icons.archive, color: const Color(0xFF64748B), label: AppLocalizations.of(context)!.badgeFinished));
+                    if (isPrivate) items.add((icon: Icons.lock, color: const Color(0xFFDC2626), label: AppLocalizations.of(context)!.badgePrivate));
+                    if (isFuzzy) items.add((icon: Icons.location_on, color: Colors.black54, label: AppLocalizations.of(context)!.badgeFuzzy));
+                    if (isGlobal) items.add((icon: Icons.public, color: Colors.black54, label: AppLocalizations.of(context)!.badgeGlobal));
+                    if (items.isEmpty) return const SizedBox(height: 24);
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 12, bottom: 24),
+                      child: Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: items.map((b) => Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: b.color,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(b.icon, size: 15, color: Colors.white),
+                              const SizedBox(width: 5),
+                              Text(b.label, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
+                            ],
+                          ),
+                        )).toList(),
+                      ),
+                    );
+                  }),
 
                   // Stats and button row
                   Row(
@@ -687,8 +716,10 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                 postObservationMessage: localizedText(_projectData?['post_observation_message']).isNotEmpty
                                 ? localizedText(_projectData?['post_observation_message'])
                                 : null,
+                                showPostMessage: _projectData?['show_post_message'] as bool? ?? true,
                                 isPrivate: isPrivate,
                                 isMember: isMember,
+                                isFinished: isFinished,
                               ),
                             ),
                           );
@@ -723,8 +754,10 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                                 postObservationMessage: localizedText(_projectData?['post_observation_message']).isNotEmpty
                                 ? localizedText(_projectData?['post_observation_message'])
                                 : null,
+                                showPostMessage: _projectData?['show_post_message'] as bool? ?? true,
                                 isPrivate: isPrivate,
                                 isMember: isMember,
+                                isFinished: isFinished,
                               ),
                             ),
                           );
@@ -782,9 +815,9 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                   const SizedBox(height: 24),
 
                   // Description
-                  Text(
+                  HtmlWidget(
                     description,
-                    style: TextStyle(
+                    textStyle: TextStyle(
                       fontSize: 16,
                       height: 1.5,
                       color: Theme.of(context).colorScheme.onSurface,

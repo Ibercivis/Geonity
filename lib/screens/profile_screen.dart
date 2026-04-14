@@ -1,9 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../services/locale_service.dart';
+import '../services/observation_service.dart';
+import '../services/project_service.dart';
 import '../services/theme_service.dart';
 import '../models/project.dart';
 import '../models/organization.dart';
@@ -12,6 +15,7 @@ import '../widgets/organization_card.dart';
 import 'map_screen.dart';
 import 'edit_profile_screen.dart';
 import 'login_screen.dart';
+import 'changelog_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -22,7 +26,14 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final _authService = AuthService();
+  final _projectService = ProjectService();
+  final _observationService = ObservationService();
+
   Map<String, dynamic>? _profileData;
+  List<Map<String, dynamic>> _myObservations = [];
+  List<Project> _adminProjects = [];
+  List<Project> _participatingProjects = [];
+  List<Project> _likedProjects = [];
   bool _isLoading = true;
 
   @override
@@ -71,15 +82,153 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _loadProfile() async {
     setState(() => _isLoading = true);
     try {
-      final profile = await _authService.getUserProfile();
+      final results = await Future.wait([
+        _authService.getUserProfile(),
+        _observationService.getMyObservations(),
+        _projectService.getMyAdminProjects(),
+        _projectService.getMyParticipatingProjects(),
+        _projectService.getMyLikedProjects(),
+      ]);
+      if (!mounted) return;
       setState(() {
-        _profileData = profile;
+        _profileData = results[0] as Map<String, dynamic>?;
+        _myObservations = results[1] as List<Map<String, dynamic>>;
+        _adminProjects = results[2] as List<Project>;
+        _participatingProjects = results[3] as List<Project>;
+        _likedProjects = results[4] as List<Project>;
         _isLoading = false;
       });
     } catch (e) {
       debugPrint('Error loading profile: $e');
+      if (!mounted) return;
       setState(() => _isLoading = false);
     }
+  }
+
+  void _showSettingsSheet() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        final l10n = AppLocalizations.of(ctx)!;
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Theme.of(ctx).colorScheme.outlineVariant,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                l10n.settings,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              // Idioma
+              Row(
+                children: [
+                  Icon(Icons.language, color: Theme.of(ctx).colorScheme.primary),
+                  const SizedBox(width: 12),
+                  Text(l10n.languageTitle, style: const TextStyle(fontSize: 16)),
+                  const Spacer(),
+                  Consumer<LocaleService>(
+                    builder: (ctx, localeService, _) => DropdownButton<String>(
+                      value: localeService.getCurrentLanguage(),
+                      underline: const SizedBox(),
+                      items: [
+                        DropdownMenuItem(value: 'system', child: Text(l10n.languageSystem)),
+                        DropdownMenuItem(value: 'es', child: Text(l10n.languageSpanish)),
+                        DropdownMenuItem(value: 'en', child: Text(l10n.languageEnglish)),
+                        DropdownMenuItem(value: 'pt', child: Text(l10n.languagePortuguese)),
+                        DropdownMenuItem(value: 'it', child: Text(l10n.languageItalian)),
+                      ],
+                      onChanged: (value) {
+                        localeService.setLocale(value == 'system' ? null : value);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const Divider(height: 28),
+              // Tema
+              Row(
+                children: [
+                  Icon(Icons.brightness_6, color: Theme.of(ctx).colorScheme.primary),
+                  const SizedBox(width: 12),
+                  Text(l10n.themeTitle, style: const TextStyle(fontSize: 16)),
+                  const Spacer(),
+                  Consumer<ThemeService>(
+                    builder: (ctx, themeService, _) => DropdownButton<String>(
+                      value: themeService.getCurrentThemeMode(),
+                      underline: const SizedBox(),
+                      items: [
+                        DropdownMenuItem(value: 'system', child: Text(l10n.themeSystem)),
+                        DropdownMenuItem(value: 'light', child: Text(l10n.themeLight)),
+                        DropdownMenuItem(value: 'dark', child: Text(l10n.themeDark)),
+                      ],
+                      onChanged: (value) {
+                        if (value != null) themeService.setThemeMode(value);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const Divider(height: 28),
+              // Versión
+              FutureBuilder<PackageInfo>(
+                future: PackageInfo.fromPlatform(),
+                builder: (ctx, snap) {
+                  final version = snap.hasData
+                      ? '${snap.data!.version} (${snap.data!.buildNumber})'
+                      : '—';
+                  return Row(
+                    children: [
+                      Icon(Icons.info_outline, color: Theme.of(ctx).colorScheme.primary),
+                      const SizedBox(width: 12),
+                      Text(l10n.appVersion, style: const TextStyle(fontSize: 16)),
+                      const Spacer(),
+                      Text(version, style: TextStyle(color: Theme.of(ctx).colorScheme.onSurfaceVariant)),
+                    ],
+                  );
+                },
+              ),
+              const Divider(height: 28),
+              // Novedades
+              InkWell(
+                onTap: () {
+                  Navigator.pop(ctx);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ChangelogScreen()),
+                  );
+                },
+                borderRadius: BorderRadius.circular(8),
+                child: Row(
+                  children: [
+                    Icon(Icons.new_releases_outlined, color: Theme.of(ctx).colorScheme.primary),
+                    const SizedBox(width: 12),
+                    Text(l10n.whatsNew, style: const TextStyle(fontSize: 16)),
+                    const Spacer(),
+                    Icon(Icons.chevron_right, color: Theme.of(ctx).colorScheme.onSurfaceVariant),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _logout() async {
@@ -186,12 +335,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final List<dynamic> createdOrgs = _profileData!['created_organizations'] ?? [];
     final List<dynamic> adminOrgs = _profileData!['admin_organizations'] ?? [];
     final List<dynamic> memberOrgs = _profileData!['member_organizations'] ?? [];
-    final List<dynamic> participatedProjects = _profileData!['participated_projects'] ?? [];
-    final List<dynamic> createdObservations = _profileData!['created_observations'] ?? [];
-    final List<dynamic> createdProjects = _profileData!['created_projects'] ?? [];
-    final List<dynamic> likedProjects = _profileData!['liked_projects'] ?? [];
 
-    final allOrgs = [...createdOrgs, ...adminOrgs, ...memberOrgs];
+    final Map<int, dynamic> orgsById = {};
+    for (final org in [...createdOrgs, ...adminOrgs, ...memberOrgs]) {
+      final id = org['id'] as int?;
+      if (id != null) orgsById[id] = org;
+    }
+    final allOrgs = orgsById.values.toList();
 
     return Scaffold(
       body: RefreshIndicator(
@@ -205,29 +355,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
               pinned: false,
               stretch: true,
               actions: [
-                // Botón de editar perfil
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CircleAvatar(
-                    backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                    child: IconButton(
-                      icon: const Icon(Icons.edit, color: Colors.blue, size: 20),
-                      onPressed: () async {
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EditProfileScreen(
-                              profileData: _profileData!,
-                            ),
-                          ),
-                        );
-                        if (result == true && mounted) {
-                          _loadProfile();
-                        }
-                      },
-                    ),
+                CircleAvatar(
+                  backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  child: IconButton(
+                    icon: const Icon(Icons.settings, color: Colors.blue, size: 20),
+                    onPressed: _showSettingsSheet,
                   ),
                 ),
+                const SizedBox(width: 8),
+                CircleAvatar(
+                  backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  child: IconButton(
+                    icon: const Icon(Icons.edit, color: Colors.blue, size: 20),
+                    onPressed: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EditProfileScreen(
+                            profileData: _profileData!,
+                          ),
+                        ),
+                      );
+                      if (result == true && mounted) {
+                        _loadProfile();
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(width: 8),
               ],
               flexibleSpace: FlexibleSpaceBar(
                 background: cover != null
@@ -340,117 +495,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ],
                       ),
                     const SizedBox(height: 24),
-                    
-                    // Configuración
-                    Row(
-                      children: [
-                        // Selector de idioma
-                        Expanded(
-                          child: Consumer<LocaleService>(
-                            builder: (context, localeService, _) {
-                              return Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.language, size: 20, color: Theme.of(context).colorScheme.primary),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: DropdownButton<String>(
-                                        value: localeService.getCurrentLanguage(),
-                                        isExpanded: true,
-                                        underline: const SizedBox(),
-                                        items: [
-                                          DropdownMenuItem(
-                                            value: 'system',
-                                            child: Text(AppLocalizations.of(context)!.languageSystem),
-                                          ),
-                                          DropdownMenuItem(
-                                            value: 'es',
-                                            child: Text(AppLocalizations.of(context)!.languageSpanish),
-                                          ),
-                                          DropdownMenuItem(
-                                            value: 'en',
-                                            child: Text(AppLocalizations.of(context)!.languageEnglish),
-                                          ),
-                                          DropdownMenuItem(
-                                            value: 'pt',
-                                            child: Text(AppLocalizations.of(context)!.languagePortuguese),
-                                          ),
-                                          DropdownMenuItem(
-                                            value: 'it',
-                                            child: Text(AppLocalizations.of(context)!.languageItalian),
-                                          ),
-                                        ],
-                                        onChanged: (value) {
-                                          if (value == 'system') {
-                                            localeService.setLocale(null);
-                                          } else {
-                                            localeService.setLocale(value);
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        // Selector de tema
-                        Expanded(
-                          child: Consumer<ThemeService>(
-                            builder: (context, themeService, _) {
-                              return Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.brightness_6, size: 20, color: Theme.of(context).colorScheme.primary),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: DropdownButton<String>(
-                                        value: themeService.getCurrentThemeMode(),
-                                        isExpanded: true,
-                                        underline: const SizedBox(),
-                                        items: [
-                                          DropdownMenuItem(
-                                            value: 'system',
-                                            child: Text(AppLocalizations.of(context)!.themeSystem),
-                                          ),
-                                          DropdownMenuItem(
-                                            value: 'light',
-                                            child: Text(AppLocalizations.of(context)!.themeLight),
-                                          ),
-                                          DropdownMenuItem(
-                                            value: 'dark',
-                                            child: Text(AppLocalizations.of(context)!.themeDark),
-                                          ),
-                                        ],
-                                        onChanged: (value) {
-                                          if (value != null) {
-                                            themeService.setThemeMode(value);
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    // Divisor
                     const Divider(thickness: 1),
                     const SizedBox(height: 8),
                   ],
@@ -467,18 +511,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     _StatCard(
                       icon: Icons.visibility,
-                      count: createdObservations.length,
+                      count: _myObservations.length,
                       label: localizations.profileObservations,
-                    ),
-                    _StatCard(
-                      icon: Icons.folder,
-                      count: participatedProjects.length,
-                      label: localizations.profileProjects,
-                    ),
-                    _StatCard(
-                      icon: Icons.business,
-                      count: allOrgs.length,
-                      label: localizations.profileOrganizationsLabel,
                     ),
                   ],
                 ),
@@ -486,7 +520,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
 
             // Mis Observaciones (Colapsado)
-            if (createdObservations.isNotEmpty)
+            if (_myObservations.isNotEmpty)
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
@@ -496,7 +530,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       tilePadding: EdgeInsets.zero,
                       leading: const Icon(Icons.visibility, color: Colors.blue),
                       title: Text(
-                        localizations.myObservations(createdObservations.length),
+                        localizations.myObservations(_myObservations.length),
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -506,9 +540,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          itemCount: createdObservations.length,
+                          itemCount: _myObservations.length,
                           itemBuilder: (context, index) {
-                            final obs = createdObservations[index];
+                            final obs = _myObservations[index];
                             return Card(
                               margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
                               child: ListTile(
@@ -564,8 +598,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
 
-            // Proyectos Creados
-            if (createdProjects.isNotEmpty)
+            // Proyectos Creados o Administrados
+            if (_adminProjects.isNotEmpty)
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
@@ -574,7 +608,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       const Icon(Icons.create, color: Colors.blue),
                       const SizedBox(width: 8),
                       Text(
-                        localizations.createdProjectsCount(createdProjects.length),
+                        localizations.createdProjectsCount(_adminProjects.length),
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -585,24 +619,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
 
-            if (createdProjects.isNotEmpty)
+            if (_adminProjects.isNotEmpty)
               SliverList(
                 delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final projectData = createdProjects[index];
-                    final project = Project.fromJson(projectData);
-                    return ProjectCard(
-                      project: project,
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                      onProjectDeleted: _loadProfile,
-                    );
-                  },
-                  childCount: createdProjects.length,
+                  (context, index) => ProjectCard(
+                    project: _adminProjects[index],
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    onProjectDeleted: _loadProfile,
+                  ),
+                  childCount: _adminProjects.length,
                 ),
               ),
 
             // Proyectos en los que Participo
-            if (participatedProjects.isNotEmpty)
+            if (_participatingProjects.isNotEmpty)
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
@@ -611,7 +641,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       const Icon(Icons.group_work, color: Colors.blue),
                       const SizedBox(width: 8),
                       Text(
-                        localizations.participatedProjectsCount(participatedProjects.length),
+                        localizations.participatedProjectsCount(_participatingProjects.length),
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -622,24 +652,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
 
-            if (participatedProjects.isNotEmpty)
+            if (_participatingProjects.isNotEmpty)
               SliverList(
                 delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final projectData = participatedProjects[index];
-                    final project = Project.fromJson(projectData);
-                    return ProjectCard(
-                      project: project,
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                      onProjectDeleted: _loadProfile,
-                    );
-                  },
-                  childCount: participatedProjects.length,
+                  (context, index) => ProjectCard(
+                    project: _participatingProjects[index],
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    onProjectDeleted: _loadProfile,
+                  ),
+                  childCount: _participatingProjects.length,
                 ),
               ),
 
             // Proyectos que me Gustan
-            if (likedProjects.isNotEmpty)
+            if (_likedProjects.isNotEmpty)
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
@@ -648,7 +674,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       const Icon(Icons.favorite, color: Colors.red),
                       const SizedBox(width: 8),
                       Text(
-                        localizations.likedProjectsCount(likedProjects.length),
+                        localizations.likedProjectsCount(_likedProjects.length),
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -659,19 +685,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
 
-            if (likedProjects.isNotEmpty)
+            if (_likedProjects.isNotEmpty)
               SliverList(
                 delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final projectData = likedProjects[index];
-                    final project = Project.fromJson(projectData);
-                    return ProjectCard(
-                      project: project,
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                      onProjectDeleted: _loadProfile,
-                    );
-                  },
-                  childCount: likedProjects.length,
+                  (context, index) => ProjectCard(
+                    project: _likedProjects[index],
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    onProjectDeleted: _loadProfile,
+                  ),
+                  childCount: _likedProjects.length,
                 ),
               ),
 

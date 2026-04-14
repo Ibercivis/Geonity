@@ -7,6 +7,7 @@ import '../utils/multilingual_utils.dart';
 import 'create_project_message_screen.dart';
 
 class FieldData {
+  int? id;             // server-assigned ID (null for new fields)
   String name;         // localized — shown in the UI
   String rawName;      // raw from server (may be JSON-encoded multilingual map)
   int? typeId;
@@ -20,6 +21,7 @@ class FieldData {
   List<dynamic> rawChoices;                  // raw from server (preserves multilingual)
 
   FieldData({
+    this.id,
     this.name = '',
     this.rawName = '',
     this.typeId,
@@ -42,13 +44,20 @@ class CreateProjectFieldsScreen extends StatefulWidget {
   final List<int> selectedTopicIds;
   final List<int> selectedOrganizationIds;
   final bool isPrivate;
+  final bool isPublicMap;
   final bool isDatabasePrivate;
   final bool isFuzzyGeoposition;
+  final bool isDraft;
+  final bool isEnded;
+  final bool isEmailOnObservation;
   final bool isGlobal;
   final List<String> selectedCountryCodes;
   final String? password;
   final int? projectId; // Para modo edición
   final int? contributions; // Número de observaciones existentes
+  // State restored from a previous visit (create mode only)
+  final Map<String, dynamic>? initialFieldForm;
+  final String? initialMessage;
 
   const CreateProjectFieldsScreen({
     super.key,
@@ -58,13 +67,19 @@ class CreateProjectFieldsScreen extends StatefulWidget {
     required this.selectedTopicIds,
     required this.selectedOrganizationIds,
     required this.isPrivate,
+    this.isPublicMap = false,
     required this.isDatabasePrivate,
     this.isFuzzyGeoposition = false,
+    this.isDraft = true,
+    this.isEnded = false,
+    this.isEmailOnObservation = false,
     this.isGlobal = true,
     this.selectedCountryCodes = const [],
     this.password,
     this.projectId,
     this.contributions,
+    this.initialFieldForm,
+    this.initialMessage,
   });
 
   @override
@@ -82,7 +97,9 @@ class _CreateProjectFieldsScreenState extends State<CreateProjectFieldsScreen> {
   List<FieldData> _originalFields = []; // Campos originales para comparar
   int? _selectedFieldIndex;
   String? _existingPostObservationMessage;
+  bool _existingShowPostMessage = true;
   Map<String, dynamic>? _rawFieldFormData; // Raw server data (preserves multilingual)
+  String? _returnedMessage; // Message returned from CreateProjectMessageScreen
 
   bool get _hasObservations => (widget.contributions ?? 0) > 0;
   bool get _isEditMode => widget.projectId != null;
@@ -103,8 +120,47 @@ class _CreateProjectFieldsScreenState extends State<CreateProjectFieldsScreen> {
     await _loadQuestionTypes();
     if (_isEditMode) {
       await _loadExistingFields();
+    } else if (widget.initialFieldForm != null) {
+      _parseFieldsFromSaved(widget.initialFieldForm!);
     }
     setState(() => _loadingData = false);
+  }
+
+  /// Restores field list from a previously-built fieldFormToSend map (create mode only).
+  void _parseFieldsFromSaved(Map<String, dynamic> form) {
+    final questions = form['questions'] as List<dynamic>? ?? [];
+    _fields = questions.map((q) {
+      final rawChoicesList = (q['choices'] as List?) ?? [];
+      final choices = rawChoicesList.map<Map<String, String>>((c) {
+        if (c is Map) {
+          return {
+            'value': c['value']?.toString() ?? '',
+            'label': localizedText(c['label'] ?? c['value'] ?? ''),
+          };
+        }
+        return {'value': c.toString(), 'label': c.toString()};
+      }).toList();
+
+      final rawHelp = q['question_help'];
+      final helpStr = rawHelp is Map
+          ? jsonEncode(rawHelp)
+          : (rawHelp?.toString() ?? '');
+
+      return FieldData(
+        name: localizedText(q['question_text'] ?? ''),
+        rawName: q['question_text'] is Map
+            ? jsonEncode(q['question_text'])
+            : (q['question_text']?.toString() ?? ''),
+        typeValue: q['answer_type'],
+        typeName: _getTypeName(q['answer_type']),
+        questionHelp: helpStr.isNotEmpty ? localizedText(rawHelp) : null,
+        rawQuestionHelp: helpStr.isNotEmpty ? helpStr : null,
+        isRequired: q['mandatory'] ?? false,
+        allowOther: q['allow_other'] ?? false,
+        choices: choices,
+        rawChoices: rawChoicesList,
+      );
+    }).toList();
   }
 
   Future<void> _loadExistingFields() async {
@@ -119,6 +175,7 @@ class _CreateProjectFieldsScreenState extends State<CreateProjectFieldsScreen> {
       final rawMsg = projectData['post_observation_message'];
       _existingPostObservationMessage =
           rawMsg != null ? rawMsg.toString() : null;
+      _existingShowPostMessage = projectData['show_post_message'] as bool? ?? true;
 
       debugPrint('Loading existing fields for project ${widget.projectId}');
       
@@ -172,6 +229,7 @@ class _CreateProjectFieldsScreenState extends State<CreateProjectFieldsScreen> {
                 }).toList().cast<Map<String, String>>();
 
           return FieldData(
+            id: q['id'] as int?,
             name: localizedText(rawQ),
             rawName: rawQ is Map ? jsonEncode(rawQ) : rawQ.toString(),
             typeValue: q['answer_type'],
@@ -195,6 +253,7 @@ class _CreateProjectFieldsScreenState extends State<CreateProjectFieldsScreen> {
         setState(() {
           _fields = loadedFields;
           _originalFields = loadedFields.map((f) => FieldData(
+            id: f.id,
             name: f.name,
             rawName: f.rawName,
             typeValue: f.typeValue,
@@ -257,6 +316,7 @@ class _CreateProjectFieldsScreenState extends State<CreateProjectFieldsScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
+                textCapitalization: TextCapitalization.sentences,
                 decoration: InputDecoration(
                   labelText: AppLocalizations.of(context)!.optionLabelRequired,
                   hintText: AppLocalizations.of(context)!.optionLabelHint,
@@ -319,7 +379,7 @@ class _CreateProjectFieldsScreenState extends State<CreateProjectFieldsScreen> {
     setState(() {
       // Si hay observaciones, los campos nuevos no pueden ser obligatorios
       _fields.add(FieldData(
-        isRequired: _hasObservations ? false : false, // Siempre false por defecto
+        isRequired: false,
       ));
     });
   }
@@ -470,6 +530,9 @@ class _CreateProjectFieldsScreenState extends State<CreateProjectFieldsScreen> {
               : (field.questionHelp ?? ''),
           'mandatory': field.isRequired,
           'order': order,
+          // Include id for existing questions so the server updates in-place
+          // (instead of delete-and-recreate) when there are observations
+          if (isOriginal && field.id != null) 'id': field.id,
         };
 
         if ((field.typeValue == 'CHOICE' || field.typeValue == 'MCHOICE') && field.choices.isNotEmpty) {
@@ -505,28 +568,73 @@ class _CreateProjectFieldsScreenState extends State<CreateProjectFieldsScreen> {
           selectedTopicIds: widget.selectedTopicIds,
           selectedOrganizationIds: widget.selectedOrganizationIds,
           isPrivate: widget.isPrivate,
+          isPublicMap: widget.isPublicMap,
           isDatabasePrivate: widget.isDatabasePrivate,
           isFuzzyGeoposition: widget.isFuzzyGeoposition,
+          isDraft: widget.isDraft,
+          isEnded: widget.isEnded,
+          isEmailOnObservation: widget.isEmailOnObservation,
           isGlobal: widget.isGlobal,
           selectedCountryCodes: widget.selectedCountryCodes,
           password: widget.password,
           projectId: widget.projectId,
           fieldFormToSend: fieldFormToSend,
-          existingMessage: _existingPostObservationMessage,
+          existingMessage: _returnedMessage ?? _existingPostObservationMessage ?? widget.initialMessage,
+          existingShowPostMessage: _existingShowPostMessage,
         ),
       ),
-    );
+    ).then((returnedMessage) {
+      if (returnedMessage is String && mounted) {
+        setState(() => _returnedMessage = returnedMessage);
+      }
+    });
+  }
+
+  /// Serializes the current _fields list into the fieldFormToSend format,
+  /// so it can be passed back to CreateProjectScreen on back navigation.
+  Map<String, dynamic>? _serializeCurrentFields() {
+    if (_fields.isEmpty) return null;
+    return {
+      'questions': _fields.map((f) {
+        final q = <String, dynamic>{
+          'question_text': f.rawName.isNotEmpty ? f.rawName : f.name,
+          'answer_type': f.typeValue,
+          'question_help': f.rawQuestionHelp ?? f.questionHelp ?? '',
+          'mandatory': f.isRequired,
+          'allow_other': f.allowOther,
+        };
+        if ((f.typeValue == 'CHOICE' || f.typeValue == 'MCHOICE')) {
+          q['choices'] = f.rawChoices.isNotEmpty
+              ? f.rawChoices
+              : f.choices.map((c) => {
+                  'value': c['value'],
+                  'label': {'default': c['label']},
+                }).toList();
+        }
+        return q;
+      }).toList(),
+    };
+  }
+
+  void _popWithState() {
+    Navigator.pop(context, {
+      'fieldForm': _serializeCurrentFields(),
+      'message': _returnedMessage ?? _existingPostObservationMessage ?? widget.initialMessage,
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope<Map<String, dynamic>>(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        _popWithState();
+      },
+      child: Scaffold(
       appBar: AppBar(
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
+        automaticallyImplyLeading: false,
         title: Text(
           _isEditMode ? 'Editar Campos del Proyecto' : 'Campos del Proyecto',
         ),
@@ -658,10 +766,12 @@ class _CreateProjectFieldsScreenState extends State<CreateProjectFieldsScreen> {
                                     const SizedBox(width: 12),
                                     Expanded(
                                       child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.stretch,
                                         children: [
                                           TextFormField(
                                             key: ValueKey('field_${index}_name_${field.name}'),
                                             initialValue: field.name,
+                                            textCapitalization: TextCapitalization.sentences,
                                             decoration: InputDecoration(
                                               hintText: AppLocalizations.of(context)!.fieldNameHint,
                                               border: OutlineInputBorder(
@@ -685,6 +795,7 @@ class _CreateProjectFieldsScreenState extends State<CreateProjectFieldsScreen> {
                                           TextFormField(
                                             key: ValueKey('field_${index}_help_${field.questionHelp}'),
                                             initialValue: field.questionHelp,
+                                            textCapitalization: TextCapitalization.sentences,
                                             decoration: InputDecoration(
                                               hintText: AppLocalizations.of(context)!.helpTextHint,
                                               border: OutlineInputBorder(
@@ -704,88 +815,79 @@ class _CreateProjectFieldsScreenState extends State<CreateProjectFieldsScreen> {
                                               });
                                             },
                                           ),
+                                          const SizedBox(height: 8),
+                                          // Selector de tipo — mismo ancho que los inputs
+                                          () {
+                                            final locked = _hasObservations && index < _originalFields.length;
+                                            final hasType = field.typeValue != null;
+                                            return OutlinedButton.icon(
+                                              onPressed: () => _showTypeSelector(index),
+                                              icon: Icon(
+                                                locked ? Icons.lock : _getIconForType(field.typeValue),
+                                                size: 18,
+                                              ),
+                                              label: Text(
+                                                field.typeName ?? AppLocalizations.of(context)!.selectFieldType,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              style: OutlinedButton.styleFrom(
+                                                minimumSize: const Size(double.infinity, 44),
+                                                alignment: Alignment.centerLeft,
+                                                foregroundColor: locked
+                                                    ? Theme.of(context).colorScheme.onSurfaceVariant
+                                                    : hasType
+                                                        ? Theme.of(context).colorScheme.primary
+                                                        : Theme.of(context).colorScheme.error,
+                                                side: BorderSide(
+                                                  color: locked
+                                                      ? Theme.of(context).colorScheme.outlineVariant
+                                                      : hasType
+                                                          ? Theme.of(context).colorScheme.primary
+                                                          : Theme.of(context).colorScheme.error,
+                                                ),
+                                              ),
+                                            );
+                                          }(),
                                         ],
                                       ),
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 12),
-                                
-                                // Tipo, botones y obligatorio
+                                const SizedBox(height: 8),
+
+                                // Eliminar + Obligatorio
                                 Row(
                                   children: [
-                                    // Selector de tipo
-                                    Flexible(
-                                      child: InkWell(
-                                        onTap: () => _showTypeSelector(index),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(
-                                              _getIconForType(field.typeValue),
-                                              color: (_hasObservations && index < _originalFields.length)
-                                                  ? Theme.of(context).colorScheme.onSurfaceVariant
-                                                  : Colors.blue[700],
-                                              size: 18,
-                                            ),
-                                            const SizedBox(width: 4),
-                                            Flexible(
-                                              child: Text(
-                                                field.typeName ?? AppLocalizations.of(context)!.selectFieldType,
-                                                style: TextStyle(
-                                                  color: (_hasObservations && index < _originalFields.length)
-                                                      ? Theme.of(context).colorScheme.onSurfaceVariant
-                                                      : Colors.blue[700],
-                                                  fontSize: 13,
-                                                ),
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                            if (_hasObservations && index < _originalFields.length)
-                                              Padding(
-                                                padding: const EdgeInsets.only(left: 4),
-                                                child: Icon(
-                                                  Icons.lock,
-                                                  size: 12,
-                                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                                ),
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    
                                     // Botón eliminar
                                     IconButton(
                                       icon: Icon(
-                                        Icons.delete,
-                                        size: 18,
+                                        Icons.delete_outline,
+                                        size: 20,
                                         color: (_hasObservations && index < _originalFields.length)
                                             ? Theme.of(context).colorScheme.onSurfaceVariant
-                                            : Colors.red,
+                                            : Theme.of(context).colorScheme.error,
                                       ),
                                       onPressed: () => _removeField(index),
                                       padding: EdgeInsets.zero,
-                                      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                                      constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                                      tooltip: 'Eliminar campo',
                                     ),
-                                    
+
                                     const Spacer(),
-                                    
+
                                     // Toggle obligatorio
                                     Text(
-                                      'Oblig.',
+                                      'Obligatorio',
                                       style: TextStyle(
-                                        fontSize: 12,
+                                        fontSize: 13,
                                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                                       ),
                                     ),
                                     Transform.scale(
-                                      scale: 0.8,
+                                      scale: 0.85,
                                       child: Switch(
                                         value: field.isRequired,
                                         onChanged: (value) {
-                                          // Si hay observaciones y es un campo original, no se puede cambiar mandatory
                                           if (_hasObservations && index < _originalFields.length) {
                                             final originalField = _originalFields[index];
                                             if (originalField.isRequired != value) {
@@ -798,8 +900,6 @@ class _CreateProjectFieldsScreenState extends State<CreateProjectFieldsScreen> {
                                               return;
                                             }
                                           }
-                                          
-                                          // Si es un campo nuevo y hay observaciones, no puede ser obligatorio
                                           if (_hasObservations && index >= _originalFields.length && value) {
                                             ScaffoldMessenger.of(context).showSnackBar(
                                               SnackBar(
@@ -809,10 +909,7 @@ class _CreateProjectFieldsScreenState extends State<CreateProjectFieldsScreen> {
                                             );
                                             return;
                                           }
-                                          
-                                          setState(() {
-                                            field.isRequired = value;
-                                          });
+                                          setState(() => field.isRequired = value);
                                         },
                                         activeColor: Colors.blue,
                                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -994,6 +1091,7 @@ class _CreateProjectFieldsScreenState extends State<CreateProjectFieldsScreen> {
                 ),
               ],
             )),
-    );
+      ), // Scaffold
+    ); // PopScope
   }
 }

@@ -9,11 +9,7 @@ class AppConfig {
   // Mapbox access token (configurado en secrets.dart)
   static String get mapboxAccessToken => Secrets.mapboxAccessToken;
 
-  static String get baseUrl {
-    return isProduction
-        ? 'https://geonity.ibercivis.es'
-        : 'http://geonity.ibercivis.es:10003';
-  }
+  static String get baseUrl => 'https://geonity.ibercivis.es';
 
   static String get apiUrl => '$baseUrl/api';
 
@@ -22,4 +18,6 @@ class AppConfig {
   // Google auth endpoint is only available on the production host (no port)
   static String get productionBaseUrl => 'https://geonity.ibercivis.es';
   static String get googleAuthUrl => '$productionBaseUrl/api/users/auth/google/';
+
+  static String get observationsApiKey => Secrets.observationsApiKey;
 }

@@ -5,6 +5,9 @@ import '../models/project.dart';
 import '../screens/project_detail_screen.dart';
 import '../services/offline_service.dart';
 
+String _stripHtml(String html) =>
+    html.replaceAll(RegExp(r'<[^>]*>'), '').replaceAll(RegExp(r'\s+'), ' ').trim();
+
 class ProjectCard extends StatefulWidget {
   final Project project;
   final EdgeInsets? margin;
@@ -119,7 +122,7 @@ class _ProjectCardState extends State<ProjectCard> {
                     const SizedBox(height: 8),
                     if (project.description != null)
                       Text(
-                        project.description!,
+                        _stripHtml(project.description!),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(

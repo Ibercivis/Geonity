@@ -47,5 +47,26 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Se necesita acceso a la cámara para escanear códigos QR y códigos de barras</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Se necesita acceso a tu ubicación para registrar observaciones geolocalizadas y descargar mapas de tu área</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Se necesita acceso a tu ubicación para registrar observaciones geolocalizadas y descargar mapas de tu área</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Se necesita acceso a la galería para adjuntar imágenes a tus observaciones</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Se necesita acceso a la galería para guardar imágenes de tus observaciones</string>
+	<key>GIDClientID</key>
+	<string>196939700044-eeilnpn18dhdnabvss9em576iqtrbu6n.apps.googleusercontent.com</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.196939700044-eeilnpn18dhdnabvss9em576iqtrbu6n</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

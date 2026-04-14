@@ -25,16 +25,20 @@ class MapScreen extends StatefulWidget {
   final int projectId;
   final String projectName;
   final String? postObservationMessage;
+  final bool showPostMessage;
   final bool isPrivate;
   final bool isMember;
+  final bool isFinished;
 
   const MapScreen({
     super.key,
     required this.projectId,
     required this.projectName,
     this.postObservationMessage,
+    this.showPostMessage = true,
     this.isPrivate = false,
     this.isMember = false,
+    this.isFinished = false,
   });
 
   @override
@@ -58,9 +62,17 @@ class _MapScreenState extends State<MapScreen> {
   String? _hexGeoJson;
   int _totalCount = 0;
   bool _showOnlyMine = false;
+  List<Observation> _myObservations = [];
+  bool _myObservationsLoaded = false;
+  int? _lastHexFieldFormId;
+  int _lastHexH3Resolution = -1;
+  Timer? _hexDebounce;
+  bool _markersUpdating = false;
+  bool _markersPending = false;
+  bool _isLoadingObservation = false;
 
   List<Observation> get _filteredObservations =>
-      _showOnlyMine ? _observations.where((o) => o.isMine).toList() : _observations;
+      _showOnlyMine ? _myObservations : _observations;
 
   @override
   void initState() {
@@ -82,6 +94,7 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void dispose() {
     _connectivitySub?.cancel();
+    _hexDebounce?.cancel();
     super.dispose();
   }
 
@@ -130,14 +143,20 @@ class _MapScreenState extends State<MapScreen> {
       ),
     );
 
-    if (!mounted) return;
+    if (!mounted) {
+      controller.dispose();
+      return;
+    }
 
     if (confirmed != true) {
+      controller.dispose();
       Navigator.pop(context);
       return;
     }
 
     final valid = await ProjectService().validatePassword(widget.projectId, controller.text);
+
+    controller.dispose();
 
     if (!mounted) return;
 
@@ -176,11 +195,16 @@ class _MapScreenState extends State<MapScreen> {
           };
 
           if (project.fuzzy) {
-            // ── Fuzzy mode: fetch hex GeoJSON ────────────────────────────────
-            final hexGeoJson =
-                await _observationService.getHexObservations(fieldFormId);
-            final decoded =
-                jsonDecode(hexGeoJson) as Map<String, dynamic>;
+            // ── Fuzzy mode: fetch hex GeoJSON + mis observaciones ─────────────
+            const initialZoom = 6; // matches the map's starting zoom
+            final results = await Future.wait([
+              _observationService.getHexObservations(fieldFormId, zoom: initialZoom),
+              _observationService.getMyObservationsForFieldForm(fieldFormId),
+            ]);
+            final hexGeoJson = results[0] as String;
+            final myObs = results[1] as List<Observation>;
+
+            final decoded = jsonDecode(hexGeoJson) as Map<String, dynamic>;
             final features = decoded['features'] as List<dynamic>;
             final total = features.fold<int>(
                 0, (s, f) => s + (f['properties']['count'] as int? ?? 1));
@@ -193,13 +217,18 @@ class _MapScreenState extends State<MapScreen> {
               _hexGeoJson = hexGeoJson;
               _totalCount = total;
               _observations = [];
+              _myObservations = myObs;
+              _myObservationsLoaded = true;
+              _showOnlyMine = false;
               _isOfflineMode = false;
               _isLoading = false;
+              _lastHexFieldFormId = fieldFormId;
+              _lastHexH3Resolution = _zoomToH3Resolution(initialZoom.toDouble());
             });
           } else {
-            // ── Normal mode: individual observations ─────────────────────────
+            // ── Normal mode: puntos ligeros del mapa ──────────────────────────
             final observations =
-                await _observationService.getObservations(fieldFormId);
+                await _observationService.getMapObservations(fieldFormId);
 
             // Also append any locally-pending observations not yet synced
             final allPending = await _offlineService.getPendingObservations();
@@ -215,6 +244,9 @@ class _MapScreenState extends State<MapScreen> {
               _isFuzzy = false;
               _observations = [...observations, ...pendingObs];
               _totalCount = _observations.length;
+              _myObservations = [];
+              _myObservationsLoaded = false;
+              _showOnlyMine = false;
               _isOfflineMode = false;
               _isLoading = false;
             });
@@ -251,6 +283,9 @@ class _MapScreenState extends State<MapScreen> {
         _isFuzzy = false;
         _observations = pendingObs;
         _totalCount = pendingObs.length;
+        _myObservations = [];
+        _myObservationsLoaded = false;
+        _showOnlyMine = false;
         _isOfflineMode = true;
         _isLoading = false;
         final msg = localizedText(offlineProject['post_observation_message']);
@@ -317,8 +352,33 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> _addMarkersToMap() async {
     if (_mapboxMap == null) return;
-    if (!_isFuzzy && _filteredObservations.isEmpty) return;
-    if (_isFuzzy && _hexGeoJson == null) return;
+
+    // Prevent concurrent executions — queue at most one pending run
+    if (_markersUpdating) {
+      _markersPending = true;
+      return;
+    }
+    _markersUpdating = true;
+    _markersPending = false;
+
+    try {
+      await _addMarkersToMapInternal();
+    } finally {
+      _markersUpdating = false;
+      if (_markersPending) {
+        // A newer update arrived while we were running — execute it now
+        _markersPending = false;
+        unawaited(_addMarkersToMap());
+      }
+    }
+  }
+
+  Future<void> _addMarkersToMapInternal() async {
+    if (_mapboxMap == null) return;
+    // En fuzzy mode mostramos hex, salvo cuando el toggle "solo las mías" está activo
+    final useHex = _isFuzzy && !_showOnlyMine;
+    if (!useHex && _filteredObservations.isEmpty) return;
+    if (useHex && _hexGeoJson == null) return;
 
     // Remove existing layers/sources (refresh-safe)
     for (final id in [
@@ -331,11 +391,13 @@ class _MapScreenState extends State<MapScreen> {
       try { await _mapboxMap!.style.removeStyleSource(id); } catch (_) {}
     }
 
-    if (_isFuzzy) {
+    if (useHex) {
       await _addHexMarkersToMap();
     } else {
       await _addPointMarkersToMap();
     }
+
+    _registerMapInteractions();
   }
 
   /// Renders the Material location_on icon and registers it as a Mapbox style image.
@@ -447,88 +509,35 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> _addHexMarkersToMap() async {
     try {
-      debugPrint('[HEX] _addHexMarkersToMap start, geoJson length=${_hexGeoJson?.length}');
+      debugPrint('[HEX] start, geoJson length=${_hexGeoJson?.length}');
 
-      // Parse and validate GeoJSON
       final decoded = jsonDecode(_hexGeoJson!) as Map<String, dynamic>;
       final features = decoded['features'] as List<dynamic>;
       debugPrint('[HEX] features count: ${features.length}');
+      if (features.isEmpty) return;
 
-      if (features.isEmpty) {
-        debugPrint('[HEX] no features, skipping render');
-        return;
-      }
-
-      // Log first feature for debugging
-      final firstFeature = features.first as Map<String, dynamic>;
-      final firstProps = firstFeature['properties'] as Map<String, dynamic>?;
-      debugPrint('[HEX] first feature props: $firstProps');
-
-      // Backend sends [lat, lon] — GeoJSON needs [lon, lat]. Swap both
-      // centroid coordinates and hex_polygon vertices.
-      final fixedFeatures = features.map((f) {
-        final geom = f['geometry'] as Map<String, dynamic>;
-        final c = geom['coordinates'] as List<dynamic>;
-        final props = Map<String, dynamic>.from(f['properties'] as Map<String, dynamic>);
-
-        // Swap centroid [lat, lon] → [lon, lat]
-        final fixedGeom = {
-          'type': 'Point',
-          'coordinates': [c[1], c[0]],
-        };
-
-        // Swap each hex_polygon vertex [lat, lon] → [lon, lat]
-        if (props['hex_polygon'] != null) {
-          props['hex_polygon'] = (props['hex_polygon'] as List<dynamic>)
-              .map((v) => [(v as List<dynamic>)[1], v[0]])
-              .toList();
-        }
-
-        return {'type': 'Feature', 'geometry': fixedGeom, 'properties': props};
-      }).toList();
-
-      final fixedGeoJson = jsonEncode({
-        'type': 'FeatureCollection',
-        'features': fixedFeatures,
-      });
-
-      // Source 1: centroids as Points → native Mapbox clustering
-      // clusterMaxZoom:10 → clusters dissolve above zoom 10, hexagons take over
-      await _mapboxMap!.style.addSource(
-        GeoJsonSource(
-          id: 'observations',
-          data: fixedGeoJson,
-          cluster: true,
-          clusterRadius: 50,
-          clusterMaxZoom: 10,
-        ),
-      );
-      debugPrint('[HEX] source observations added');
-
-      // Source 2: polygons built client-side from hex_polygon property
+      // Build polygon features from hex_polygon property.
+      // Backend already sends GeoJSON-compliant [lng, lat] — no swap needed.
       final polygonFeatures = <Map<String, dynamic>>[];
-      for (final f in fixedFeatures) {
-        final props = f['properties'] as Map<String, dynamic>?;
-        final hexPolygon = props?['hex_polygon'];
-        if (hexPolygon == null) {
-          debugPrint('[HEX] WARNING: feature missing hex_polygon, props=$props');
-          continue;
+      for (final f in features) {
+        final props = Map<String, dynamic>.from(
+            (f as Map<String, dynamic>)['properties'] as Map<String, dynamic>);
+        final hexPolygon = props['hex_polygon'];
+        if (hexPolygon == null) continue;
+
+        final ring = List<dynamic>.from(hexPolygon as List<dynamic>);
+        // GeoJSON Polygon ring must be closed (last == first)
+        if (ring.first.toString() != ring.last.toString()) {
+          ring.add(ring.first);
         }
-        final ring = (hexPolygon as List<dynamic>).cast<dynamic>();
-        // GeoJSON Polygon needs the ring closed (last == first)
-        final closed = List<dynamic>.from(ring);
-        if (closed.first.toString() != closed.last.toString()) {
-          closed.add(closed.first);
-        }
+
         polygonFeatures.add({
           'type': 'Feature',
-          'geometry': {'type': 'Polygon', 'coordinates': [closed]},
+          'geometry': {'type': 'Polygon', 'coordinates': [ring]},
           'properties': props,
         });
       }
-      debugPrint('[HEX] polygon features built: ${polygonFeatures.length}');
-
-      await _registerPinImage(color: Colors.blue);
+      debugPrint('[HEX] polygon features: ${polygonFeatures.length}');
 
       await _mapboxMap!.style.addSource(
         GeoJsonSource(
@@ -537,86 +546,48 @@ class _MapScreenState extends State<MapScreen> {
           cluster: false,
         ),
       );
-      debugPrint('[HEX] source hex-polygons added');
 
-      // Cluster circles (2+ centroids grouped together)
-      await _mapboxMap!.style.addLayer(
-        CircleLayer(
-          id: 'clusters',
-          sourceId: 'observations',
-          filter: ['has', 'point_count'],
-          circleColorExpression: [
-            'step', ['get', 'point_count'],
-            '#51bbd6', 100, '#f1f075', 750, '#f28cb1',
-          ],
-          circleRadiusExpression: [
-            'step', ['get', 'point_count'],
-            20, 100, 30, 750, 40,
-          ],
-          circleOpacity: 0.85,
-        ),
-      );
-
-      await _mapboxMap!.style.addLayer(
-        SymbolLayer(
-          id: 'cluster-count',
-          sourceId: 'observations',
-          filter: ['has', 'point_count'],
-          textField: "{point_count_abbreviated}",
-          textSize: 14.0,
-          textColor: Colors.white.value,
-        ),
-      );
-
-      // Single unclustered centroid pin — fades out at zoom >= 10 where hex cells are visible
-      await _mapboxMap!.style.addLayer(
-        SymbolLayer(
-          id: 'unclustered-point',
-          sourceId: 'observations',
-          filter: ['!', ['has', 'point_count']],
-          iconImage: 'pin-marker',
-          iconSize: 1.0,
-          iconAnchor: IconAnchor.BOTTOM,
-          iconAllowOverlap: true,
-          iconOpacityExpression: ['step', ['zoom'], 0.85, 10, 0.0],
-        ),
-      );
-
-      // Hexagon fill — visible at zoom >= 8
+      // Fill — color by count: blue → orange → red
       await _mapboxMap!.style.addLayer(
         FillLayer(
           id: 'hex-fill',
           sourceId: 'hex-polygons',
-          fillColor: Colors.blue[600]!.value,
-          fillOpacityExpression: ['step', ['zoom'], 0.0, 10, 0.45],
+          fillColorExpression: [
+            'step', ['get', 'count'],
+            '#4FC3F7',   // 1–9    light blue
+            10,  '#29B6F6',  // 10–49  blue
+            50,  '#FFA726',  // 50–99  orange
+            100, '#EF5350',  // 100+   red
+          ],
+          fillOpacity: 0.6,
         ),
       );
-      debugPrint('[HEX] hex-fill layer added');
 
-      // Hexagon outline — visible at zoom >= 8
+      // Outline
       await _mapboxMap!.style.addLayer(
         LineLayer(
           id: 'hex-outline',
           sourceId: 'hex-polygons',
-          lineColor: Colors.blue[800]!.value,
-          lineWidth: 1.5,
-          lineOpacityExpression: ['step', ['zoom'], 0.0, 10, 1.0],
+          lineColor: Colors.white.value,
+          lineWidth: 1.0,
+          lineOpacity: 0.8,
         ),
       );
-      debugPrint('[HEX] hex-outline layer added');
 
-      // Count label — visible at zoom >= 10
+      // Count label in the center of each hexagon
       await _mapboxMap!.style.addLayer(
         SymbolLayer(
           id: 'hex-count',
           sourceId: 'hex-polygons',
-          textField: "{count}",
-          textSize: 12.0,
+          textField: '{count}',
+          textSize: 13.0,
           textColor: Colors.white.value,
-          textOpacityExpression: ['step', ['zoom'], 0.0, 10, 1.0],
+          textHaloColor: const Color(0x66000000).value,
+          textHaloWidth: 1.0,
+          textAllowOverlap: true,
+          textIgnorePlacement: true,
         ),
       );
-      debugPrint('[HEX] hex-count layer added');
 
       debugPrint('[HEX] all layers added successfully');
     } catch (e, st) {
@@ -624,37 +595,110 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
+  /// Maps Mapbox zoom level to H3 resolution, matching the server-side logic.
+  int _zoomToH3Resolution(double zoom) {
+    if (zoom <= 2) return 1;
+    if (zoom <= 4) return 2;
+    if (zoom <= 6) return 3;
+    if (zoom <= 8) return 4;
+    if (zoom <= 10) return 5;
+    return 6;
+  }
+
+  /// Called whenever the camera changes. Re-fetches hex data only when the
+  /// H3 resolution would change (avoids excessive API calls during panning).
+  void _onCameraChanged(CameraChangedEventData data) {
+    if (!_isFuzzy || _lastHexFieldFormId == null) return;
+    _hexDebounce?.cancel();
+    _hexDebounce = Timer(const Duration(milliseconds: 600), () async {
+      if (_mapboxMap == null) return;
+      final camera = await _mapboxMap!.getCameraState();
+      final newResolution = _zoomToH3Resolution(camera.zoom);
+      if (newResolution == _lastHexH3Resolution) return;
+
+      debugPrint('[MapScreen] H3 resolution changed $_lastHexH3Resolution → $newResolution (zoom ${camera.zoom.toStringAsFixed(1)})');
+      try {
+        final hexGeoJson = await _observationService.getHexObservations(
+          _lastHexFieldFormId!,
+          zoom: camera.zoom.toInt(),
+        );
+        final decoded = jsonDecode(hexGeoJson) as Map<String, dynamic>;
+        final features = decoded['features'] as List<dynamic>;
+        final total = features.fold<int>(
+            0, (s, f) => s + (f['properties']['count'] as int? ?? 1));
+
+        if (!mounted) return;
+        setState(() {
+          _hexGeoJson = hexGeoJson;
+          _totalCount = total;
+          _lastHexH3Resolution = newResolution;
+        });
+        if (_mapboxMap != null && _styleLoaded) await _addMarkersToMap();
+      } catch (e) {
+        debugPrint('[MapScreen] Error refreshing hex at zoom ${camera.zoom}: $e');
+      }
+    });
+  }
+
   void _onMapCreated(MapboxMap mapboxMap) {
     _mapboxMap = mapboxMap;
     _styleLoaded = false; // style not ready yet — wait for onStyleLoaded
+  }
 
-    // Tap on individual points (non-fuzzy mode)
-    _mapboxMap!.addInteraction(
-      TapInteraction(
-        FeaturesetDescriptor(layerId: 'unclustered-point'),
-        (feature, context) {
-          final observationId = feature.properties['id'] as int?;
-          if (observationId != null) {
-            final observation = _observations.firstWhere(
-              (obs) => obs.id == observationId,
-              orElse: () => _observations.first,
-            );
-            _showObservationDetails(observation);
-          }
-        },
-      ),
+  void _registerMapInteractions() {
+    // Interactions are handled via onTapListener on the MapWidget
+  }
+
+  Future<void> _onMapTap(MapContentGestureContext gestureContext) async {
+    if (_mapboxMap == null || _isLoadingObservation) return;
+
+    final screenCoord = gestureContext.touchPosition;
+    final geometry = RenderedQueryGeometry.fromScreenBox(ScreenBox(
+      min: ScreenCoordinate(x: screenCoord.x - 20, y: screenCoord.y - 20),
+      max: ScreenCoordinate(x: screenCoord.x + 20, y: screenCoord.y + 20),
+    ));
+
+    final useHex = _isFuzzy && !_showOnlyMine;
+    final layerIds = useHex ? ['hex-fill'] : ['unclustered-point'];
+
+    final features = await _mapboxMap!.queryRenderedFeatures(
+      geometry,
+      RenderedQueryOptions(layerIds: layerIds),
     );
 
-    // Tap on hexagons (fuzzy mode)
-    _mapboxMap!.addInteraction(
-      TapInteraction(
-        FeaturesetDescriptor(layerId: 'hex-fill'),
-        (feature, context) {
-          final count = feature.properties['count'];
-          _showHexDetails(count is int ? count : int.tryParse(count?.toString() ?? '') ?? 0);
-        },
-      ),
-    );
+    if (features.isEmpty) return;
+
+    final featureMap = features.first?.queriedFeature.feature;
+    if (featureMap == null) return;
+    final props = featureMap['properties'] as Map<Object?, Object?>?;
+    if (props == null) return;
+
+    if (useHex) {
+      final count = props['count'];
+      _showHexDetails(count is int ? count : int.tryParse(count?.toString() ?? '') ?? 0);
+    } else {
+      final observationId = props['id'];
+      final id = observationId is int ? observationId : int.tryParse(observationId?.toString() ?? '');
+      if (id == null) return;
+
+      // Buscar en la lista activa (mine o all)
+      final pool = _showOnlyMine ? _myObservations : _observations;
+      final cached = pool.where((o) => o.id == id).firstOrNull;
+
+      if (cached != null && cached.data != null) {
+        // Observación completa ya en memoria (mine/ o pendiente offline)
+        _showObservationDetails(cached);
+      } else {
+        // Observación sintética (del endpoint /map/) — fetch detalle completo
+        setState(() => _isLoadingObservation = true);
+        try {
+          final detail = await _observationService.getObservationDetail(id);
+          if (detail != null && mounted) _showObservationDetails(detail);
+        } finally {
+          if (mounted) setState(() => _isLoadingObservation = false);
+        }
+      }
+    }
   }
 
   void _onStyleLoaded(StyleLoadedEventData _) {
@@ -758,6 +802,7 @@ class _MapScreenState extends State<MapScreen> {
           longitude: longitude,
           fields: fields,
           postObservationMessage: _postObservationMessage,
+          showPostMessage: widget.showPostMessage,
         ),
       ),
     );
@@ -869,10 +914,21 @@ class _MapScreenState extends State<MapScreen> {
                           : MapboxStyles.MAPBOX_STREETS,
                       onMapCreated: _onMapCreated,
                       onStyleLoadedListener: _onStyleLoaded,
+                      onTapListener: _onMapTap,
+                      onCameraChangeListener: _onCameraChanged,
                     ),
                     
-                    // Botón para filtrar mis observaciones
-                    if (!_isFuzzy && !_isOfflineMode)
+                    // Indicador de carga al tocar un marker
+                    if (_isLoadingObservation)
+                      Positioned.fill(
+                        child: ColoredBox(
+                          color: Colors.black12,
+                          child: const Center(child: CircularProgressIndicator()),
+                        ),
+                      ),
+
+                    // Botón para filtrar mis observaciones (normal y fuzzy)
+                    if (!_isOfflineMode)
                       Positioned(
                         top: 120,
                         right: 16,
@@ -882,7 +938,20 @@ class _MapScreenState extends State<MapScreen> {
                           elevation: 4,
                           child: InkWell(
                             onTap: () async {
-                              setState(() => _showOnlyMine = !_showOnlyMine);
+                              final newValue = !_showOnlyMine;
+                              // En modo normal, cargar mine/ la primera vez que se activa
+                              if (newValue && !_myObservationsLoaded && !_isFuzzy) {
+                                final myObs = await _observationService
+                                    .getMyObservationsForFieldForm(_fieldForm!.id);
+                                if (!mounted) return;
+                                setState(() {
+                                  _myObservations = myObs;
+                                  _myObservationsLoaded = true;
+                                  _showOnlyMine = newValue;
+                                });
+                              } else {
+                                setState(() => _showOnlyMine = newValue);
+                              }
                               await _addMarkersToMap();
                             },
                             borderRadius: BorderRadius.circular(8),
@@ -967,7 +1036,7 @@ class _MapScreenState extends State<MapScreen> {
                       ),
                   ],
                 ),
-      floatingActionButton: _fieldForm != null
+      floatingActionButton: _fieldForm != null && !widget.isFinished
           ? FloatingActionButton(
               onPressed: _addObservationWithCurrentLocation,
               backgroundColor: Colors.blue[700],
@@ -1269,59 +1338,71 @@ class _MapScreenState extends State<MapScreen> {
     final isLocal = imagePath.startsWith('/');
     showDialog(
       context: context,
-      barrierColor: Colors.black,
+      barrierColor: Colors.black87,
       builder: (context) {
         return Scaffold(
           backgroundColor: Colors.black,
-          body: Center(
-            child: InteractiveViewer(
-              minScale: 0.5,
-              maxScale: 4.0,
-              constrained: false,
-              child: isLocal
-                  ? Image.file(
-                      File(imagePath),
-                      fit: BoxFit.contain,
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height,
-                      errorBuilder: (_, __, ___) => Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.image_not_supported,
-                                color: Colors.grey[400], size: 64),
-                            const SizedBox(height: 16),
-                            Text(AppLocalizations.of(context)!.observationImageLoadError,
-                                style: TextStyle(color: Colors.grey[400])),
-                          ],
+          body: Stack(
+            children: [
+              Center(
+                child: InteractiveViewer(
+                  minScale: 0.5,
+                  maxScale: 4.0,
+                  constrained: false,
+                  child: isLocal
+                      ? Image.file(
+                          File(imagePath),
+                          fit: BoxFit.contain,
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height,
+                          errorBuilder: (_, __, ___) => Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.image_not_supported,
+                                    color: Colors.grey[400], size: 64),
+                                const SizedBox(height: 16),
+                                Text(AppLocalizations.of(context)!.observationImageLoadError,
+                                    style: TextStyle(color: Colors.grey[400])),
+                              ],
+                            ),
+                          ),
+                        )
+                      : CachedNetworkImage(
+                          imageUrl: imagePath,
+                          fit: BoxFit.contain,
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height,
+                          errorWidget: (context, url, error) => Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: MediaQuery.of(context).size.height,
+                            color: Colors.grey[900],
+                            child: Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.image_not_supported, color: Colors.grey[400], size: 64),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    AppLocalizations.of(context)!.observationImageLoadError,
+                                    style: TextStyle(color: Colors.grey[400]),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    )
-                  : CachedNetworkImage(
-                imageUrl: imagePath,
-                fit: BoxFit.contain,
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                errorWidget: (context, url, error) => Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  color: Colors.grey[900],
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.image_not_supported, color: Colors.grey[400], size: 64),
-                        const SizedBox(height: 16),
-                        Text(
-                          AppLocalizations.of(context)!.observationImageLoadError,
-                          style: TextStyle(color: Colors.grey[400]),
-                        ),
-                      ],
-                    ),
-                  ),
                 ),
               ),
-            ),
+              Positioned(
+                top: MediaQuery.of(context).padding.top + 8,
+                left: 8,
+                child: IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white, size: 30),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ),
+            ],
           ),
         );
       },

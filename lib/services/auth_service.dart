@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
@@ -6,11 +7,26 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/app_config.dart';
 import '../config/secrets.dart';
+import 'locale_service.dart';
 
 class AuthService {
   static final AuthService _instance = AuthService._internal();
   factory AuthService() => _instance;
   AuthService._internal();
+
+  /// Broadcast stream that fires when the server returns 401 (session expired).
+  /// Listen in main.dart to redirect the user to the login screen.
+  static final StreamController<void> _unauthorizedController =
+      StreamController<void>.broadcast();
+  static Stream<void> get onUnauthorized => _unauthorizedController.stream;
+
+  /// Call this from any service that receives a 401 response.
+  /// Clears the stored token and notifies listeners to redirect to login.
+  Future<void> handleUnauthorized() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(keyStorageKey);
+    _unauthorizedController.add(null);
+  }
 
   static String get baseUrl => '${AppConfig.apiUrl}/users/authentication';
   static const String keyStorageKey = 'auth_key';
@@ -54,9 +70,40 @@ class AuthService {
     return prefs.getString(keyStorageKey);
   }
 
+  /// Standard JSON request headers: Content-Type + Authorization + Accept-Language.
+  Future<Map<String, String>> getHeaders() async {
+    final token = await getToken();
+    return {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Token $token',
+      'Accept-Language': LocaleService.acceptLanguage,
+    };
+  }
+
+  /// Headers for multipart requests (no Content-Type): Authorization + Accept-Language.
+  Future<Map<String, String>> getMultipartHeaders() async {
+    final token = await getToken();
+    return {
+      if (token != null) 'Authorization': 'Token $token',
+      'Accept-Language': LocaleService.acceptLanguage,
+    };
+  }
+
   Future<void> logout() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(keyStorageKey);
+    try {
+      final headers = await getHeaders();
+      if (headers.containsKey('Authorization')) {
+        await http.post(
+          Uri.parse('$baseUrl/logout/'),
+          headers: headers,
+        ).timeout(const Duration(seconds: 10));
+      }
+    } catch (e) {
+      debugPrint('Logout backend call failed: $e');
+    } finally {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(keyStorageKey);
+    }
   }
 
   /// Returns null on success, or a human-readable error string on failure.
@@ -98,10 +145,7 @@ class AuthService {
     if (token == null) throw Exception('Not authenticated');
     final response = await http.delete(
       Uri.parse('${AppConfig.apiUrl}/users/delete/'),
-      headers: {
-        'Authorization': 'Token $token',
-        'Content-Type': 'application/json',
-      },
+      headers: await getHeaders(),
       body: '{"keep_observations": $keepObservations}',
     ).timeout(const Duration(seconds: 15));
     if (response.statusCode != 204 && response.statusCode != 200) {
@@ -117,10 +161,7 @@ class AuthService {
 
       final response = await http.get(
         Uri.parse('$baseUrl/user/'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Token $token',
-        },
+        headers: await getHeaders(),
       ).timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
@@ -145,10 +186,7 @@ class AuthService {
 
       final response = await http.get(
         Uri.parse('${AppConfig.apiUrl}/users/profile/'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Token $token',
-        },
+        headers: await getHeaders(),
       ).timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
@@ -230,14 +268,12 @@ class AuthService {
         Uri.parse('${AppConfig.apiUrl}/users/profile/'),
       );
 
-      request.headers['Authorization'] = 'Token $token';
+      request.headers.addAll(await getMultipartHeaders());
 
       // Campos de texto
       request.fields['first_name'] = firstName;
       request.fields['last_name'] = lastName;
-      if (biography.isNotEmpty) {
-        request.fields['biography'] = biography;
-      }
+      request.fields['biography'] = biography;
       request.fields['visibility'] = visibility.toString();
       if (countryCode != null && countryCode.isNotEmpty) {
         request.fields['country'] = countryCode;

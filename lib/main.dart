@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_quill/flutter_quill.dart' show FlutterQuillLocalizations;
 import 'l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
@@ -14,11 +16,17 @@ import 'services/sync_service.dart';
 import 'services/theme_service.dart';
 import 'config/app_config.dart';
 
+/// Global navigator key used to push the login screen when a 401 is received
+/// from any service, regardless of where in the widget tree the call happened.
+final GlobalKey<NavigatorState> appNavigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Render behind the system nav bar so SafeArea handles insets consistently.
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  MapboxOptions.setAccessToken(AppConfig.mapboxAccessToken);
+  if (!kIsWeb) {
+    MapboxOptions.setAccessToken(AppConfig.mapboxAccessToken);
+  }
 
   // L3: Catch all unhandled Flutter framework errors.
   FlutterError.onError = (details) {
@@ -33,7 +41,6 @@ void main() async {
   };
 
   final syncService = SyncService();
-  syncService.start();
 
   runApp(
     MultiProvider(
@@ -123,8 +130,37 @@ ThemeData get _darkTheme {
   );
 }
 
-class GeonityApp extends StatelessWidget {
+class GeonityApp extends StatefulWidget {
   const GeonityApp({super.key});
+
+  @override
+  State<GeonityApp> createState() => _GeonityAppState();
+}
+
+class _GeonityAppState extends State<GeonityApp> {
+  StreamSubscription<void>? _unauthorizedSub;
+
+  @override
+  void initState() {
+    super.initState();
+    // Start sync service once the widget tree is fully built.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<SyncService>().start();
+    });
+    // Redirect to login whenever any service receives a 401 (session expired).
+    _unauthorizedSub = AuthService.onUnauthorized.listen((_) {
+      appNavigatorKey.currentState?.pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+        (_) => false,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _unauthorizedSub?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -132,10 +168,12 @@ class GeonityApp extends StatelessWidget {
     final themeService = Provider.of<ThemeService>(context);
 
     return MaterialApp(
+      navigatorKey: appNavigatorKey,
       title: 'Geonity',
       locale: localeService.locale,
       localizationsDelegates: const [
         AppLocalizations.delegate,
+        FlutterQuillLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,

@@ -1,3 +1,4 @@
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -8,6 +9,11 @@ class LocaleService extends ChangeNotifier {
   /// Reflects the currently active app locale. null means "use system locale".
   /// Used by multilingual_utils.dart to resolve translated content.
   static Locale? activeLocale;
+
+  /// Language code to send in Accept-Language headers (e.g. "es", "en", "fr").
+  static String get acceptLanguage =>
+      activeLocale?.languageCode ??
+      ui.PlatformDispatcher.instance.locale.languageCode;
 
   Locale? get locale => _locale;
 

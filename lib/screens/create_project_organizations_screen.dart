@@ -167,10 +167,7 @@ class _CreateProjectOrganizationsScreenState extends State<CreateProjectOrganiza
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        automaticallyImplyLeading: false,
         title: Text(l10n.adminAndInvitationsTitle),
         centerTitle: true,
       ),

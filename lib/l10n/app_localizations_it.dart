@@ -245,10 +245,32 @@ class AppLocalizationsIt extends AppLocalizations {
   String get myProjects => 'I miei progetti';
 
   @override
-  String get exploreProjects => 'Esplora progetti';
+  String get exploreProjects => 'Esplora';
+
+  @override
+  String get drafts => 'Bozze';
+
+  @override
+  String get noDraftsTitle => 'Nessuna bozza';
+
+  @override
+  String get noDraftsSubtitle =>
+      'I progetti salvati come bozza appariranno qui';
+
+  @override
+  String get continueDraft => 'Continua a modificare';
+
+  @override
+  String get noMyProjectsTitle => 'Nessun progetto';
+
+  @override
+  String get noMyProjectsSubtitle => 'Unisciti a un progetto o creane uno';
 
   @override
   String get filterByCategory => 'Filtra per categoria';
+
+  @override
+  String get category => 'Categoria';
 
   @override
   String projectCreatedBy(Object creator) {
@@ -704,6 +726,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get profileUpdateError => 'Errore nell\'aggiornamento del profilo';
 
   @override
+  String get settings => 'Impostazioni';
+
+  @override
   String get languageTitle => 'Lingua';
 
   @override
@@ -720,6 +745,12 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get languageSystem => 'Lingua di sistema';
+
+  @override
+  String get appVersion => 'Versione';
+
+  @override
+  String get whatsNew => 'Novità';
 
   @override
   String get themeTitle => 'Tema';
@@ -980,6 +1011,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get confirmationMessageTitle => 'Messaggio di conferma';
 
   @override
+  String get showPostMessageLabel => 'Mostra messaggio dopo l\'osservazione';
+
+  @override
   String get insertLinkTitle => 'Inserisci collegamento';
 
   @override
@@ -1119,6 +1153,52 @@ class AppLocalizationsIt extends AppLocalizations {
       'Le osservazioni vengono mostrate come aree approssimative, non come punti esatti';
 
   @override
+  String get publicMap => 'Mappa pubblica';
+
+  @override
+  String get publicMapSubtitle =>
+      'Abilita una pagina mappa pubblica accessibile senza accesso';
+
+  @override
+  String get projectPublished => 'Pubblicato';
+
+  @override
+  String get projectDraftSubtitle =>
+      'Il progetto è in bozza. Necessita di almeno 10 osservazioni per essere pubblicato.';
+
+  @override
+  String projectDraftSubtitleWithCount(int count) {
+    return 'Il progetto è in bozza. Necessita di almeno 10 osservazioni per essere pubblicato (attualmente ne ha $count).';
+  }
+
+  @override
+  String get projectPublishedSubtitle =>
+      'Il progetto è pubblicato e visibile a tutti.';
+
+  @override
+  String get projectEnded => 'Concluso';
+
+  @override
+  String get projectEndedSubtitle =>
+      'Il progetto non accetta più nuove osservazioni';
+
+  @override
+  String get emailOnObservation => 'Email all\'osservazione';
+
+  @override
+  String get emailOnObservationSubtitle =>
+      'Ricevi un\'email ogni volta che viene inviata un\'osservazione';
+
+  @override
+  String get coverImageRequired => 'L\'immagine di copertina è obbligatoria';
+
+  @override
+  String get organizationType => 'Tipo di organizzazione';
+
+  @override
+  String get continueLabel => 'Continua';
+
+  @override
   String get optionLabelRequired => 'Testo *';
 
   @override
@@ -1147,6 +1227,18 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get adminBadge => 'Admin';
+
+  @override
+  String get badgeFinished => 'Terminato';
+
+  @override
+  String get badgePrivate => 'Privato';
+
+  @override
+  String get badgeFuzzy => 'Fuzzy';
+
+  @override
+  String get badgeGlobal => 'Globale';
 
   @override
   String get downloadCsv => 'Scarica CSV';
