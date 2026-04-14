@@ -1,8 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../l10n/app_localizations.dart';
-import '../services/locale_service.dart';
 
 class ChangelogScreen extends StatefulWidget {
   const ChangelogScreen({super.key});
@@ -21,17 +22,23 @@ class _ChangelogScreenState extends State<ChangelogScreen> {
   }
 
   Future<String> _loadChangelog() async {
-    final lang = LocaleService.activeLocale?.languageCode ?? 'en';
-    final supported = ['es', 'en', 'it', 'pt'];
-    final code = supported.contains(lang) ? lang : 'en';
-    return rootBundle.loadString('assets/changelog/changelog_$code.md');
+    if (kDebugMode) {
+      final info = await PackageInfo.fromPlatform();
+      final path = 'assets/changelog/debug/debug_${info.version}+${info.buildNumber}.md';
+      try {
+        return await rootBundle.loadString(path);
+      } catch (_) {
+        return '## DEBUG ${info.version}+${info.buildNumber}\n\nNo debug changelog found.\nRun `./generate_changelog.sh` to generate one.';
+      }
+    }
+    return rootBundle.loadString('assets/changelog/changelog.md');
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.whatsNew)),
+      appBar: AppBar(title: Text(kDebugMode ? 'Changelog (debug)' : l10n.whatsNew)),
       body: FutureBuilder<String>(
         future: _content,
         builder: (context, snap) {

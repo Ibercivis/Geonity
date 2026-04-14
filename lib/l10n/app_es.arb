@@ -647,5 +647,7 @@
   "observationZone": "Zona de observaciones",
   "helpTextHint": "Texto de ayuda (opcional)",
   "noOptionsAdded": "No hay opciones. Añade al menos una opción.",
-  "projectPasswordWrong": "Contraseña incorrecta."
+  "projectPasswordWrong": "Contraseña incorrecta.",
+  "privacyPolicy": "Política de privacidad",
+  "deleteAccountWeb": "Eliminar cuenta"
 }

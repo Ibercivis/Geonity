@@ -647,5 +647,7 @@
   "observationZone": "Observation zone",
   "helpTextHint": "Help text (optional)",
   "noOptionsAdded": "No options added. Add at least one option.",
-  "projectPasswordWrong": "Wrong password."
+  "projectPasswordWrong": "Wrong password.",
+  "privacyPolicy": "Privacy Policy",
+  "deleteAccountWeb": "Delete Account"
 }

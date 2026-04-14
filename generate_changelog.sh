@@ -22,11 +22,10 @@ Opciones:
                      Crea también un tag git: debug-<version>+<build>
 
   --prod             Modo PRODUCCIÓN — agrega todos los entries debug de la
-                     versión actual en un único borrador, abre el editor para
-                     que escribas el texto final, y luego pide traducción a
-                     EN, IT y PT (Enter para copiar la versión ES).
+                     versión actual en un único borrador y abre el editor para
+                     que escribas el texto final en inglés.
                      Guarda el resultado en:
-                       assets/changelog/changelog_<lang>.md  (prepend)
+                       assets/changelog/changelog.md  (prepend)
                      Crea también un tag git: v<version>
 
   --help, -h         Muestra esta ayuda.
@@ -58,8 +57,6 @@ DATE=$(date +%Y-%m-%d)
 CHANGELOG_DIR="assets/changelog"
 DEBUG_DIR="${CHANGELOG_DIR}/debug"
 mkdir -p "$DEBUG_DIR"
-
-LANGS=(es en it pt)
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -143,8 +140,7 @@ if ! $PROD; then
 
 ${FORMATTED}
 # ── Instrucciones ──────────────────────────────────────────────────────────────
-# Edita el texto anterior en español (los otros idiomas puedes dejarlos en blanco
-# y los rellenarás en --prod, o traducirlos ahora si quieres).
+# Edita el texto anterior en inglés.
 # Guarda y cierra el editor para continuar.
 EOF
 
@@ -215,58 +211,25 @@ cat > "$DRAFT" <<EOF
 
 ${AGGREGATED}
 # ── Instrucciones ──────────────────────────────────────────────────────────────
-# Lo anterior es la agregación de los debugs. Edítalo para que sea un texto
-# limpio y legible para el usuario final (en español).
+# Lo anterior es la agregación de los debugs. Edítalo en inglés para que sea
+# un texto limpio y legible para el usuario final.
 # Elimina duplicados, tecnicismos, y agrupa por tema.
-# El resultado se replicará (traducido) a todos los idiomas.
 # Guarda y cierra para continuar.
 EOF
 
 ${EDITOR:-nano} "$DRAFT"
-ES_ENTRY=$(grep -v '^#' "$DRAFT")
+EN_ENTRY=$(grep -v '^#' "$DRAFT")
 rm -f "$DRAFT"
 
-if [ -z "$(echo "$ES_ENTRY" | tr -d '[:space:]')" ]; then
+if [ -z "$(echo "$EN_ENTRY" | tr -d '[:space:]')" ]; then
   echo "Entry vacío — abortado."
   exit 1
 fi
 
-echo ""
-echo "Ahora introduce la traducción para cada idioma."
-echo "(Pulsa Enter sin escribir nada para copiar la versión española)"
-echo ""
-
-declare -A ENTRIES
-ENTRIES[es]="$ES_ENTRY"
-
-for lang in en it pt; do
-  LANG_DRAFT=$(mktemp /tmp/changelog_${lang}_draft.XXXXXX.md)
-  cat > "$LANG_DRAFT" <<EOF
-## ${VERSION} (${DATE})
-
-$(echo "$ES_ENTRY" | grep -v '^##')
-# ── Traducción al ${lang} ──────────────────────────────────────────────────────
-# Edita el texto anterior en ${lang}.
-# Guarda y cierra para continuar.
-EOF
-  ${EDITOR:-nano} "$LANG_DRAFT"
-  LANG_CONTENT=$(grep -v '^#' "$LANG_DRAFT")
-  rm -f "$LANG_DRAFT"
-
-  if [ -z "$(echo "$LANG_CONTENT" | tr -d '[:space:]')" ]; then
-    echo "  (${lang}: vacío → usando español)"
-    ENTRIES[$lang]="$ES_ENTRY"
-  else
-    ENTRIES[$lang]="$LANG_CONTENT"
-  fi
-done
-
-# Guardar en los ficheros de changelog de producción
-for lang in "${LANGS[@]}"; do
-  PROD_FILE="${CHANGELOG_DIR}/changelog_${lang}.md"
-  prepend_to_file "$PROD_FILE" "${ENTRIES[$lang]:-${ENTRIES[es]}}"
-  echo "✓ Actualizado: ${PROD_FILE}"
-done
+# Guardar en changelog único en inglés
+PROD_FILE="${CHANGELOG_DIR}/changelog.md"
+prepend_to_file "$PROD_FILE" "$EN_ENTRY"
+echo "✓ Actualizado: ${PROD_FILE}"
 
 # Tag de release
 if git tag "v${VERSION}" 2>/dev/null; then

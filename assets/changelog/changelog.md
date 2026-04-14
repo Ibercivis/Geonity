@@ -7,4 +7,4 @@
 - Correct gallery permissions for Android 13+
 
 ## 1.0.0 (2026-04-12)
-- First release of Geonity
+- First version of Geonity

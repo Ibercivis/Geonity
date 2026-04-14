@@ -2597,6 +2597,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Contraseña incorrecta.'**
   String get projectPasswordWrong;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In es, this message translates to:
+  /// **'Política de privacidad'**
+  String get privacyPolicy;
+
+  /// No description provided for @deleteAccountWeb.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar cuenta'**
+  String get deleteAccountWeb;
 }
 
 class _AppLocalizationsDelegate

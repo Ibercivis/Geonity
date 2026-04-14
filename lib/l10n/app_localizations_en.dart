@@ -1363,4 +1363,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get projectPasswordWrong => 'Wrong password.';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
+  String get deleteAccountWeb => 'Delete Account';
 }

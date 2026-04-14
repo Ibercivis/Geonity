@@ -101,7 +101,7 @@ if [[ "$MODE" == "debug" ]]; then
 else
   # Prod: verificar que existe el changelog de producción con la versión que se va a publicar
   NEXT_PATCH=$((PATCH + 1))
-  PROD_CHANGELOG="${CHANGELOG_DIR}/changelog_es.md"
+  PROD_CHANGELOG="${CHANGELOG_DIR}/changelog.md"
 
   if [[ ! -f "$PROD_CHANGELOG" ]]; then
     echo "✗ No hay changelog de producción."

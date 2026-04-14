@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 import '../services/locale_service.dart';
@@ -221,6 +222,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Text(l10n.whatsNew, style: const TextStyle(fontSize: 16)),
                     const Spacer(),
                     Icon(Icons.chevron_right, color: Theme.of(ctx).colorScheme.onSurfaceVariant),
+                  ],
+                ),
+              ),
+              const Divider(height: 28),
+              // Política de privacidad
+              InkWell(
+                onTap: () => launchUrl(
+                  Uri.parse('https://geonity.ibercivis.es/privacy-policy'),
+                  mode: LaunchMode.externalApplication,
+                ),
+                borderRadius: BorderRadius.circular(8),
+                child: Row(
+                  children: [
+                    Icon(Icons.privacy_tip_outlined, color: Theme.of(ctx).colorScheme.primary),
+                    const SizedBox(width: 12),
+                    Text(l10n.privacyPolicy, style: const TextStyle(fontSize: 16)),
+                    const Spacer(),
+                    Icon(Icons.open_in_new, size: 18, color: Theme.of(ctx).colorScheme.onSurfaceVariant),
+                  ],
+                ),
+              ),
+              const Divider(height: 28),
+              // Eliminar cuenta (web)
+              InkWell(
+                onTap: () => launchUrl(
+                  Uri.parse('https://geonity.ibercivis.es/delete-account'),
+                  mode: LaunchMode.externalApplication,
+                ),
+                borderRadius: BorderRadius.circular(8),
+                child: Row(
+                  children: [
+                    Icon(Icons.delete_outline, color: Colors.red.shade400),
+                    const SizedBox(width: 12),
+                    Text(l10n.deleteAccountWeb, style: TextStyle(fontSize: 16, color: Colors.red.shade400)),
+                    const Spacer(),
+                    Icon(Icons.open_in_new, size: 18, color: Theme.of(ctx).colorScheme.onSurfaceVariant),
                   ],
                 ),
               ),
