@@ -1053,8 +1053,10 @@ class _MapScreenState extends State<MapScreen> {
         final features = decoded['features'] as List<dynamic>;
         if (features.isNotEmpty) {
           final coords = features.first['geometry']['coordinates'] as List;
+          // Polygon: coords[0] = outer ring, coords[0][0] = first point
           // Backend sends [lat, lon] → Position needs (lon, lat)
-          return Position(coords[1] as double, coords[0] as double);
+          final firstPoint = (coords[0] as List)[0] as List;
+          return Position(firstPoint[1] as double, firstPoint[0] as double);
         }
       } catch (_) {}
     } else if (_observations.isNotEmpty) {

@@ -649,5 +649,13 @@
   "noOptionsAdded": "Não há opções. Adicione pelo menos uma opção.",
   "projectPasswordWrong": "Palavra-passe incorreta.",
   "privacyPolicy": "Política de privacidade",
-  "deleteAccountWeb": "Eliminar conta"
+  "deleteAccountWeb": "Eliminar conta",
+
+  "consentTitle": "Termos e privacidade",
+  "consentSubtitle": "Para continuar, deves aceitar os nossos Termos de utilização e Política de privacidade.",
+  "consentTermsLabel": "Termos de utilização",
+  "consentAcceptButton": "Aceitar e continuar",
+  "consentError": "Erro ao guardar o consentimento. Tenta novamente.",
+  "registerTermsAccept": "Aceito os Termos de utilização e a Política de privacidade",
+  "registerTermsRequired": "Deves aceitar os termos para te registares"
 }

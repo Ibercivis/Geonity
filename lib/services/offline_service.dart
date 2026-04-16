@@ -120,6 +120,7 @@ class OfflineService {
               'choiceValues': f.choiceValues,
               'order': f.order,
               'helpText': f.helpText,
+              'allowOther': f.allowOther,
             })
         .toList());
 
@@ -186,6 +187,7 @@ class OfflineService {
                   : null,
               order: f['order'] as int,
               helpText: f['helpText'] as String,
+              allowOther: f['allowOther'] as bool? ?? false,
             ))
         .toList();
   }

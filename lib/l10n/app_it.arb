@@ -649,5 +649,13 @@
   "noOptionsAdded": "Nessuna opzione. Aggiungi almeno un opzione.",
   "projectPasswordWrong": "Password errata.",
   "privacyPolicy": "Informativa sulla privacy",
-  "deleteAccountWeb": "Elimina account"
+  "deleteAccountWeb": "Elimina account",
+
+  "consentTitle": "Termini e privacy",
+  "consentSubtitle": "Per continuare, devi accettare i nostri Termini di utilizzo e l'Informativa sulla privacy.",
+  "consentTermsLabel": "Termini di utilizzo",
+  "consentAcceptButton": "Accetta e continua",
+  "consentError": "Errore nel salvataggio del consenso. Riprova.",
+  "registerTermsAccept": "Accetto i Termini di utilizzo e l'Informativa sulla privacy",
+  "registerTermsRequired": "Devi accettare i termini per registrarti"
 }

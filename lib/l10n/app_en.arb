@@ -649,5 +649,13 @@
   "noOptionsAdded": "No options added. Add at least one option.",
   "projectPasswordWrong": "Wrong password.",
   "privacyPolicy": "Privacy Policy",
-  "deleteAccountWeb": "Delete Account"
+  "deleteAccountWeb": "Delete Account",
+
+  "consentTitle": "Terms & Privacy",
+  "consentSubtitle": "To continue, you must accept our Terms of Use and Privacy Policy.",
+  "consentTermsLabel": "Terms of Use",
+  "consentAcceptButton": "Accept and continue",
+  "consentError": "Error saving consent. Please try again.",
+  "registerTermsAccept": "I accept the Terms of Use and Privacy Policy",
+  "registerTermsRequired": "You must accept the terms to register"
 }

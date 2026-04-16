@@ -649,5 +649,13 @@
   "noOptionsAdded": "No hay opciones. Añade al menos una opción.",
   "projectPasswordWrong": "Contraseña incorrecta.",
   "privacyPolicy": "Política de privacidad",
-  "deleteAccountWeb": "Eliminar cuenta"
+  "deleteAccountWeb": "Eliminar cuenta",
+
+  "consentTitle": "Términos y privacidad",
+  "consentSubtitle": "Para continuar, debes aceptar nuestros Términos de uso y Política de privacidad.",
+  "consentTermsLabel": "Términos de uso",
+  "consentAcceptButton": "Acepto y continuar",
+  "consentError": "Error al guardar el consentimiento. Inténtalo de nuevo.",
+  "registerTermsAccept": "Acepto los Términos de uso y la Política de privacidad",
+  "registerTermsRequired": "Debes aceptar los términos para registrarte"
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
+import 'consent_screen.dart';
 import 'home_screen.dart';
 import 'register_screen.dart';
 
@@ -27,6 +28,17 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  Future<void> _navigateAfterLogin() async {
+    final userInfo = await _authService.getUserInfo();
+    if (!mounted) return;
+    final needsConsent = userInfo == null || userInfo['terms_accepted_at'] == null;
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => needsConsent ? const ConsentScreen() : const HomeScreen(),
+      ),
+    );
+  }
+
   Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
@@ -40,9 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (success && mounted) {
         TextInput.finishAutofillContext();
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
+        await _navigateAfterLogin();
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -64,9 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!mounted) return;
 
     if (error == null) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
+      await _navigateAfterLogin();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(error), backgroundColor: Colors.red),

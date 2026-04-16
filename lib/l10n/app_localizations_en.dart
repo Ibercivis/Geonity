@@ -1369,4 +1369,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteAccountWeb => 'Delete Account';
+
+  @override
+  String get consentTitle => 'Terms & Privacy';
+
+  @override
+  String get consentSubtitle =>
+      'To continue, you must accept our Terms of Use and Privacy Policy.';
+
+  @override
+  String get consentTermsLabel => 'Terms of Use';
+
+  @override
+  String get consentAcceptButton => 'Accept and continue';
+
+  @override
+  String get consentError => 'Error saving consent. Please try again.';
+
+  @override
+  String get registerTermsAccept =>
+      'I accept the Terms of Use and Privacy Policy';
+
+  @override
+  String get registerTermsRequired => 'You must accept the terms to register';
 }

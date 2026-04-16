@@ -1,4 +1,7 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../config/app_config.dart';
 import '../l10n/app_localizations.dart';
 import '../services/auth_service.dart';
 
@@ -18,6 +21,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isLoading = false;
   bool _obscurePassword1 = true;
   bool _obscurePassword2 = true;
+  bool _termsAccepted = false;
+  String? _termsError;
 
   @override
   void dispose() {
@@ -27,9 +32,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
+  Future<void> _openUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
   Future<void> _handleRegister() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() => _isLoading = true);
+    if (!_termsAccepted) {
+      setState(() => _termsError = AppLocalizations.of(context)!.registerTermsRequired);
+      return;
+    }
+    setState(() {
+      _isLoading = true;
+      _termsError = null;
+    });
 
     final error = await _authService.register(
       _emailController.text.trim(),
@@ -196,7 +215,65 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 20),
+
+                  // Terms checkbox
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Checkbox(
+                            value: _termsAccepted,
+                            onChanged: (value) => setState(() {
+                              _termsAccepted = value ?? false;
+                              if (_termsAccepted) _termsError = null;
+                            }),
+                          ),
+                          Expanded(
+                            child: Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: '${l10n.consentTermsLabel} ',
+                                    style: TextStyle(
+                                      color: colorScheme.primary,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () => _openUrl('${AppConfig.baseUrl}/terms'),
+                                  ),
+                                  const TextSpan(text: '& '),
+                                  TextSpan(
+                                    text: l10n.privacyPolicy,
+                                    style: TextStyle(
+                                      color: colorScheme.primary,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () => _openUrl('${AppConfig.baseUrl}/privacy-policy'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (_termsError != null)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 12),
+                          child: Text(
+                            _termsError!,
+                            style: TextStyle(
+                              color: colorScheme.error,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
 
                   // Botón registrar
                   SizedBox(

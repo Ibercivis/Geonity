@@ -31,6 +31,9 @@ class AuthService {
   static String get baseUrl => '${AppConfig.apiUrl}/users/authentication';
   static const String keyStorageKey = 'auth_key';
 
+  static const String currentTermsVersion = '2025-04';
+  static const String currentPrivacyVersion = '2025-04';
+
   Future<bool> login(String email, String password) async {
     try {
       final response = await http.post(
@@ -116,6 +119,8 @@ class AuthService {
           'email': email,
           'password1': password1,
           'password2': password2,
+          'terms_version': currentTermsVersion,
+          'privacy_version': currentPrivacyVersion,
         }),
       ).timeout(const Duration(seconds: 15));
 
@@ -134,6 +139,25 @@ class AuthService {
         });
         if (messages.isNotEmpty) return messages.join('\n');
       }
+      return 'Error ${response.statusCode}';
+    } catch (e) {
+      return 'Error de conexión';
+    }
+  }
+
+  /// Submits consent for terms and privacy. Returns null on success, or an error string.
+  Future<String?> submitConsent() async {
+    try {
+      final response = await http.post(
+        Uri.parse('${AppConfig.apiUrl}/users/consent/'),
+        headers: await getHeaders(),
+        body: jsonEncode({
+          'terms_version': currentTermsVersion,
+          'privacy_version': currentPrivacyVersion,
+        }),
+      ).timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200) return null;
       return 'Error ${response.statusCode}';
     } catch (e) {
       return 'Error de conexión';

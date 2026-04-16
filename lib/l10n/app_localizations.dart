@@ -2609,6 +2609,48 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Eliminar cuenta'**
   String get deleteAccountWeb;
+
+  /// No description provided for @consentTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Términos y privacidad'**
+  String get consentTitle;
+
+  /// No description provided for @consentSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Para continuar, debes aceptar nuestros Términos de uso y Política de privacidad.'**
+  String get consentSubtitle;
+
+  /// No description provided for @consentTermsLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Términos de uso'**
+  String get consentTermsLabel;
+
+  /// No description provided for @consentAcceptButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Acepto y continuar'**
+  String get consentAcceptButton;
+
+  /// No description provided for @consentError.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al guardar el consentimiento. Inténtalo de nuevo.'**
+  String get consentError;
+
+  /// No description provided for @registerTermsAccept.
+  ///
+  /// In es, this message translates to:
+  /// **'Acepto los Términos de uso y la Política de privacidad'**
+  String get registerTermsAccept;
+
+  /// No description provided for @registerTermsRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Debes aceptar los términos para registrarte'**
+  String get registerTermsRequired;
 }
 
 class _AppLocalizationsDelegate
