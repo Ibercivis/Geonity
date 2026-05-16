@@ -124,6 +124,30 @@ class AppLocalizationsPt extends AppLocalizations {
   String get loginRegister => 'Registar';
 
   @override
+  String get loginForgotPassword => 'Esqueceu-se da palavra-passe?';
+
+  @override
+  String get forgotPasswordTitle => 'Recuperar palavra-passe';
+
+  @override
+  String get forgotPasswordDescription =>
+      'Insira o seu email e enviaremos um link para definir uma nova palavra-passe.';
+
+  @override
+  String get forgotPasswordEmailLabel => 'Email';
+
+  @override
+  String get forgotPasswordSubmit => 'Enviar link';
+
+  @override
+  String get forgotPasswordSuccess =>
+      'Se o endereço existir no Geonity, enviámos um email com instruções. Verifique a caixa de entrada e a pasta de spam.';
+
+  @override
+  String get forgotPasswordError =>
+      'Não foi possível enviar o link. Tente novamente.';
+
+  @override
   String get registerTitle => 'Criar conta';
 
   @override

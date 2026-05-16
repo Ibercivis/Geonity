@@ -41,6 +41,14 @@
   "loginPasswordMinLength": "Password must be at least 6 characters",
   "loginNoAccount": "Don't have an account? ",
   "loginRegister": "Sign up",
+  "loginForgotPassword": "Forgot your password?",
+
+  "forgotPasswordTitle": "Reset password",
+  "forgotPasswordDescription": "Enter your email and we'll send you a link to set a new password.",
+  "forgotPasswordEmailLabel": "Email",
+  "forgotPasswordSubmit": "Send link",
+  "forgotPasswordSuccess": "If that address exists in Geonity, we've sent an email with instructions. Check your inbox and spam folder.",
+  "forgotPasswordError": "We couldn't send the link. Please try again.",
 
   "registerTitle": "Create account",
   "registerEmailHint": "your@email.com",

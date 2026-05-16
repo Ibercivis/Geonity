@@ -145,6 +145,42 @@ class AuthService {
     }
   }
 
+  /// Requests a password reset email. Returns null on success, or an error string.
+  /// The backend responds 200 regardless of whether the email exists (anti-enumeration),
+  /// so a non-200 here generally means a transport or server error.
+  Future<String?> requestPasswordReset(String email) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/password/reset/'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept-Language': LocaleService.acceptLanguage,
+        },
+        body: jsonEncode({'email': email}),
+      ).timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200) return null;
+
+      try {
+        final body = jsonDecode(response.body);
+        if (body is Map) {
+          final messages = <String>[];
+          body.forEach((key, value) {
+            if (value is List) {
+              messages.addAll(value.map((e) => e.toString()));
+            } else {
+              messages.add(value.toString());
+            }
+          });
+          if (messages.isNotEmpty) return messages.join('\n');
+        }
+      } catch (_) {}
+      return 'Error ${response.statusCode}';
+    } catch (e) {
+      return 'Error de conexión';
+    }
+  }
+
   /// Submits consent for terms and privacy. Returns null on success, or an error string.
   Future<String?> submitConsent() async {
     try {

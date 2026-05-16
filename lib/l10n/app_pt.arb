@@ -41,6 +41,14 @@
   "loginPasswordMinLength": "A palavra-passe deve ter pelo menos 6 caracteres",
   "loginNoAccount": "Não tem conta? ",
   "loginRegister": "Registar",
+  "loginForgotPassword": "Esqueceu-se da palavra-passe?",
+
+  "forgotPasswordTitle": "Recuperar palavra-passe",
+  "forgotPasswordDescription": "Insira o seu email e enviaremos um link para definir uma nova palavra-passe.",
+  "forgotPasswordEmailLabel": "Email",
+  "forgotPasswordSubmit": "Enviar link",
+  "forgotPasswordSuccess": "Se o endereço existir no Geonity, enviámos um email com instruções. Verifique a caixa de entrada e a pasta de spam.",
+  "forgotPasswordError": "Não foi possível enviar o link. Tente novamente.",
 
   "registerTitle": "Criar conta",
   "registerEmailHint": "seu@email.com",

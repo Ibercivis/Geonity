@@ -324,6 +324,48 @@ abstract class AppLocalizations {
   /// **'Regístrate'**
   String get loginRegister;
 
+  /// No description provided for @loginForgotPassword.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Has olvidado tu contraseña?'**
+  String get loginForgotPassword;
+
+  /// No description provided for @forgotPasswordTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Recuperar contraseña'**
+  String get forgotPasswordTitle;
+
+  /// No description provided for @forgotPasswordDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduce tu correo y te enviaremos un enlace para crear una contraseña nueva.'**
+  String get forgotPasswordDescription;
+
+  /// No description provided for @forgotPasswordEmailLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Email'**
+  String get forgotPasswordEmailLabel;
+
+  /// No description provided for @forgotPasswordSubmit.
+  ///
+  /// In es, this message translates to:
+  /// **'Enviar enlace'**
+  String get forgotPasswordSubmit;
+
+  /// No description provided for @forgotPasswordSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Si la dirección existe en Geonity, te hemos enviado un correo con instrucciones. Revisa tu bandeja de entrada y la carpeta de spam.'**
+  String get forgotPasswordSuccess;
+
+  /// No description provided for @forgotPasswordError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo enviar el enlace. Inténtalo de nuevo.'**
+  String get forgotPasswordError;
+
   /// No description provided for @registerTitle.
   ///
   /// In es, this message translates to:
