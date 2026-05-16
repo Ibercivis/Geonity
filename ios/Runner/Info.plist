@@ -45,6 +45,8 @@
 	<string>Geonity necesita acceso a la cámara para tomar fotos de tus observaciones y escanear códigos QR de proyectos</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Geonity necesita tu ubicación para registrar observaciones geolocalizadas y mostrar los mapas centrados en tu área</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Geonity puede requerir acceso al micrófono al grabar vídeos para tus observaciones</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Geonity necesita acceso a la galería para guardar las fotos de tus observaciones</string>
 	<key>NSPhotoLibraryUsageDescription</key>
