@@ -8,7 +8,9 @@
 #   ./deploy.sh prod android               → APK arm64 release → scp servidor
 #   ./deploy.sh prod android --store       → AAB release → listo para Play Store
 #   ./deploy.sh prod ios                   → IPA release → scp servidor
+#   ./deploy.sh prod ios --store           → IPA release → listo para App Store
 #   ./deploy.sh prod all                   → APK arm64 + IPA → scp servidor
+#   ./deploy.sh prod all --store           → AAB + IPA → listos para stores
 
 set -e
 
@@ -29,27 +31,33 @@ Plataformas:
   all      Compila para ambas plataformas (solo en modo prod)
 
 Opciones:
-  --store    (solo prod android) Genera AAB para Play Store en lugar de
-             APK arm64 para el servidor. El fichero queda en:
-               build/app/outputs/bundle/release/app-release.aab
-             y NO se sube por scp — hay que subirlo manualmente a Play Console.
+  --store    (solo prod) En lugar de subir al servidor por scp, deja los
+             artefactos listos para subirlos manualmente a las stores:
+               Android → build/app/outputs/bundle/release/app-release.aab
+                         (Play Console)
+               iOS     → build/ios/ipa/*.ipa
+                         (Transporter.app o Xcode → Distribute App)
+             Bumpa el build number antes de compilar (las stores rechazan
+             builds repetidos).
   --help, -h   Muestra esta ayuda.
 
 Comportamiento:
   - Aborta si el changelog para la versión actual no existe.
-  - Sin --store: compila APK arm64 y lo sube por scp al servidor.
-  - Con --store: compila AAB y lo deja listo en build/ para Play Store.
+  - Sin --store: compila y sube por scp al servidor.
+  - Con --store: compila y deja el artefacto listo para la store.
 
 Flujo correcto:
   1. ./generate_changelog.sh [--prod]        ← bumpa versión + genera changelog
   2. ./deploy.sh [debug|prod] [platform]     ← compila y sube al servidor
-     ./deploy.sh prod android --store        ← compila AAB para Play Store
+     ./deploy.sh prod [platform] --store     ← compila para subir a la store
 
 Ejemplos:
   ./deploy.sh debug android
   ./deploy.sh prod android
   ./deploy.sh prod android --store
+  ./deploy.sh prod ios --store
   ./deploy.sh prod all
+  ./deploy.sh prod all --store
 EOF
   exit 0
 fi
@@ -79,8 +87,9 @@ if [[ "$MODE" == "debug" && "$PLATFORM" == "all" ]]; then
   exit 1
 fi
 
-if [[ "$STORE" == true && ( "$MODE" != "prod" || "$PLATFORM" != "android" ) ]]; then
-  echo "✗ --store solo es válido con: ./deploy.sh prod android --store"
+if [[ "$STORE" == true && "$MODE" != "prod" ]]; then
+  echo "✗ --store solo es válido en modo prod."
+  echo "     ./deploy.sh --help  para más información"
   exit 1
 fi
 
@@ -92,6 +101,17 @@ VERSION=$(echo "$CURRENT" | cut -d'+' -f1)
 BUILD=$(echo "$CURRENT" | cut -d'+' -f2)
 
 echo "Versión: $CURRENT [${MODE}/${PLATFORM}]"
+
+# ── Bump build number para Store ─────────────────────────────────────────────
+
+if [[ "$STORE" == true ]]; then
+  NEW_BUILD=$((BUILD + 1))
+  NEW_VERSION="${VERSION}+${NEW_BUILD}"
+  sed -i '' "s/^version: .*/version: ${NEW_VERSION}/" "$PUBSPEC"
+  BUILD=$NEW_BUILD
+  CURRENT=$NEW_VERSION
+  echo "✓ Build bumped → $CURRENT"
+fi
 
 # ── Verificar changelog ───────────────────────────────────────────────────────
 
@@ -140,6 +160,7 @@ compile_android() {
 compile_ios() {
   if [[ "$MODE" == "prod" ]]; then
     echo "Compilando iOS (release archive)..."
+    rm -f build/ios/ipa/*.ipa 2>/dev/null
     flutter build ipa --release
     OUTPUT=$(find build/ios/ipa -name "*.ipa" 2>/dev/null | head -1)
   else
@@ -198,7 +219,21 @@ if $ANDROID_OK; then
   fi
 fi
 
-$IOS_OK && upload "$IOS_OUTPUT"
+if $IOS_OK; then
+  if $STORE; then
+    echo ""
+    echo "✓ IPA listo para App Store:"
+    echo "  $(pwd)/${IOS_OUTPUT}"
+    echo ""
+    echo "  Sube manualmente con una de estas opciones:"
+    echo "    1. Transporter.app → arrastra el .ipa"
+    echo "    2. Xcode → Window → Organizer → Distribute App → App Store Connect"
+    echo "    3. xcrun altool --upload-app --type ios --file <ipa> \\"
+    echo "         --apiKey <KEY_ID> --apiIssuer <ISSUER_ID>"
+  else
+    upload "$IOS_OUTPUT"
+  fi
+fi
 
 echo ""
 echo "✓ Deploy completado — v${CURRENT} [${MODE}/${PLATFORM}${STORE:+ store}]"
