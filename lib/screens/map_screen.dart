@@ -10,6 +10,8 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart' as geo;
 import 'package:provider/provider.dart';
 import '../models/observation.dart';
+import '../widgets/audio_player_tile.dart';
+import 'package:audioplayers/audioplayers.dart';
 import '../utils/multilingual_utils.dart';
 import '../models/field_form.dart';
 import '../models/observation_field.dart';
@@ -1170,31 +1172,7 @@ class _MapScreenState extends State<MapScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      ...observation.data!.entries.map((entry) {
-                        // Debug: imprimir key y su tipo
-                        
-                        // Intentar buscar por diferentes formatos
-                        final field = _fieldsById[entry.key.toString()] ?? 
-                                      _fieldsById[entry.key];
-                        final label = field?.label ?? AppLocalizations.of(context)!.fieldLabelFallback(entry.key.toString());
-                        String displayValue = entry.value?.toString() ?? 'N/A';
-                        
-                        // Formatear valores booleanos
-                        if (field?.fieldType == 'bool') {
-                          displayValue = entry.value == true || entry.value == 'true'
-                              ? '✓ ${AppLocalizations.of(context)!.boolYes}'
-                              : '✗ ${AppLocalizations.of(context)!.boolNo}';
-                        }
-                        
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: _buildInfoRow(
-                            Icons.info_outline,
-                            label,
-                            displayValue,
-                          ),
-                        );
-                      }).toList(),
+                      ..._buildObservationDataRows(observation.data!),
                     ],
                     if (observation.adminValues != null && observation.adminValues!.isNotEmpty) ...[
                       const SizedBox(height: 16),
@@ -1262,6 +1240,24 @@ class _MapScreenState extends State<MapScreen> {
                           },
                         ),
                       ),
+                    ],
+                    if (observation.audios != null && observation.audios!.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      const Divider(),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Audios (${observation.audios!.length})',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      ...observation.audios!.map((a) => Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: AudioPlayerTile(source: UrlSource(a.url)),
+                          )),
                     ],
                     const SizedBox(height: 24),
                     SizedBox(
@@ -1334,6 +1330,183 @@ class _MapScreenState extends State<MapScreen> {
         ),
       ],
     );
+  }
+
+  bool _coerceBool(dynamic value) {
+    if (value is bool) return value;
+    if (value is num) return value != 0;
+    if (value is String) {
+      final s = value.trim().toLowerCase();
+      return s == 'true' || s == '1';
+    }
+    return false;
+  }
+
+  String _resolveChoiceLabel(ObservationField field, String value) {
+    final values = field.choiceValues;
+    final labels = field.choices;
+    if (values == null || labels == null) return value;
+    final idx = values.indexOf(value);
+    if (idx < 0 || idx >= labels.length) return value;
+    return labels[idx];
+  }
+
+  String _formatFieldValue(ObservationField? field, dynamic value) {
+    if (value == null) return '';
+    final type = (field?.fieldType ?? '').toUpperCase();
+
+    switch (type) {
+      case 'BOOL':
+      case 'BOOLEAN':
+      case 'SWITCH':
+        return _coerceBool(value)
+            ? '✓ ${AppLocalizations.of(context)!.boolYes}'
+            : '✗ ${AppLocalizations.of(context)!.boolNo}';
+
+      case 'MCHOICE':
+        final parts = value is List
+            ? value.map((v) => v.toString().trim()).toList()
+            : value.toString().split(',').map((s) => s.trim()).toList();
+        final resolved = parts
+            .where((p) => p.isNotEmpty)
+            .map((p) => field == null ? p : _resolveChoiceLabel(field, p))
+            .toList();
+        return resolved.join(', ');
+
+      case 'CHOICE':
+        final raw = value.toString();
+        if (raw.isEmpty) return '';
+        return field == null ? raw : _resolveChoiceLabel(field, raw);
+
+      default:
+        return value.toString();
+    }
+  }
+
+  Widget _buildAnswerRow(String label, String value, {bool isCustom = false}) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(Icons.info_outline, size: 20, color: colorScheme.onSurfaceVariant),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  if (isCustom) ...[
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: colorScheme.secondaryContainer,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        AppLocalizations.of(context)!.other,
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: colorScheme.onSecondaryContainer,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: colorScheme.onSurface,
+                  fontStyle: isCustom ? FontStyle.italic : FontStyle.normal,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<Widget> _buildObservationDataRows(Map<String, dynamic> data) {
+    final isOtherRe = RegExp(r'^(\d+)_is_other$');
+    final otherTextRe = RegExp(r'^(\d+)_other_text$');
+
+    final isOtherMap = <String, bool>{};
+    final otherTextMap = <String, String>{};
+    final valueMap = <String, dynamic>{};
+
+    data.forEach((key, value) {
+      final k = key.toString();
+      final isOtherMatch = isOtherRe.firstMatch(k);
+      if (isOtherMatch != null) {
+        isOtherMap[isOtherMatch.group(1)!] = _coerceBool(value);
+        return;
+      }
+      final otherTextMatch = otherTextRe.firstMatch(k);
+      if (otherTextMatch != null) {
+        otherTextMap[otherTextMatch.group(1)!] = (value ?? '').toString();
+        return;
+      }
+      valueMap[k] = value;
+    });
+
+    final orderedFields = _fieldsById.values.toList()
+      ..sort((a, b) => a.order.compareTo(b.order));
+    final renderedKeys = <String>{};
+    final rows = <Widget>[];
+
+    void appendRow(String label, String value, {bool isCustom = false}) {
+      rows.add(Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: _buildAnswerRow(label, value, isCustom: isCustom),
+      ));
+    }
+
+    for (final field in orderedFields) {
+      final keyStr = field.id.toString();
+      final hasValue = valueMap.containsKey(keyStr);
+      final isOther = isOtherMap[keyStr] == true;
+      final otherText = otherTextMap[keyStr];
+      if (!hasValue && !(isOther && otherText != null && otherText.isNotEmpty)) {
+        continue;
+      }
+      renderedKeys.add(keyStr);
+
+      final displayValue = (isOther && otherText != null && otherText.isNotEmpty)
+          ? otherText
+          : _formatFieldValue(field, valueMap[keyStr]);
+      if (displayValue.isEmpty) continue;
+
+      appendRow(field.label, displayValue, isCustom: isOther);
+    }
+
+    // Fallback: data keys with no matching field (e.g. legacy/offline).
+    for (final entry in valueMap.entries) {
+      if (renderedKeys.contains(entry.key)) continue;
+      final raw = entry.value?.toString() ?? '';
+      if (raw.isEmpty) continue;
+      appendRow(
+        AppLocalizations.of(context)!.fieldLabelFallback(entry.key),
+        raw,
+      );
+    }
+
+    return rows;
   }
 
   void _showFullScreenImage(BuildContext context, String imagePath) {

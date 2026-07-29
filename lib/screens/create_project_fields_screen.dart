@@ -291,6 +291,8 @@ class _CreateProjectFieldsScreenState extends State<CreateProjectFieldsScreen> {
         return Icons.calendar_today;
       case 'IMG':
         return Icons.image_outlined;
+      case 'AUDIO':
+        return Icons.mic_none;
       case 'CHOICE':
         return Icons.list_alt;
       case 'MCHOICE':

@@ -253,6 +253,7 @@ class ObservationService {
     required double longitude,
     required Map<String, dynamic> data,
     Map<String, List<File>>? images,
+    Map<String, File>? audios,
   }) async {
     try {
       final key = await _authService.getToken();
@@ -291,6 +292,21 @@ class ObservationService {
             );
             request.files.add(multipartFile);
           }
+        }
+      }
+
+      if (audios != null) {
+        for (var entry in audios.entries) {
+          final file = entry.value;
+          final stream = http.ByteStream(file.openRead());
+          final length = await file.length();
+          final multipartFile = http.MultipartFile(
+            'audio_${entry.key}',
+            stream,
+            length,
+            filename: file.path.split('/').last,
+          );
+          request.files.add(multipartFile);
         }
       }
 

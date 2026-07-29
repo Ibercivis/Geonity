@@ -9,6 +9,7 @@ import '../services/connection_helper.dart';
 import '../services/observation_service.dart';
 import '../services/offline_service.dart';
 import '../services/sync_service.dart';
+import '../widgets/audio_recorder_field.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mapbox;
 import 'package:geolocator/geolocator.dart';
 import 'qr_scanner_screen.dart';
@@ -43,11 +44,13 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
   final _offlineService = OfflineService();
   final Map<String, dynamic> _formData = {};
   final Map<String, List<File>> _imageData = {};
+  final Map<String, File> _audioData = {};
   bool _isSubmitting = false;
   mapbox.MapboxMap? _miniMapController;
   final ScrollController _scrollController = ScrollController();
   bool _isMapTouched = false;
-  
+  bool _isSatelliteView = false;
+
   // Coordenadas editables
   late double _currentLatitude;
   late double _currentLongitude;
@@ -96,9 +99,11 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
                     ),
                     zoom: 15.0,
                   ),
-                  styleUri: Theme.of(context).brightness == Brightness.dark
-                      ? mapbox.MapboxStyles.DARK
-                      : mapbox.MapboxStyles.MAPBOX_STREETS,
+                  styleUri: _isSatelliteView
+                      ? mapbox.MapboxStyles.SATELLITE_STREETS
+                      : (Theme.of(context).brightness == Brightness.dark
+                          ? mapbox.MapboxStyles.DARK
+                          : mapbox.MapboxStyles.MAPBOX_STREETS),
                   onMapCreated: (mapboxMap) {
                     _miniMapController = mapboxMap;
                     // Añadir marcador circular rojo
@@ -160,6 +165,42 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
                       child: const Padding(
                         padding: EdgeInsets.all(8),
                         child: Icon(Icons.my_location, size: 20, color: Colors.blue),
+                      ),
+                    ),
+                  ),
+                ),
+                // Botón para cambiar entre callejero y ortoimagen
+                Positioned(
+                  top: 52,
+                  right: 8,
+                  child: Material(
+                    color: colorScheme.surface,
+                    borderRadius: BorderRadius.circular(8),
+                    elevation: 2,
+                    child: InkWell(
+                      onTap: () async {
+                        final newSatellite = !_isSatelliteView;
+                        setState(() => _isSatelliteView = newSatellite);
+                        if (_miniMapController == null) return;
+                        final isDark = Theme.of(context).brightness == Brightness.dark;
+                        final styleUri = newSatellite
+                            ? mapbox.MapboxStyles.SATELLITE_STREETS
+                            : (isDark ? mapbox.MapboxStyles.DARK : mapbox.MapboxStyles.MAPBOX_STREETS);
+                        await _miniMapController!.loadStyleURI(styleUri);
+                        // Los annotation managers se pierden al cambiar de estilo: recrear marcador
+                        _currentMarker = null;
+                        final manager = await _miniMapController!.annotations.createCircleAnnotationManager();
+                        _markerManager = manager;
+                        await _updateMarker();
+                      },
+                      borderRadius: BorderRadius.circular(8),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Icon(
+                          _isSatelliteView ? Icons.map : Icons.satellite,
+                          size: 20,
+                          color: Colors.blue,
+                        ),
                       ),
                     ),
                   ),
@@ -540,6 +581,43 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
           );
         }
 
+      case 'AUDIO':
+        return FormField<File>(
+          initialValue: _audioData[field.id.toString()],
+          validator: field.required
+              ? (value) => value == null
+                  ? AppLocalizations.of(context)!.fieldRequired
+                  : null
+              : null,
+          builder: (formState) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                AudioRecorderField(
+                  questionId: field.id.toString(),
+                  initial: _audioData[field.id.toString()],
+                  onChanged: (file) {
+                    setState(() {
+                      if (file == null) {
+                        _audioData.remove(field.id.toString());
+                      } else {
+                        _audioData[field.id.toString()] = file;
+                      }
+                    });
+                    formState.didChange(file);
+                  },
+                ),
+                if (formState.hasError)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4, left: 4),
+                    child: Text(formState.errorText!,
+                        style: const TextStyle(color: Colors.red, fontSize: 12)),
+                  ),
+              ],
+            );
+          },
+        );
+
       case 'IMG':
       case 'IMAGE':
         return Column(
@@ -742,6 +820,7 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
           longitude: _currentLongitude,
           data: _formData,
           images: _imageData,
+          audios: _audioData,
         );
 
         if (mounted) {
@@ -772,6 +851,7 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
           longitude: _currentLongitude,
           data: _formData,
           images: _imageData,
+          audios: _audioData,
         );
         SyncService().refreshPendingCount();
 

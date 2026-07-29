@@ -1,4 +1,25 @@
 import 'package:flutter/foundation.dart';
+
+class ObservationAudio {
+  final int id;
+  final int questionId;
+  final String url;
+
+  ObservationAudio({
+    required this.id,
+    required this.questionId,
+    required this.url,
+  });
+
+  factory ObservationAudio.fromJson(Map<String, dynamic> json) {
+    return ObservationAudio(
+      id: json['id'] as int? ?? 0,
+      questionId: (json['question'] as int?) ?? 0,
+      url: (json['audio'] as String?) ?? '',
+    );
+  }
+}
+
 class Observation {
   final int id;
   final double latitude;
@@ -9,6 +30,7 @@ class Observation {
   final int fieldFormId;
   final Map<String, dynamic>? data;
   final List<String>? images;
+  final List<ObservationAudio>? audios;
   final List<Map<String, dynamic>>? adminValues;
   final bool isMine;
 
@@ -22,6 +44,7 @@ class Observation {
     required this.fieldFormId,
     this.data,
     this.images,
+    this.audios,
     this.adminValues,
     this.isMine = false,
   });
@@ -75,6 +98,16 @@ class Observation {
         }).where((url) => url.isNotEmpty).toList();
       }
 
+      // Parse audios — lista de {id, question, audio}
+      List<ObservationAudio>? audios;
+      if (json['audios'] != null && json['audios'] is List) {
+        audios = (json['audios'] as List)
+            .whereType<Map>()
+            .map((e) => ObservationAudio.fromJson(Map<String, dynamic>.from(e)))
+            .where((a) => a.url.isNotEmpty)
+            .toList();
+      }
+
       // Parse admin_values - lista de {key, label, value}
       List<Map<String, dynamic>>? adminValues;
       if (json['admin_values'] != null && json['admin_values'] is List) {
@@ -96,6 +129,7 @@ class Observation {
         fieldFormId: json['field_form'] ?? json['field_form_id'] ?? 0,
         data: parsedData,
         images: imageUrls,
+        audios: audios,
         adminValues: adminValues,
         isMine: json['is_mine'] == true,
       );

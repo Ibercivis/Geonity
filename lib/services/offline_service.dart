@@ -16,7 +16,7 @@ class OfflineService {
 
   static Database? _db;
   static const _dbName = 'geonity_offline.db';
-  static const _dbVersion = 3;
+  static const _dbVersion = 4;
 
   // M12: Cache the TileStore so it is not recreated on every call.
   static Future<TileStore>? _tileStoreFuture;
@@ -59,6 +59,7 @@ class OfflineService {
             longitude      REAL    NOT NULL,
             data_json      TEXT    NOT NULL,
             image_paths_json TEXT  NOT NULL,
+            audio_paths_json TEXT  NOT NULL DEFAULT '{}',
             created_at     TEXT    NOT NULL,
             attempts       INTEGER DEFAULT 0
           )
@@ -87,6 +88,15 @@ class OfflineService {
           try {
             await db.execute(
                 'ALTER TABLE offline_projects ADD COLUMN post_observation_message TEXT');
+          } catch (e) {
+            debugPrint('DB upgrade v$oldVersion→$newVersion: $e');
+          }
+        }
+        // Version 3→4: add audio_paths_json column to pending_observations
+        if (oldVersion < 4) {
+          try {
+            await db.execute(
+                "ALTER TABLE pending_observations ADD COLUMN audio_paths_json TEXT NOT NULL DEFAULT '{}'");
           } catch (e) {
             debugPrint('DB upgrade v$oldVersion→$newVersion: $e');
           }
@@ -302,6 +312,26 @@ class OfflineService {
     return paths;
   }
 
+  /// Copies one audio file per question to permanent app storage.
+  Future<String?> _copyAudioToPermanentStorage(
+      File audio, int projectId) async {
+    final dir = await getApplicationDocumentsDirectory();
+    final destDir = Directory('${dir.path}/offline_audios/$projectId');
+    if (!await destDir.exists()) {
+      await destDir.create(recursive: true);
+    }
+    try {
+      final filename =
+          '${DateTime.now().microsecondsSinceEpoch}_${p.basename(audio.path)}';
+      final dest = File('${destDir.path}/$filename');
+      await audio.copy(dest.path);
+      return dest.path;
+    } catch (e) {
+      debugPrint('Failed to copy audio ${audio.path}: $e');
+      return null;
+    }
+  }
+
   Future<int> enqueueObservation({
     required int fieldFormId,
     required int projectId,
@@ -309,6 +339,7 @@ class OfflineService {
     required double longitude,
     required Map<String, dynamic> data,
     Map<String, List<File>>? images,
+    Map<String, File>? audios,
   }) async {
     if (kIsWeb) return -1;
     final db = await database;
@@ -322,6 +353,15 @@ class OfflineService {
       }
     }
 
+    // Copy audios (1 per question) to permanent storage
+    final audioPathsMap = <String, String>{};
+    if (audios != null) {
+      for (final entry in audios.entries) {
+        final path = await _copyAudioToPermanentStorage(entry.value, projectId);
+        if (path != null) audioPathsMap[entry.key] = path;
+      }
+    }
+
     final id = await db.insert('pending_observations', {
       'field_form_id': fieldFormId,
       'project_id': projectId,
@@ -329,6 +369,7 @@ class OfflineService {
       'longitude': longitude,
       'data_json': jsonEncode(data),
       'image_paths_json': jsonEncode(imagePathsMap),
+      'audio_paths_json': jsonEncode(audioPathsMap),
       'created_at': DateTime.now().toIso8601String(),
       'attempts': 0,
     });

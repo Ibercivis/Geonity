@@ -111,12 +111,22 @@ class SyncService extends ChangeNotifier with WidgetsBindingObserver {
             }
           }
 
+          final audioPathsRaw =
+              jsonDecode((obs['audio_paths_json'] as String?) ?? '{}')
+                  as Map<String, dynamic>;
+          final audios = <String, File>{};
+          for (final entry in audioPathsRaw.entries) {
+            final f = File(entry.value as String);
+            if (f.existsSync()) audios[entry.key] = f;
+          }
+
           final success = await _observationService.createObservation(
             fieldFormId: obs['field_form_id'] as int,
             latitude: obs['latitude'] as double,
             longitude: obs['longitude'] as double,
             data: data,
             images: images.isEmpty ? null : images,
+            audios: audios.isEmpty ? null : audios,
           );
 
           if (success) {
