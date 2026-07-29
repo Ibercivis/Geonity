@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { GripVertical } from 'lucide-react'
+import { GripHorizontal, GripVertical } from 'lucide-react'
 import { Group, Panel, Separator } from 'react-resizable-panels'
 
 import { cn } from '@/lib/utils'
@@ -18,14 +18,21 @@ function ResizableHandle({
   return (
     <Separator
       className={cn(
-        'relative flex bg-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 aria-[orientation=vertical]:h-full aria-[orientation=vertical]:w-px aria-[orientation=vertical]:cursor-col-resize aria-[orientation=horizontal]:h-px aria-[orientation=horizontal]:w-full aria-[orientation=horizontal]:cursor-row-resize',
+        'group relative flex items-center justify-center bg-border transition-colors hover:bg-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+        'aria-[orientation=vertical]:h-full aria-[orientation=vertical]:w-1 aria-[orientation=vertical]:cursor-col-resize',
+        'aria-[orientation=horizontal]:h-2 aria-[orientation=horizontal]:w-full aria-[orientation=horizontal]:cursor-row-resize',
         className
       )}
       {...props}
     >
       {withHandle ? (
-        <div className="z-10 flex h-5 w-5 items-center justify-center rounded-sm border bg-background">
-          <GripVertical className="h-3 w-3" />
+        <div className="z-10 hidden h-5 w-8 items-center justify-center rounded-sm border bg-background shadow-sm group-hover:border-primary/50 group-hover:bg-primary/5 group-aria-[orientation=horizontal]:flex">
+          <GripHorizontal className="h-3 w-3 text-muted-foreground group-hover:text-primary" />
+        </div>
+      ) : null}
+      {withHandle ? (
+        <div className="z-10 hidden h-8 w-5 items-center justify-center rounded-sm border bg-background shadow-sm group-hover:border-primary/50 group-hover:bg-primary/5 group-aria-[orientation=vertical]:flex">
+          <GripVertical className="h-3 w-3 text-muted-foreground group-hover:text-primary" />
         </div>
       ) : null}
     </Separator>
