@@ -1,0 +1,60 @@
+Geonity — Publicar nueva versión en App Store
+==============================================
+
+1. Bumpear versión
+   - Edita pubspec.yaml → `version: 1.x.y+N` (sube N o el patch según toque).
+   - Asegura entry en assets/changelog/changelog.md (lo hace generate_changelog.sh --prod).
+
+2. Sincronizar config Flutter → Xcode
+   $ flutter build ios --config-only --release
+   Verifica: `grep FLUTTER_BUILD_NUMBER ios/Flutter/Generated.xcconfig` coincide con pubspec.
+
+3. Abrir Xcode
+   $ open ios/Runner.xcworkspace
+   - Target Runner → Signing & Capabilities: Team "Fundación Ibercivis" (6RWV382T9P).
+   - Destination en la barra superior: "Any iOS Device (arm64)".
+
+4. Compilar archive
+   - Product → Clean Build Folder (Cmd+Shift+K).
+   - Product → Archive.
+
+5. Distribuir (manual signing)
+   Organizer (se abre al terminar el archive) → Distribute App:
+   - App Store Connect → Upload
+   - Distribution Options: ✓ Upload symbols  ✓ Strip Swift  ✗ Manage Version
+   - Re-sign: Manually manage signing
+       Certificate: Apple Distribution: Fundación Ibercivis
+       Profile:     Geonity App Store Distribution
+   - Review: confirma versión correcta y "Apple Distribution" → Upload.
+
+6. App Store Connect — completar versión
+   https://appstoreconnect.apple.com → Geonity → App Store → "+ Version or Platform" → iOS → 1.x.y.
+   - What's New in This Version (release notes).
+   - Build → "+" → seleccionar el build subido (espera ~5-15 min de procesado).
+   - Screenshots si la UI cambió.
+   - App Review Information: cuenta de prueba + contacto.
+   - Export Compliance: auto "No" (ITSAppUsesNonExemptEncryption=false en Info.plist).
+
+7. Enviar a revisión
+   "Add for Review" → "Submit to App Review".
+   Apple tarda 24-48h normalmente.
+
+
+Notas / gotchas conocidos
+-------------------------
+- Bundle IDs son distintos por plataforma:
+    iOS     com.ibercivis.geonity
+    Android es.ibercivis.geonity
+- El Archive de Xcode siempre sale firmado con Apple Development cert; la
+  firma de Distribution se aplica en el paso "Manually manage signing"
+  durante Distribute. Es correcto, no lo confundas con un fallo.
+- Si Apple rechaza con ITMS-90683 (Missing purpose string), añade la
+  NS*UsageDescription que indique en Info.plist y vuelve a subir con un
+  build number nuevo. SDKs como Mapbox referencian APIs aunque tú no
+  las uses (mic, location always, motion, etc.).
+- Tras bumpear pubspec.yaml hay que correr `flutter build ios --config-only
+  --release` para que Generated.xcconfig se sincronice. Sin ese paso,
+  Xcode archiva con el build number antiguo.
+- Si aparece un banner "Apple Developer Program License Agreement has been
+  updated", solo el Account Holder (jbarba) puede aceptarlo en
+  developer.apple.com → bloquea todas las subidas hasta que lo haga.
