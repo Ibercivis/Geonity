@@ -1,0 +1,20 @@
+{% extends "email/base.html" %}
+{% load i18n %}
+
+{% block subject %}{{ subject }}{% endblock %}
+
+{% block content %}
+  <h1 style="margin:0 0 8px 0;font-size:24px;font-weight:700;color:#111827;">{{ subject }}</h1>
+  <p style="margin:0 0 24px 0;font-size:13px;color:#6b7585;">
+    {% blocktrans with name=project_name %}Proyecto: {{ name }}{% endblocktrans %}
+  </p>
+
+  <!-- Body -->
+  <table cellpadding="0" cellspacing="0" width="100%" style="background-color:#f0f2f8;border-radius:8px;margin-bottom:28px;">
+    <tr>
+      <td style="padding:20px 24px;">
+        <p style="margin:0;font-size:15px;line-height:1.8;color:#111827;white-space:pre-line;">{{ body }}</p>
+      </td>
+    </tr>
+  </table>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% load i18n %}{% get_current_language as LANGUAGE_CODE %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block subject %}Geonity{% endblock %}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f0f2f8;font-family:Arial,Helvetica,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f0f2f8;padding:32px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e2e5ed;">
+
+          <!-- Header -->
+          <tr>
+            <td style="background-color:#111827;padding:24px 32px;text-align:center;">
+              <img src="https://geonity.ibercivis.es/assets/logo-B882rnpU.webp" alt="Geonity" height="40" style="display:inline-block;">
+            </td>
+          </tr>
+
+          <!-- Content -->
+          <tr>
+            <td style="padding:40px 32px 32px 32px;color:#111827;">
+              {% block content %}{% endblock %}
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color:#f0f2f8;padding:20px 32px;border-top:1px solid #e2e5ed;text-align:center;">
+              <p style="margin:0;font-size:12px;color:#6b7585;">{% trans "Este es un email automático, por favor no responder." %}</p>
+              <p style="margin:8px 0 0 0;font-size:12px;color:#6b7585;">© Geonity · <a href="https://geonity.ibercivis.es" style="color:#2563eb;text-decoration:none;">geonity.ibercivis.es</a></p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

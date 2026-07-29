@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restablecer Contraseña - Geonity</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0;
+        }
+        .header img {
+            width: 100%; /* Ancho completo del contenedor */
+            height: auto; /* Altura automática para mantener la relación de aspecto */
+        }
+        .content {
+            padding: 20px;
+            text-align: center;
+        }
+        .footer {
+            padding: 10px;
+            text-align: center;
+            font-size: 12px;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 20px;
+            background-color: #008CBA;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        input[type="password"] {
+            padding: 10px;
+            margin-top: 10px;
+            width: 95%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://geonity.ibercivis.es/static/img/header_geonity.png" alt="Cabecera Geonity" />
+        </div>
+        <div class="content">
+            <h1>Restablecer Contraseña</h1>
+            <form id="password-reset-form">
+                <input type="hidden" id="uid" value="{{ uid }}">
+                <input type="hidden" id="token" value="{{ token }}">
+                <input type="password" id="new-password" placeholder="Nueva Contraseña" required><br>
+                <input type="password" id="confirm-password" placeholder="Confirmar Nueva Contraseña" required><br>
+                <button type="submit" class="button">Confirmar Cambio de Contraseña</button>
+            </form>
+        </div>
+        <div class="footer">
+            <p>Si no has solicitado cambiar tu contraseña, ignora este procedimiento.</p>
+        </div>
+    </div>
+    <script>
+        document.getElementById('password-reset-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var uid = document.getElementById('uid').value;
+            var token = document.getElementById('token').value;
+            var newPassword = document.getElementById('new-password').value;
+            var confirmPassword = document.getElementById('confirm-password').value;
+
+            // Validación de las contraseñas
+            if (newPassword !== confirmPassword) {
+                showToast('Las contraseñas no coinciden.');
+                return;
+            }
+
+            if (newPassword.length < 8 || !newPassword.match(/^[a-zA-Z0-9]+$/)) {
+                showToast('La contraseña debe tener al menos 8 caracteres alfanuméricos.');
+                return;
+            }
+
+            var data = {
+                uid: uid,
+                token: token,
+                new_password1: newPassword,
+                new_password2: confirmPassword
+            };
+
+            fetch('{{ request.scheme }}://{{ request.get_host }}/api/users/authentication/password/reset/confirm/' + uid + '/' + token, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => {
+                return response.json().then(body => ({ ok: response.ok, body }));
+            })
+            .then(({ ok, body }) => {
+                if (!ok) {
+                    var messages = [];
+                    Object.values(body).forEach(function(errors) {
+                        if (Array.isArray(errors)) {
+                            errors.forEach(function(e) { messages.push(e); });
+                        } else {
+                            messages.push(errors);
+                        }
+                    });
+                    showToast(messages.join('\n'));
+                    return;
+                }
+                window.location.href = '{{ request.scheme }}://{{ request.get_host }}/api/users/recovery_success';
+            })
+            .catch(function() {
+                showToast('Error de conexión. Inténtalo de nuevo.');
+            });
+        });
+
+        function showToast(message) {
+            var toast = document.createElement("div");
+            toast.style.whiteSpace = 'pre-line';
+            toast.textContent = message;
+            toast.style.position = 'fixed';
+            toast.style.bottom = '10px';
+            toast.style.left = '10px';
+            toast.style.padding = '10px';
+            toast.style.backgroundColor = 'red';
+            toast.style.color = 'white';
+            toast.style.borderRadius = '5px';
+
+            document.body.appendChild(toast);
+
+            // Hacer que el Toast desaparezca después de unos segundos
+            setTimeout(function() {
+                document.body.removeChild(toast);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

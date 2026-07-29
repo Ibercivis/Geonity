@@ -1,0 +1,9 @@
+¡Bienvenido a Geonity!
+
+Estamos emocionados de tenerte como parte de nuestra comunidad y esperamos que disfrutes de la experiencia recopilando datos en tiempo real.
+
+{{ user.username }}, estás a punto de sumergirte en un mundo donde la información fluye de forma instantánea, permitiéndote participar, crear nuevos proyectos y establecer tu propia organización.
+
+Pero, antes de nada, necesitamos que actives tu cuenta haciendo click en el siguiente link: {{ key }}
+
+¡Nos vemos en Geonity!

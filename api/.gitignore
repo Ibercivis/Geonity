@@ -1,0 +1,13 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+*env
+*out
+*sqlite3
+
+media/*
+uwsgi.ini
+# collectstatic output
+static/

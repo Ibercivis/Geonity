@@ -1,0 +1,33 @@
+{% extends "email/base.html" %}
+{% load i18n %}
+
+{% block subject %}{% blocktrans with name=project_name %}Invitación a {{ name }}{% endblocktrans %}{% endblock %}
+
+{% block content %}
+  <h1 style="margin:0 0 16px 0;font-size:24px;font-weight:700;color:#111827;">
+    {% trans "Te han invitado a un proyecto" %}
+  </h1>
+  <p style="margin:0 0 20px 0;font-size:15px;line-height:1.6;color:#111827;">
+    {% blocktrans with inviter=invited_by name=project_name %}
+      <strong>{{ inviter }}</strong> te ha invitado a unirte al proyecto <strong>{{ name }}</strong> como administrador.
+    {% endblocktrans %}
+  </p>
+
+  <!-- Project card -->
+  <table cellpadding="0" cellspacing="0" width="100%" style="background-color:#f0f2f8;border-radius:8px;margin-bottom:28px;">
+    <tr>
+      <td style="padding:20px 24px;">
+        <p style="margin:0 0 4px 0;font-size:13px;font-weight:600;color:#6b7585;text-transform:uppercase;letter-spacing:0.05em;">{% trans "Proyecto" %}</p>
+        <p style="margin:0;font-size:18px;font-weight:700;color:#111827;">{{ project_name }}</p>
+      </td>
+    </tr>
+  </table>
+
+  <p style="margin:0 0 28px 0;font-size:14px;color:#6b7585;">
+    {% blocktrans %}Descarga la app o visita <a href="https://geonity.ibercivis.es" style="color:#4f6ef7;text-decoration:none;">Geonity</a> para aceptar o rechazar la invitación.{% endblocktrans %}
+  </p>
+
+  <p style="margin:0;font-size:13px;color:#6b7585;border-top:1px solid #e2e5ed;padding-top:16px;">
+    {% trans "Esta invitación expirará en 30 días." %}
+  </p>
+{% endblock %}

@@ -1,0 +1,176 @@
+[
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Ecología y Medio Ambiente"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Biodiversidad"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Educación"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Biología"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Ciencias Sociales"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Clima y Meteorología"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Animales"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Salud y Medicina"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Agricultura"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Alimentación"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Arqueología"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Astronomía y Espacio"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Aves"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Biogeografía"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Ciencias Políticas"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Culturas Indígenas"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Genética"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Geografía"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Geología y Ciencias de la Tierra"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Gestión de los Recursos Naturales"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Información y Ciencias de la Computación"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Insectos y Polinizadores"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Monitorización de Especies a Largo Plazo"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Naturaleza y Aire Libre"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Océano, Agua, Mar y Tierra"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Física"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Química"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Sonido"
+        }
+    },
+    {
+        "model": "project.topic",
+        "fields": {
+            "topic": "Transporte"
+        }
+    }
+]

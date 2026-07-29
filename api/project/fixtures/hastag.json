@@ -1,0 +1,33 @@
+[
+				{
+								"model": "project.hasTag",
+								"fields": {
+												"hasTag": "Fees applicable"
+								}
+				},
+				{
+								"model": "project.hasTag",
+								"fields": {
+												"hasTag": "Suitable for children"
+								}
+				},
+				{
+								"model": "project.hasTag",
+								"fields": {
+												"hasTag": "Teaching materials available"
+								}
+				},
+				{
+								"model": "project.hasTag",
+								"fields": {
+												"hasTag": "Do-it-yourself"
+								}
+				},
+				{
+								"model": "project.hasTag",
+								"fields": {
+												"hasTag": "Participate from home"
+								}
+				}
+
+]
