@@ -237,9 +237,14 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
           Expanded(
             child: Form(
               key: _formKey,
-              child: ListView(
+              // SingleChildScrollView en lugar de ListView: un ListView destruye
+              // el estado de los hijos fuera de pantalla al hacer scroll y se
+              // perdían las selecciones de los MCHOICE y los textos escritos.
+              child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
-                children: [
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
             // Campos dinámicos del formulario
             ...widget.fields.map((field) => _buildFieldWidget(field)),
 
@@ -270,7 +275,8 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
             ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -499,8 +505,12 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
         }
         {
           final key = field.id.toString();
+          // La selección se replica en _formData ('${key}_selected') para que
+          // sobreviva si el FormField se reconstruye; el estado interno solo
+          // vive mientras el widget esté montado.
           return FormField<List<String>>(
-            initialValue: const [],
+            initialValue:
+                (_formData['${key}_selected'] as List?)?.cast<String>() ?? const [],
             validator: field.required
                 ? (value) => (value == null || value.where((v) => v != '__other__').isEmpty)
                     ? AppLocalizations.of(context)!.selectAtLeastOneOption
@@ -529,6 +539,7 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
                       onChanged: (checked) {
                         final current = List<String>.from(formState.value ?? []);
                         checked == true ? current.add(value) : current.remove(value);
+                        _formData['${key}_selected'] = current;
                         formState.didChange(current);
                       },
                       contentPadding: EdgeInsets.zero,
@@ -547,6 +558,7 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
                           current.remove('__other__');
                           setState(() => _formData['${key}_other_text'] = null);
                         }
+                        _formData['${key}_selected'] = current;
                         formState.didChange(current);
                         setState(() {});
                       },
@@ -557,6 +569,7 @@ class _AddObservationScreenState extends State<AddObservationScreen> {
                       Padding(
                         padding: const EdgeInsets.only(left: 16, bottom: 8),
                         child: TextFormField(
+                          initialValue: _formData['${key}_other_text'] as String?,
                           textCapitalization: TextCapitalization.sentences,
                           decoration: InputDecoration(
                             hintText: AppLocalizations.of(context)!.specify,
