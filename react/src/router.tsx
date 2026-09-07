@@ -15,6 +15,8 @@ import { PrivacyPolicyPage } from '@/pages/PrivacyPolicyPage'
 import { TermsOfUsePage } from '@/pages/TermsOfUsePage'
 import { AboutPage } from '@/pages/AboutPage'
 import { PublicMapPage } from '@/pages/PublicMapPage'
+import { ContributePageLazy } from '@/pages/ContributePageLazy'
+import { RouteErrorPage } from '@/pages/RouteErrorPage'
 import { useAuthStore } from '@/store/auth'
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
@@ -27,6 +29,11 @@ export const router = createBrowserRouter([
   {
     path: '/map/:id',
     element: <PublicMapPage />,
+  },
+  {
+    path: '/contribute/:token',
+    element: <ContributePageLazy />,
+    errorElement: <RouteErrorPage />,
   },
   {
     path: '/login',

@@ -197,6 +197,11 @@ export function ObservationPanel({
                 {observation?.is_mine && (
                   <Badge variant="secondary" className="text-xs shrink-0">{t('mine')}</Badge>
                 )}
+                {observation?.is_anonymous && (
+                  <Badge variant="outline" className="text-xs shrink-0" title={observation.anonymous_id ?? undefined}>
+                    {t('anonymous')}{observation.anonymous_id ? ` · ${observation.anonymous_id.slice(0, 4)}` : ''}
+                  </Badge>
+                )}
               </div>
               <SheetClose asChild>
                 <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0">

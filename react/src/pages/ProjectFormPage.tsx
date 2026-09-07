@@ -28,6 +28,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { CoverCropDialog } from '@/components/ui/cover-crop-dialog'
 import { LocalizedField, LOCALIZED_LANGS, type LocalizedLang } from '@/components/ui/localized-field'
 import { CountrySelect } from '@/components/ui/country-select'
+import { AnonymousQrBlock } from '@/components/project/AnonymousQrBlock'
 import { projectsApi } from '@/api/projects'
 import { config } from '@/config/env'
 import { orgsApi } from '@/api/organizations'
@@ -130,6 +131,7 @@ interface FormState {
   emailOnObservation: boolean
   draft: boolean
   publicMap: boolean
+  anonymousContribution: boolean
 }
 
 const emptyForm = (): FormState => ({
@@ -154,6 +156,7 @@ const emptyForm = (): FormState => ({
   emailOnObservation: false,
   draft: true,
   publicMap: false,
+  anonymousContribution: false,
 })
 
 
@@ -333,6 +336,7 @@ export function ProjectFormPage() {
       emailOnObservation: project.email_on_observation ?? false,
       draft: project.draft ?? true,
       publicMap: project.public_map ?? false,
+      anonymousContribution: project.anonymous_contribution ?? false,
     })
   }, [project, existingFieldForm])
 
@@ -380,6 +384,7 @@ export function ProjectFormPage() {
       fd.append('email_on_observation', String(form.emailOnObservation))
       fd.append('draft', String(form.draft))
       fd.append('public_map', String(form.publicMap))
+      fd.append('anonymous_contribution', String(form.anonymousContribution && !form.isPrivate))
       if (!form.isGlobal) fd.append('countries', JSON.stringify(form.countries))
 
       const buildQuestions = () => form.fields.map((f, i) => ({
@@ -420,6 +425,7 @@ export function ProjectFormPage() {
             email_on_observation: form.emailOnObservation,
             draft: form.draft,
             public_map: form.publicMap,
+            anonymous_contribution: form.anonymousContribution && !form.isPrivate,
           }
           if (!form.isGlobal) body.countries = form.countries
           if (form.isPrivate && form.rawPassword) body.raw_password = form.rawPassword
@@ -851,7 +857,7 @@ export function ProjectFormPage() {
 
                   {/* 2. Private */}
                   <div className="flex items-center gap-3 py-3">
-                    <Switch checked={form.isPrivate} onCheckedChange={(v) => set('isPrivate', v)} />
+                    <Switch checked={form.isPrivate} onCheckedChange={(v) => { set('isPrivate', v); if (v) set('anonymousContribution', false) }} />
                     <Lock className="h-4 w-4 text-muted-foreground shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium">{t('private')}</p>
@@ -906,6 +912,31 @@ export function ProjectFormPage() {
                         </div>
                       )
                     })()}
+                  </div>
+
+                  {/* 3b. Anonymous contribution (QR) */}
+                  <div className="py-3 space-y-3">
+                    <div className="flex items-center gap-3">
+                      <Switch
+                        checked={form.anonymousContribution && !form.isPrivate}
+                        disabled={form.isPrivate}
+                        onCheckedChange={(v) => set('anonymousContribution', v)}
+                      />
+                      <QrCode className="h-4 w-4 text-muted-foreground shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className={`text-sm font-medium ${form.isPrivate ? 'text-muted-foreground' : ''}`}>{t('anonymousContribution')}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {form.isPrivate ? t('anonymousContributionPrivateHint') : t('anonymousContributionDesc')}
+                        </p>
+                      </div>
+                    </div>
+                    {form.anonymousContribution && !form.isPrivate && isEdit && (
+                      <AnonymousQrBlock
+                        projectId={projectId!}
+                        projectName={form.name}
+                        token={project?.anonymous_contribution ? project?.anonymous_token : null}
+                      />
+                    )}
                   </div>
 
                   {/* 4. Private data */}

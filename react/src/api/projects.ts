@@ -127,4 +127,8 @@ export const projectsApi = {
 
   deleteObservation: (id: number) =>
     api.delete(`/observations/${id}/`),
+
+  /** Rotates the project's anonymous-contribution token; previously printed QR codes stop working. */
+  regenerateAnonymousToken: (id: number) =>
+    api.post<{ anonymous_token: string }>(`/project/${id}/regenerate-anonymous-token/`).then((r) => r.data),
 }

@@ -46,6 +46,8 @@ interface ProjectMapProps {
   onObservationClick?: (obs: Observation) => void
   onZoomChange?: (zoom: number) => void
   pickingMode?: boolean
+  /** Text of the floating hint in picking mode. Defaults to t('selectLocation'). Pass null to hide it. */
+  pickingHint?: string | null
   pickedLocation?: [number, number] | null
   initialViewState?: { longitude: number; latitude: number; zoom: number }
   selectedObsId?: number | null
@@ -91,6 +93,7 @@ export function ProjectMap({
   onObservationClick,
   onZoomChange,
   pickingMode = false,
+  pickingHint,
   pickedLocation,
   initialViewState,
   selectedObsId,
@@ -315,10 +318,10 @@ export function ProjectMap({
       </div>
 
       {/* Picking mode hint */}
-      {pickingMode && (
+      {pickingMode && pickingHint !== null && (
         <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
           <Badge variant="secondary" className="shadow-md bg-background/90 backdrop-blur-sm text-foreground">
-            {t('selectLocation')}
+            {pickingHint ?? t('selectLocation')}
           </Badge>
         </div>
       )}

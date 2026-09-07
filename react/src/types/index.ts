@@ -149,6 +149,10 @@ export interface Project {
   email_on_observation?: boolean
   draft?: boolean
   public_map?: boolean
+  /** Anonymous (QR) contributions enabled. Mutually exclusive with is_private. */
+  anonymous_contribution?: boolean
+  /** Unguessable token used in the public /contribute/<token> URL. Read-only; regenerate via API. */
+  anonymous_token?: string | null
   last_observation?: string | null
   created_at?: string
 }
@@ -224,6 +228,10 @@ export interface Observation {
   images: (string | { id: number; image: string; question: number })[]
   admin_values: AdminValue[]
   is_mine: boolean
+  /** True when submitted without an account (creator is null). */
+  is_anonymous?: boolean
+  /** Short prefix of the anonymous browser id, if the backend exposes it. */
+  anonymous_id?: string | null
   description?: string
   project_id?: number
   project_name?: string

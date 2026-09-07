@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import {
-  Heart, Download, Plus, Trash2, Edit, Lock, Users, ArrowLeft, Filter, EyeOff, Archive, MapPin, Globe, Loader2
+  Heart, Download, Plus, Trash2, Edit, Lock, Users, ArrowLeft, Filter, EyeOff, Archive, MapPin, Globe, Loader2, QrCode,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -21,6 +21,7 @@ import { Sheet, SheetContent } from '@/components/ui/sheet'
 import { Input } from '@/components/ui/input'
 import { ProjectMap } from '@/components/map/ProjectMap'
 import { ObservationPanel } from '@/components/map/ObservationPanel'
+import { AnonymousQrDialog } from '@/components/project/AnonymousQrDialog'
 import { projectsApi } from '@/api/projects'
 import { resolveLocalized, mediaUrl, parseGeoposition } from '@/lib/utils'
 import { toast } from '@/hooks/use-toast'
@@ -40,6 +41,7 @@ export function ProjectDetailPage() {
   const [myObsOnly, setMyObsOnly] = useState(false)
   const [hexZoom, setHexZoom] = useState(2)
   const [passwordDialog, setPasswordDialog] = useState(false)
+  const [qrDialog, setQrDialog] = useState(false)
   const [passwordInput, setPasswordInput] = useState('')
   const [unlocked, setUnlocked] = useState(false)
   const [deleteDialog, setDeleteDialog] = useState(false)
@@ -270,8 +272,29 @@ export function ProjectDetailPage() {
             {project.is_private && <Badge variant="secondary"><Lock className="h-3 w-3 mr-1" /> {t('private')}</Badge>}
             {(project.fuzzy || project.is_fuzzy) && <Badge variant="outline">{t('fuzzyLocations')}</Badge>}
             {project.is_global && <Badge variant="outline"><Globe className="h-3 w-3 mr-1" /> {t('global')}</Badge>}
+            {project.anonymous_contribution && (
+              project.anonymous_token ? (
+                <button
+                  type="button"
+                  onClick={() => setQrDialog(true)}
+                  title={t('anonymousContribution')}
+                  className="inline-flex"
+                >
+                  <Badge variant="outline" className="border-cyan-400 text-cyan-700 cursor-pointer hover:bg-cyan-50">
+                    <QrCode className="h-3 w-3 mr-1" /> {t('anonymous')}
+                  </Badge>
+                </button>
+              ) : (
+                <Badge variant="outline" className="border-cyan-400 text-cyan-700" title={t('anonymousContribution')}>
+                  <QrCode className="h-3 w-3 mr-1" /> {t('anonymous')}
+                </Badge>
+              )
+            )}
           </div>
         </div>
+        {project.anonymous_token && (
+          <AnonymousQrDialog open={qrDialog} onOpenChange={setQrDialog} token={project.anonymous_token} projectName={name} />
+        )}
 
         <div className="flex gap-4 text-sm">
           <span className="flex items-center gap-1 text-muted-foreground">
