@@ -47,6 +47,7 @@ export const router = createBrowserRouter([
   {
     path: '/',
     element: <AppLayout />,
+    errorElement: <RouteErrorPage />,
     children: [
       // Public — accessible with or without auth
       { path: 'privacy-policy', element: <PrivacyPolicyPage /> },
