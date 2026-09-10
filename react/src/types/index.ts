@@ -39,6 +39,8 @@ export interface UserProfile {
   visibility: boolean
   country: string | { code: string; name: string }
   cover: string | null
+  /** Language for automatic emails: es, en, fr, pt, it, de, or '' for no preference. */
+  language?: string
 }
 
 // ─── Multilingual ─────────────────────────────────────────────────────────────

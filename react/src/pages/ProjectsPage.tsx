@@ -308,6 +308,19 @@ function ProjectCard({ project, lang, coverUrl, onOpen, onLike }: ProjectCardPro
               <TooltipContent>{t('inviteAdmin')}</TooltipContent>
             </Tooltip>
           )}
+          {(project.is_creator || project.is_admin) && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  className="flex items-center justify-center h-6 w-6 rounded-full bg-slate-700 text-white shadow hover:bg-slate-800 transition-colors"
+                  onClick={(e) => { e.stopPropagation(); navigate(`/projects/${project.id}/stats`) }}
+                >
+                  <BarChart3 className="h-3.5 w-3.5" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>{t('stats')}</TooltipContent>
+            </Tooltip>
+          )}
         </div>
 
         {/* Top-right: status badges */}

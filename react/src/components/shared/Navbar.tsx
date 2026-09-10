@@ -16,6 +16,7 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { useAuthStore } from '@/store/auth'
 import { orgsApi } from '@/api/organizations'
+import { authApi } from '@/api/auth'
 import { projectsApi } from '@/api/projects'
 import { cn } from '@/lib/utils'
 
@@ -38,6 +39,12 @@ export function Navbar() {
   const handleLogout = () => {
     logout()
     navigate('/login')
+  }
+
+  const changeLanguage = (code: string) => {
+    i18n.changeLanguage(code)
+    // The backend sends automatic emails in Profile.language; keep it aligned with the UI choice.
+    if (user) authApi.updateLanguage(code).then((p) => useAuthStore.getState().setProfile(p)).catch(() => {})
   }
 
   const { data: pendingOrgInvitations = [] } = useQuery({
@@ -121,7 +128,7 @@ export function Navbar() {
               {LANGUAGES.map((lang) => (
                 <DropdownMenuItem
                   key={lang.code}
-                  onClick={() => i18n.changeLanguage(lang.code)}
+                  onClick={() => changeLanguage(lang.code)}
                   className={cn(i18n.language === lang.code && 'font-semibold')}
                 >
                   {lang.label}

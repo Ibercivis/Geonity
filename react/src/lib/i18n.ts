@@ -202,6 +202,9 @@ const resources = {
       emailOnObservation: 'Email on observation',
       emailOnObservationDesc: 'Receive an email each time someone submits an observation',
       // Stats
+      emailLanguage: 'Email language',
+      emailLanguageDesc: 'Language for the emails Geonity sends you. Changing the site language also updates it.',
+      emailLanguageNone: 'No preference (Spanish)',
       stats: 'Statistics',
       statsMine: 'My statistics',
       statsPlatform: 'Platform statistics',
@@ -643,6 +646,9 @@ const resources = {
       emailOnObservation: 'Email al recibir observación',
       emailOnObservationDesc: 'Recibe un email cada vez que alguien envíe una observación',
       // Stats
+      emailLanguage: 'Idioma de los correos',
+      emailLanguageDesc: 'Idioma en el que Geonity te envía los correos. Cambiar el idioma de la web también lo actualiza.',
+      emailLanguageNone: 'Sin preferencia (español)',
       stats: 'Estadísticas',
       statsMine: 'Mis estadísticas',
       statsPlatform: 'Estadísticas de la plataforma',
@@ -1084,6 +1090,9 @@ const resources = {
       emailOnObservation: 'Email ao receber observação',
       emailOnObservationDesc: 'Receba um email cada vez que alguém enviar uma observação',
       // Stats
+      emailLanguage: 'Idioma dos emails',
+      emailLanguageDesc: 'Idioma em que o Geonity lhe envia os emails. Mudar o idioma do site também o atualiza.',
+      emailLanguageNone: 'Sem preferência (espanhol)',
       stats: 'Estatísticas',
       statsMine: 'As minhas estatísticas',
       statsPlatform: 'Estatísticas da plataforma',
@@ -1525,6 +1534,9 @@ const resources = {
       emailOnObservation: 'Email alla ricezione di un\'osservazione',
       emailOnObservationDesc: 'Ricevi un\'email ogni volta che qualcuno invia un\'osservazione',
       // Stats
+      emailLanguage: 'Lingua delle email',
+      emailLanguageDesc: 'Lingua in cui Geonity ti invia le email. Cambiare la lingua del sito la aggiorna anche.',
+      emailLanguageNone: 'Nessuna preferenza (spagnolo)',
       stats: 'Statistiche',
       statsMine: 'Le mie statistiche',
       statsPlatform: 'Statistiche della piattaforma',
@@ -1982,6 +1994,9 @@ const resources = {
       emailOnObservation: 'Email à la réception d\'une observation',
       emailOnObservationDesc: 'Recevez un email chaque fois que quelqu\'un soumet une observation',
       // Stats
+      emailLanguage: 'Langue des e-mails',
+      emailLanguageDesc: 'Langue dans laquelle Geonity vous envoie les e-mails. Changer la langue du site la met aussi à jour.',
+      emailLanguageNone: 'Sans préférence (espagnol)',
       stats: 'Statistiques',
       statsMine: 'Mes statistiques',
       statsPlatform: 'Statistiques de la plateforme',
@@ -2435,6 +2450,9 @@ const resources = {
       emailOnObservation: 'E-Mail bei Beobachtung',
       emailOnObservationDesc: 'Erhalten Sie eine E-Mail, wenn jemand eine Beobachtung einsendet',
       // Stats
+      emailLanguage: 'E-Mail-Sprache',
+      emailLanguageDesc: 'Sprache, in der Geonity Ihnen E-Mails sendet. Das Ändern der Website-Sprache aktualisiert sie ebenfalls.',
+      emailLanguageNone: 'Keine Präferenz (Spanisch)',
       stats: 'Statistiken',
       statsMine: 'Meine Statistiken',
       statsPlatform: 'Plattform-Statistiken',
