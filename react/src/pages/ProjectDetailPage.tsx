@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import {
-  Heart, Download, Plus, Trash2, Edit, Lock, Users, ArrowLeft, Filter, EyeOff, Archive, MapPin, Globe, Loader2, QrCode,
+  Heart, Download, Plus, Trash2, Edit, Lock, Users, ArrowLeft, Filter, EyeOff, Archive, MapPin, Globe, Loader2, QrCode, BarChart3,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -384,6 +384,9 @@ export function ProjectDetailPage() {
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t('admin')}</p>
           <Button variant="outline" className="w-full" onClick={() => navigate(`/projects/${projectId}/edit`)}>
             <Edit className="h-4 w-4 mr-2" /> {t('edit')}
+          </Button>
+          <Button variant="outline" className="w-full" onClick={() => navigate(`/projects/${projectId}/stats`)}>
+            <BarChart3 className="h-4 w-4 mr-2" /> {t('stats')}
           </Button>
           <Button variant="outline" className="w-full" onClick={() => setInviteDialog(true)}>
             <Users className="h-4 w-4 mr-2" /> {t('invite')}

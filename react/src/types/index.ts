@@ -26,6 +26,8 @@ export interface User {
   terms_version: string | null
   privacy_accepted_at: string | null
   privacy_version: string | null
+  /** Platform staff. Only present on the "who am I" endpoint, never on user lists. */
+  is_staff?: boolean
 }
 
 export interface UserProfile {
@@ -147,6 +149,10 @@ export interface Project {
   ended?: boolean
   allowed_platforms?: 'all' | 'mobile' | 'web'
   email_on_observation?: boolean
+  /** Monthly project report to creator and admins. Defaults to true on the backend. */
+  email_monthly_stats?: boolean
+  /** First publication date (immutable, read-only). Null if never published. */
+  published_at?: string | null
   draft?: boolean
   public_map?: boolean
   /** Anonymous (QR) contributions enabled. Mutually exclusive with is_private. */

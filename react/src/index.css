@@ -25,6 +25,11 @@
     --ring: 221 83% 53%;
     --radius: 0.5rem;
     --brand-dark: 221 39% 11%;
+    /* Stats charts (validated categorical slots + neutral for "unknown") */
+    --stats-1: #2a78d6;
+    --stats-2: #eb6834;
+    --stats-3: #1baf7a;
+    --stats-neutral: #8a8f98;
   }
 
   .dark {
@@ -48,6 +53,10 @@
     --input: 221 28% 20%;
     --ring: 221 83% 58%;
     --brand-dark: 221 39% 11%;
+    --stats-1: #3987e5;
+    --stats-2: #d95926;
+    --stats-3: #199e70;
+    --stats-neutral: #8b909a;
   }
 }
 

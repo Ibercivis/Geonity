@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Globe, LogOut, User, Bell, Menu } from 'lucide-react'
+import { Globe, LogOut, User, Bell, Menu, BarChart3, ShieldCheck } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import logoSrc from '@/assets/logo.webp'
@@ -158,6 +158,16 @@ export function Navbar() {
                     <User className="mr-2 h-4 w-4" />
                     {t('profile')}
                   </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/stats')}>
+                    <BarChart3 className="mr-2 h-4 w-4" />
+                    {t('statsMine')}
+                  </DropdownMenuItem>
+                  {user.is_staff && (
+                    <DropdownMenuItem onClick={() => navigate('/admin/stats')}>
+                      <ShieldCheck className="mr-2 h-4 w-4" />
+                      {t('statsPlatform')}
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout} className="text-destructive">
                     <LogOut className="mr-2 h-4 w-4" />

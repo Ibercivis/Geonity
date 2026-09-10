@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Plus, Heart, Search, Filter, Lock, Crown, Shield, MapPin, Globe, UserPlus, EyeOff, Archive } from 'lucide-react'
+import { Plus, Heart, Search, Filter, Lock, Crown, Shield, MapPin, Globe, UserPlus, EyeOff, Archive, BarChart3 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -110,7 +110,13 @@ export function ProjectsPage() {
             </TabsList>
           </Tabs>
 
-          <Button className="ml-auto shrink-0" onClick={() => navigate('/projects/new')}>
+          {tab === 'mine' && (
+            <Button variant="outline" className="ml-auto shrink-0" onClick={() => navigate('/stats')}>
+              <BarChart3 className="h-4 w-4 md:mr-1" />
+              <span className="hidden sm:inline">{t('stats')}</span>
+            </Button>
+          )}
+          <Button className={`shrink-0 ${tab === 'mine' ? '' : 'ml-auto'}`} onClick={() => navigate('/projects/new')}>
             <Plus className="h-4 w-4 md:mr-1" />
             <span className="hidden sm:inline">{t('newProject')}</span>
           </Button>

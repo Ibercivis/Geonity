@@ -17,6 +17,7 @@ import { AboutPage } from '@/pages/AboutPage'
 import { PublicMapPage } from '@/pages/PublicMapPage'
 import { ContributePageLazy } from '@/pages/ContributePageLazy'
 import { RouteErrorPage } from '@/pages/RouteErrorPage'
+import { ProjectStatsPageLazy, MyStatsPageLazy, PlatformStatsPageLazy } from '@/pages/StatsPagesLazy'
 import { useAuthStore } from '@/store/auth'
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
@@ -58,6 +59,9 @@ export const router = createBrowserRouter([
       { path: 'projects/:id', element: <RequireAuth><ProjectDetailPage /></RequireAuth> },
       { path: 'projects/:id/edit', element: <RequireAuth><ProjectFormPage /></RequireAuth> },
       { path: 'projects/:id/observations/new', element: <RequireAuth><AddObservationPage /></RequireAuth> },
+      { path: 'projects/:id/stats', element: <RequireAuth><ProjectStatsPageLazy /></RequireAuth> },
+      { path: 'stats', element: <RequireAuth><MyStatsPageLazy /></RequireAuth> },
+      { path: 'admin/stats', element: <RequireAuth><PlatformStatsPageLazy /></RequireAuth> },
       { path: 'organizations', element: <RequireAuth><OrganizationsPage /></RequireAuth> },
       { path: 'organizations/:id', element: <RequireAuth><OrgDetailPage /></RequireAuth> },
       { path: 'profile', element: <RequireAuth><ProfilePage /></RequireAuth> },
