@@ -12,20 +12,18 @@ import { ProjectStatsViewLazy } from '@/pages/StatsPagesLazy'
 import { toast } from '@/hooks/use-toast'
 import { resolveLocalized } from '@/lib/utils'
 import { useTranslationLang } from '@/hooks/use-translation-lang'
-import type { Project } from '@/types'
-import { projectObservations } from '@/components/home/project-utils'
+import type { ManageProject } from '@/api/manage'
 import { InviteAdminDialog } from './InviteAdminDialog'
 
 const FORMATS = ['csv', 'xlsx', 'ods'] as const
 
-export function ProjectActionsMenu({ project }: { project: Project }) {
+export function ProjectActionsMenu({ project }: { project: ManageProject }) {
   const { t } = useTranslation()
   const lang = useTranslationLang()
   const [inviteOpen, setInviteOpen] = useState(false)
   const [statsOpen, setStatsOpen] = useState(false)
-  const canManage = project.is_creator || project.is_admin
 
-  const hasData = !project.draft && projectObservations(project) > 0
+  const hasData = !project.draft && project.observations > 0
 
   const download = async (format: (typeof FORMATS)[number]) => {
     try {
@@ -68,29 +66,25 @@ export function ProjectActionsMenu({ project }: { project: Project }) {
               ))}
             </DropdownMenuSubContent>
           </DropdownMenuSub>
-          {!project.draft && canManage && (
+          {!project.draft && (
             <DropdownMenuItem onSelect={() => setStatsOpen(true)}>
               <BarChart3 className="mr-2 h-4 w-4" />
               {t('stats')}
             </DropdownMenuItem>
           )}
-          {canManage && (
-            <DropdownMenuItem onSelect={() => setInviteOpen(true)}>
-              <UserPlus className="mr-2 h-4 w-4" />
-              {t('inviteAdmin')}
-            </DropdownMenuItem>
-          )}
+          <DropdownMenuItem onSelect={() => setInviteOpen(true)}>
+            <UserPlus className="mr-2 h-4 w-4" />
+            {t('inviteAdmin')}
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {canManage && (
-        <InviteAdminDialog
-          projectId={project.id}
-          projectName={resolveLocalized(project.name, lang)}
-          open={inviteOpen}
-          onOpenChange={setInviteOpen}
-        />
-      )}
+      <InviteAdminDialog
+        projectId={project.id}
+        projectName={resolveLocalized(project.name, lang)}
+        open={inviteOpen}
+        onOpenChange={setInviteOpen}
+      />
 
       {/* Mounted only while open, so the stats chunk and request load on demand. */}
       <Dialog open={statsOpen} onOpenChange={setStatsOpen}>

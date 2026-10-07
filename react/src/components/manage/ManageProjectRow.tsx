@@ -2,22 +2,20 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Clock, Eye, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { projectRole } from '@/api/manage'
+import type { ManageProject } from '@/api/manage'
 import { cn, resolveLocalized } from '@/lib/utils'
 import { useTranslationLang } from '@/hooks/use-translation-lang'
-import type { Project } from '@/types'
-import { projectCoverUrl, projectObservations, relativeTime } from '@/components/home/project-utils'
+import { mediaUrl } from '@/lib/utils'
+import { relativeTime } from '@/components/home/project-utils'
 import { ProjectActionsMenu } from './ProjectActionsMenu'
 
 const pill = 'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium'
 
-export function ManageProjectRow({ project }: { project: Project }) {
+export function ManageProjectRow({ project }: { project: ManageProject }) {
   const { t } = useTranslation()
   const lang = useTranslationLang()
-  const cover = projectCoverUrl(project)
-  const org = project.organizations?.[0] as { principalName?: string } | undefined
-  const last = relativeTime(project.last_activity_at ?? project.last_observation, lang)
-  const role = projectRole(project)
+  const cover = project.cover ? mediaUrl(project.cover) : null
+  const last = relativeTime(project.lastActivity, lang)
 
   const status = project.draft
     ? { label: t('manageStatusDraft'), cls: 'bg-amber-100 text-amber-800' }
@@ -36,18 +34,18 @@ export function ManageProjectRow({ project }: { project: Project }) {
             <h3 className="font-semibold leading-tight">{resolveLocalized(project.name, lang)}</h3>
             <span className={cn(pill, status.cls)}>{status.label}</span>
             <span className={cn(pill, 'bg-blue-100 text-blue-800')}>
-              {role === 'owner' ? t('manageRoleOwner') : t('manageRoleAdmin')}
+              {project.role === 'owner' ? t('manageRoleOwner') : t('manageRoleAdmin')}
             </span>
           </div>
-          <p className="truncate text-sm text-muted-foreground min-h-5">{org?.principalName}</p>
+          <p className="truncate text-sm text-muted-foreground min-h-5">{project.organization}</p>
           <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
-            {project.participants_count !== undefined && (
+            {project.participants !== undefined && (
               <span className="inline-flex items-center gap-1.5">
-                <Users className="h-4 w-4" />{t('homeParticipantsCount', { count: project.participants_count })}
+                <Users className="h-4 w-4" />{t('homeParticipantsCount', { count: project.participants })}
               </span>
             )}
             <span className="inline-flex items-center gap-1.5">
-              <Eye className="h-4 w-4" />{t('homeObservationsCount', { count: projectObservations(project) })}
+              <Eye className="h-4 w-4" />{t('homeObservationsCount', { count: project.observations })}
             </span>
             <span className="inline-flex items-center gap-1.5">
               <Clock className="h-4 w-4" />

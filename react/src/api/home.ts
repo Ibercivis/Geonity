@@ -1,6 +1,6 @@
 import { differenceInCalendarMonths, startOfWeek, subWeeks } from 'date-fns'
 import { api } from '@/lib/axios'
-import { isNotFoundError } from '@/lib/api-error'
+import { tryEndpoint } from '@/api/endpoint-fallback'
 import { projectsApi } from '@/api/projects'
 import { orgsApi } from '@/api/organizations'
 import { projectCoverUrl, projectObservations } from '@/components/home/project-utils'
@@ -100,22 +100,6 @@ export function buildImpact(observations: Observation[], participating: Project[
 }
 
 // ─── Dedicated endpoints with fallback ───────────────────────────────────────
-
-/** Endpoints that answered 404 in this session: not retried on every poll. */
-const unavailable = new Set<string>()
-
-async function tryEndpoint<T>(key: string, call: () => Promise<T>): Promise<T | undefined> {
-  if (unavailable.has(key)) return undefined
-  try {
-    return await call()
-  } catch (error) {
-    if (isNotFoundError(error)) {
-      unavailable.add(key)
-      return undefined
-    }
-    throw error
-  }
-}
 
 function projectToContinueItem(p: Project): ContinueItem {
   const org = p.organizations?.[0] as { principalName?: string } | undefined
