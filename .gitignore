@@ -1,6 +1,1 @@
 .DS_Store
-
-# Carpetas legacy (pendientes de borrar tras verificar el monorepo)
-Geonity-flutter/
-Geonity-admin/
-Geonity-react/
