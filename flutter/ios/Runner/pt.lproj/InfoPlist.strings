@@ -1,4 +1,0 @@
-NSCameraUsageDescription = "O acesso à câmera é necessário para digitalizar códigos QR e códigos de barras";
-NSLocationWhenInUseUsageDescription = "O acesso à localização é necessário para registar observações geolocalizadas e descarregar mapas da sua área";
-NSLocationAlwaysUsageDescription = "O acesso à localização é necessário para registar observações geolocalizadas e descarregar mapas da sua área";
-NSPhotoLibraryUsageDescription = "O acesso à galeria de fotos é necessário para anexar imagens às suas observações";
