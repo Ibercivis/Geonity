@@ -1,14 +1,14 @@
 #!/bin/bash
-# Despliega el front de React en producción y deja constancia de qué versión se ha desplegado.
+# Deploys the React front end to production and records which version was deployed.
 #
-#   ./deploy.sh                 construye y despliega (exige que no haya cambios sin commitear en react/)
-#   ./deploy.sh --dry-run       construye y enseña qué cambiaría el rsync, sin tocar el servidor
-#   ./deploy.sh --allow-dirty   despliega aunque haya cambios sin commitear (queda marcado como «dirty»)
+#   ./deploy.sh                 builds and deploys (requires no uncommitted changes in react/)
+#   ./deploy.sh --dry-run       builds and shows what rsync would change, without touching the server
+#   ./deploy.sh --allow-dirty   deploys even with uncommitted changes (it is marked as "dirty")
 #
-# Qué deja:
-#   - dist/version.json  →  https://geonity.ibercivis.es/version.json  (commit, rama, fecha, si estaba sucio, quién)
-#   - una etiqueta de git  deploy/react/AAAA-MM-DD-HHMM  en el commit desplegado (no se crea si estaba sucio)
-#   - una línea en /home/ubuntu/geonity-deploys.log del servidor (fuera de la carpeta que borra rsync --delete)
+# What it leaves behind:
+#   - dist/version.json  ->  https://geonity.ibercivis.es/version.json  (commit, branch, date, whether it was dirty, who)
+#   - a git tag  deploy/react/YYYY-MM-DD-HHMM  on the deployed commit (not created for a dirty deploy)
+#   - a line in /home/ubuntu/geonity-deploys.log on the server (outside the folder that rsync --delete cleans)
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -24,7 +24,7 @@ for arg in "$@"; do
     --allow-dirty) ALLOW_DIRTY=1 ;;
     --dry-run) DRY_RUN=1 ;;
     -h|--help) sed -n '2,13p' "$0"; exit 0 ;;
-    *) echo "Opción desconocida: $arg (usa --help)"; exit 2 ;;
+    *) echo "Unknown option: $arg (use --help)"; exit 2 ;;
   esac
 done
 
@@ -33,24 +33,24 @@ SHORT="$(git rev-parse --short HEAD)"
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 WHO="$(git config user.name || whoami)"
 
-# 1. Qué se va a desplegar tiene que poder reconstruirse: sin cambios sin commitear en react/.
+# 1. What gets deployed must be reproducible: no uncommitted changes in react/.
 DIRTY_FILES="$(git status --porcelain -- . )"
 DIRTY=false
 if [ -n "$DIRTY_FILES" ]; then
   DIRTY=true
   if [ "$ALLOW_DIRTY" -eq 0 ]; then
-    echo "✗ Hay cambios sin commitear en react/ (el despliegue no se podría reconstruir desde git):"
+    echo "✗ There are uncommitted changes in react/ (the deploy could not be rebuilt from git):"
     echo "$DIRTY_FILES" | head -15
     COUNT="$(echo "$DIRTY_FILES" | wc -l | tr -d ' ')"
-    [ "$COUNT" -gt 15 ] && echo "  … y $((COUNT - 15)) más"
+    [ "$COUNT" -gt 15 ] && echo "  … and $((COUNT - 15)) more"
     echo
-    echo "Haz commit, o usa --allow-dirty (quedará registrado como «dirty»)."
+    echo "Commit them, or use --allow-dirty (it will be recorded as \"dirty\")."
     exit 1
   fi
-  echo "⚠ Desplegando con cambios sin commitear (--allow-dirty): quedará marcado como dirty."
+  echo "⚠ Deploying with uncommitted changes (--allow-dirty): it will be marked as dirty."
 fi
 
-# 2. Construir y dejar la versión dentro del build.
+# 2. Build and put the version inside the build.
 echo "Building $SHORT ($BRANCH)..."
 npm run build
 
@@ -67,9 +67,9 @@ cat > dist/version.json <<JSON
 }
 JSON
 
-# 3. Subir.
+# 3. Upload.
 if [ "$DRY_RUN" -eq 1 ]; then
-  echo "Dry run: esto cambiaría en $REMOTE_HOST (no se toca nada):"
+  echo "Dry run: this would change on $REMOTE_HOST (nothing is touched):"
   rsync -avzn --delete --exclude 'downloads/' dist/ "$REMOTE_USER@$REMOTE_HOST:$REMOTE_PATH/"
   exit 0
 fi
@@ -77,16 +77,16 @@ fi
 echo "Deploying to $REMOTE_HOST..."
 rsync -avz --delete --exclude 'downloads/' dist/ "$REMOTE_USER@$REMOTE_HOST:$REMOTE_PATH/"
 
-# 4. Dejar constancia (si algo de esto falla, el despliegue ya está hecho: se avisa y se sigue).
+# 4. Record the deploy (if any of this fails the deploy is already done: warn and carry on).
 TAG="deploy/react/$(date -u +%Y-%m-%d-%H%M)"
 ssh "$REMOTE_USER@$REMOTE_HOST" "echo '$BUILT_AT react $SHORT branch=$BRANCH dirty=$DIRTY by=$WHO' >> $REMOTE_LOG" \
-  || echo "⚠ No se pudo escribir el registro en el servidor."
+  || echo "⚠ Could not write the log on the server."
 if [ "$DIRTY" = false ]; then
-  git tag -a "$TAG" -m "Despliegue de React $SHORT ($BUILT_AT)" \
-    && { git push origin "$TAG" 2>/dev/null && echo "Etiqueta $TAG subida." || echo "Etiqueta $TAG creada en local (haz: git push origin $TAG)."; } \
-    || echo "⚠ No se pudo crear la etiqueta $TAG."
+  git tag -a "$TAG" -m "React deploy $SHORT ($BUILT_AT)" \
+    && { git push origin "$TAG" 2>/dev/null && echo "Tag $TAG pushed." || echo "Tag $TAG created locally (run: git push origin $TAG)."; } \
+    || echo "⚠ Could not create the tag $TAG."
 else
-  echo "Despliegue sucio: no se crea etiqueta."
+  echo "Dirty deploy: no tag is created."
 fi
 
-echo "Done. https://geonity.ibercivis.es   (versión: https://geonity.ibercivis.es/version.json)"
+echo "Done. https://geonity.ibercivis.es   (version: https://geonity.ibercivis.es/version.json)"

@@ -1,47 +1,47 @@
 #!/bin/bash
 # generate_changelog.sh
-# Bumpa la versión y genera el changelog correspondiente.
+# Bumps the version and generates the matching changelog.
 #
-# Uso:
-#   ./generate_changelog.sh                  → bump build number + changelog debug
-#   ./generate_changelog.sh --prod           → bump patch version + changelog producción
+# Usage:
+#   ./generate_changelog.sh                  → bump build number + debug changelog
+#   ./generate_changelog.sh --prod           → bump patch version + production changelog
 
 set -e
 
 if [[ "${1}" == "--help" || "${1}" == "-h" ]]; then
   cat <<'EOF'
-Uso: ./generate_changelog.sh [OPCIÓN]
+Usage: ./generate_changelog.sh [OPTION]
 
-Bumpa la versión en pubspec.yaml y genera el changelog correspondiente.
+Bumps the version in pubspec.yaml and generates the matching changelog.
 
-Opciones:
-  (sin argumentos)   Modo DEBUG — incrementa el build number (+1),
-                     lee los commits convencionales desde el último tag debug,
-                     abre el editor para revisarlos y guarda el changelog en:
+Options:
+  (no arguments)     DEBUG mode — increments the build number (+1),
+                     reads the conventional commits since the last debug tag,
+                     opens the editor so you can review them and saves the changelog to:
                        assets/changelog/debug/debug_<version>+<build>.md
-                     Crea también un tag git: debug-<version>+<build>
+                     Also creates a git tag: debug-<version>+<build>
 
-  --prod             Modo PRODUCCIÓN — incrementa el patch version y resetea
-                     build a 1, agrega todos los entries debug de la versión
-                     anterior en un único borrador, abre el editor para que
-                     escribas el texto final en inglés.
-                     Guarda el resultado en:
-                       assets/changelog/changelog.md  (prepend)
-                     Crea también un tag git: v<nueva-version>
+  --prod             PRODUCTION mode — increments the patch version and resets
+                     the build to 1, gathers all the debug entries of the
+                     previous version into a single draft and opens the editor
+                     so you can write the final text in English.
+                     Saves the result to:
+                       assets/changelog/changelog.md  (prepended)
+                     Also creates a git tag: v<new-version>
 
-  --help, -h         Muestra esta ayuda.
+  --help, -h         Show this help.
 
-Formatos de commit soportados (Conventional Commits):
+Supported commit formats (Conventional Commits):
   feat:      → New features
   fix:       → Bug fixes
   perf:      → Performance
   refactor:  → Refactoring
   chore:     → Maintenance
-  (otros)    → Other
+  (others)   → Other
 
-Ejemplos:
-  ./generate_changelog.sh           # bump a 1.0.0+8, changelog debug
-  ./generate_changelog.sh --prod    # bump a 1.0.1+1, changelog producción
+Examples:
+  ./generate_changelog.sh           # bump to 1.0.0+8, debug changelog
+  ./generate_changelog.sh --prod    # bump to 1.0.1+1, production changelog
 EOF
   exit 0
 fi
@@ -123,25 +123,25 @@ revert_version() {
   sed -i '' "s/^version: .*/version: ${CURRENT}/" "$PUBSPEC"
 }
 
-# ── MODO DEBUG ────────────────────────────────────────────────────────────────
+# ── DEBUG MODE ────────────────────────────────────────────────────────────────
 
 if ! $PROD; then
   NEW_BUILD=$((BUILD + 1))
   NEW_VERSION="${VERSION}+${NEW_BUILD}"
 
-  echo "=== Changelog DEBUG: $CURRENT → $NEW_VERSION ==="
+  echo "=== DEBUG changelog: $CURRENT → $NEW_VERSION ==="
 
   LAST_DEBUG_TAG=$(git tag --sort=-version:refname | grep -E "^debug-${VERSION}\+[0-9]+" | head -1)
   RAW_COMMITS=$(commits_since "$LAST_DEBUG_TAG")
 
   if [ -z "$RAW_COMMITS" ]; then
-    echo "No hay commits nuevos desde ${LAST_DEBUG_TAG:-el inicio}."
-    echo "¿Quieres escribir el entry manualmente? (s/N)"
+    echo "There are no new commits since ${LAST_DEBUG_TAG:-the beginning}."
+    echo "Do you want to write the entry manually? (y/N)"
     read -r MANUAL
-    if [[ "$MANUAL" =~ ^[sS]$ ]]; then
-      RAW_COMMITS="# Escribe los cambios aquí (elimina esta línea)"
+    if [[ "$MANUAL" =~ ^[yY]$ ]]; then
+      RAW_COMMITS="# Write the changes here (delete this line)"
     else
-      echo "Abortado."
+      echo "Aborted."
       exit 0
     fi
   fi
@@ -153,9 +153,9 @@ if ! $PROD; then
 ## DEBUG ${NEW_VERSION} (${DATE})
 
 ${FORMATTED}
-;; ── Instrucciones ──────────────────────────────────────────────────────────────
-;; Edita el texto anterior en inglés.
-;; Guarda y cierra el editor para continuar.
+;; ── Instructions ───────────────────────────────────────────────────────────────
+;; Edit the text above (in English).
+;; Save and close the editor to continue.
 EOF
 
   ${EDITOR:-nano} "$DRAFT"
@@ -164,47 +164,47 @@ EOF
   rm -f "$DRAFT"
 
   if [ -z "$(echo "$ENTRY" | tr -d '[:space:]')" ]; then
-    echo "Entry vacío — abortado."
+    echo "Empty entry — aborted."
     exit 1
   fi
 
-  # Bump versión
+  # Bump the version
   bump_version "$NEW_VERSION"
-  echo "✓ Versión: $CURRENT → $NEW_VERSION"
+  echo "✓ Version: $CURRENT → $NEW_VERSION"
 
-  # Guardar changelog
+  # Save the changelog
   DEBUG_FILE="${DEBUG_DIR}/debug_${NEW_VERSION}.md"
   echo "$ENTRY" > "$DEBUG_FILE"
-  echo "✓ Guardado en ${DEBUG_FILE}"
+  echo "✓ Saved to ${DEBUG_FILE}"
 
   # Tag git
   if git tag "debug-${NEW_VERSION}" 2>/dev/null; then
     echo "✓ Tag git: debug-${NEW_VERSION}"
   else
-    echo "  (tag debug-${NEW_VERSION} ya existía)"
+    echo "  (tag debug-${NEW_VERSION} already existed)"
   fi
 
   echo ""
-  echo "Listo. Ahora ejecuta: ./deploy.sh debug android|ios"
+  echo "Done. Now run: ./deploy.sh debug android|ios"
   exit 0
 fi
 
-# ── MODO PRODUCCIÓN ───────────────────────────────────────────────────────────
+# ── PRODUCTION MODE ───────────────────────────────────────────────────────────
 
 NEW_PATCH=$((PATCH + 1))
 NEW_BUILD=$((BUILD + 1))
 NEW_VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}+${NEW_BUILD}"
 
-echo "=== Changelog PRODUCCIÓN: $CURRENT → $NEW_VERSION ==="
+echo "=== PRODUCTION changelog: $CURRENT → $NEW_VERSION ==="
 
 LAST_PROD_TAG=$(last_prod_tag)
 if [ -n "$LAST_PROD_TAG" ]; then
-  echo "Último release: ${LAST_PROD_TAG}"
+  echo "Last release: ${LAST_PROD_TAG}"
 else
-  echo "No hay releases previos — se usarán todos los debugs disponibles."
+  echo "There are no previous releases — all the available debug entries will be used."
 fi
 
-# Agregar todos los ficheros debug de la versión actual
+# Gather all the debug files of the current version
 AGGREGATED=""
 DEBUG_FILES=()
 for f in $(ls -v "${DEBUG_DIR}"/debug_${VERSION}+*.md 2>/dev/null); do
@@ -214,7 +214,7 @@ for f in $(ls -v "${DEBUG_DIR}"/debug_${VERSION}+*.md 2>/dev/null); do
 done
 
 if [ ${#DEBUG_FILES[@]} -eq 0 ]; then
-  echo "No hay ficheros debug para v${VERSION}. Escribe el changelog desde cero."
+  echo "There are no debug files for v${VERSION}. Write the changelog from scratch."
 fi
 
 DRAFT=$(mktemp /tmp/changelog_prod_draft.XXXXXX.md)
@@ -222,11 +222,11 @@ cat > "$DRAFT" <<EOF
 ## ${MAJOR}.${MINOR}.${NEW_PATCH} (${DATE})
 
 ${AGGREGATED}
-;; ── Instrucciones ──────────────────────────────────────────────────────────────
-;; Lo anterior es la agregación de los debugs. Edítalo en inglés para que sea
-;; un texto limpio y legible para el usuario final.
-;; Elimina duplicados, tecnicismos, y agrupa por tema.
-;; Guarda y cierra para continuar.
+;; ── Instructions ───────────────────────────────────────────────────────────────
+;; The above is the aggregation of the debug entries. Edit it (in English) so it
+;; becomes a clean text that end users can read.
+;; Remove duplicates and technical jargon, and group by topic.
+;; Save and close to continue.
 EOF
 
 ${EDITOR:-nano} "$DRAFT"
@@ -234,32 +234,32 @@ EN_ENTRY=$(grep -v '^;;' "$DRAFT")
 rm -f "$DRAFT"
 
 if [ -z "$(echo "$EN_ENTRY" | tr -d '[:space:]')" ]; then
-  echo "Entry vacío — abortado."
+  echo "Empty entry — aborted."
   exit 1
 fi
 
-# Bump versión
+# Bump the version
 bump_version "$NEW_VERSION"
-echo "✓ Versión: $CURRENT → $NEW_VERSION"
+echo "✓ Version: $CURRENT → $NEW_VERSION"
 
-# Guardar changelog de producción
+# Save the production changelog
 PROD_FILE="${CHANGELOG_DIR}/changelog.md"
 prepend_to_file "$PROD_FILE" "$EN_ENTRY"
-echo "✓ Actualizado: ${PROD_FILE}"
+echo "✓ Updated: ${PROD_FILE}"
 
 # Tag git
 if git tag "v${MAJOR}.${MINOR}.${NEW_PATCH}" 2>/dev/null; then
   echo "✓ Tag git: v${MAJOR}.${MINOR}.${NEW_PATCH}"
 else
-  echo "  (tag v${MAJOR}.${MINOR}.${NEW_PATCH} ya existía)"
+  echo "  (tag v${MAJOR}.${MINOR}.${NEW_PATCH} already existed)"
 fi
 
-# Archivar debugs de la versión anterior
+# Archive the debug entries of the previous version
 ARCHIVE_DIR="${DEBUG_DIR}/archived"
 mkdir -p "$ARCHIVE_DIR"
 for f in "${DEBUG_DIR}"/debug_${VERSION}+*.md; do
-  [[ -f "$f" ]] && mv "$f" "$ARCHIVE_DIR/" && echo "  → archivado: $(basename "$f")"
+  [[ -f "$f" ]] && mv "$f" "$ARCHIVE_DIR/" && echo "  → archived: $(basename "$f")"
 done
 
 echo ""
-echo "Listo. Ahora ejecuta: ./deploy.sh prod android|ios|all"
+echo "Done. Now run: ./deploy.sh prod android|ios|all"

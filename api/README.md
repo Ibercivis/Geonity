@@ -1,15 +1,15 @@
-# api/ — el backend vive en otro repositorio
+# api/ — the backend lives in another repository
 
-El backend de Geonity (Django REST Framework, PostGIS) se desarrolla y se despliega desde
+The Geonity backend (Django REST Framework, PostGIS) is developed and deployed from
 **[`Ibercivis/citsci-api`](https://github.com/Ibercivis/citsci-api)**.
 
-Esta carpeta contenía una copia antigua del backend (septiembre de 2026) que quedó desfasada y **no se usaba**; se ha retirado para evitar editarla por error.
-Su historial sigue disponible en git (`git log -- api/`), y el código vivo está en `citsci-api`.
+This folder used to hold an outdated copy of the backend (September 2026) that was not used; it was removed so nobody edits it by mistake.
+Its history is still available in git (`git log -- api/`), and the live code is in `citsci-api`.
 
-Para trabajar en el backend:
+To work on the backend:
 
 ```bash
 git clone git@github.com:Ibercivis/citsci-api.git
 ```
 
-La web (`react/`), el panel de administración (`admin/`) y la app móvil (`flutter/`) hablan con ese API.
+The web app (`react/`), the admin panel (`admin/`) and the mobile app (`flutter/`) talk to that API.
