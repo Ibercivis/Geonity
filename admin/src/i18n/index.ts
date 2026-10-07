@@ -6,9 +6,10 @@ import { en } from './locales/en'
 import { es } from './locales/es'
 import { fr } from './locales/fr'
 import { it } from './locales/it'
+import { nl } from './locales/nl'
 import { pt } from './locales/pt'
 
-export const LANGUAGES = ['es', 'en', 'it', 'fr', 'pt', 'de'] as const
+export const LANGUAGES = ['es', 'en', 'it', 'fr', 'pt', 'de', 'nl'] as const
 export type Language = (typeof LANGUAGES)[number]
 
 const STORAGE_KEY = 'geonity.lang'
@@ -40,6 +41,7 @@ export const LOCALE_MAP: Record<Language, string> = {
   fr: 'fr-FR',
   pt: 'pt-PT',
   de: 'de-DE',
+  nl: 'nl-NL',
 }
 
 void i18n.use(initReactI18next).init({
@@ -50,6 +52,7 @@ void i18n.use(initReactI18next).init({
     fr: { translation: fr },
     pt: { translation: pt },
     de: { translation: de },
+    nl: { translation: nl },
   },
   lng: getSavedLanguage(),
   fallbackLng: 'es',
