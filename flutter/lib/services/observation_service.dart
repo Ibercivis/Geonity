@@ -274,7 +274,11 @@ class ObservationService {
       request.fields['geoposition'] = 'POINT($longitude $latitude)';
       request.fields['timestamp'] = DateTime.now().toUtc().toIso8601String();
 
+      // Solo claves numéricas (ids de pregunta): _formData también contiene
+      // claves de control de la UI (_selected, _is_other, _other_text) que no
+      // forman parte del contrato con el backend.
       final dataList = data.entries
+          .where((e) => RegExp(r'^\d+$').hasMatch(e.key))
           .map((e) => {'key': e.key, 'value': e.value is List ? e.value : e.value.toString()})
           .toList();
       request.fields['data'] = jsonEncode(dataList);
