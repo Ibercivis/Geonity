@@ -10,12 +10,13 @@ Sitio: <https://geonity.ibercivis.es>
 | [`react/`](react/) | La web de Geonity | React, Vite, TypeScript, Tailwind, shadcn/ui |
 | [`admin/`](admin/) | Panel de administración de proyectos y observaciones | React, Vite, TypeScript |
 | [`flutter/`](flutter/) | App móvil (Android e iOS) | Flutter |
-| [`api/`](api/) | Ver la nota de abajo: **el backend vive en otro repositorio** | — |
+| [`api/`](api/) | Solo un `README` que apunta al backend: **el backend vive en otro repositorio** | — |
 | [`docs/`](docs/) | Notas técnicas públicas | Markdown |
 
 ### El backend está en otro repositorio
 La API (Django / Django REST Framework / PostGIS) se desarrolla y se despliega desde
-**[`Ibercivis/citsci-api`](https://github.com/Ibercivis/citsci-api)**. Este repositorio contiene una copia antigua en `api/` que **no se usa y no debe editarse**.
+**[`Ibercivis/citsci-api`](https://github.com/Ibercivis/citsci-api)**. La carpeta `api/` de aquí solo contiene un `README` que lo recuerda
+(hasta el 2026-10-07 guardaba una copia antigua que no se usaba; su historial sigue en git).
 
 ## Cómo trabajar
 
