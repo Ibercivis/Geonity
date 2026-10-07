@@ -2,6 +2,8 @@ import { useTranslation } from 'react-i18next'
 
 import adminLogoSrc from '@/assets/Geonity Admin Logo.png'
 
+import { VersionLabel } from '@/components/VersionLabel'
+
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import {
@@ -312,6 +314,7 @@ export function AppHeader({
                 <LogOut className="h-4 w-4" />
                 {t('header.user.logout')}
               </Button>
+              <VersionLabel className="mt-2 block text-right text-[11px] tabular-nums text-muted-foreground" />
             </PopoverContent>
           </Popover>
         </div>

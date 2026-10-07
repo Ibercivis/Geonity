@@ -7,6 +7,7 @@ import { z } from 'zod'
 import logoSrc from '@/assets/Geonity Admin Logo.png'
 import bgSrc from '@/assets/Geonity Admin BG.png'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { VersionLabel } from '@/components/VersionLabel'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
@@ -94,6 +95,7 @@ export function LoginForm({
           <p className="text-xs text-white/50">
             {t('login.footer')}
           </p>
+          <VersionLabel className="block text-[11px] tabular-nums text-white/40" />
           <p className="text-xs text-white/50">
             {t('login.footerParticipant')}{' '}
             <a

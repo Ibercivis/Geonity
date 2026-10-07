@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Mail, ExternalLink } from 'lucide-react'
 import logoSrc from '@/assets/logo.webp'
+import { VersionLabel } from './VersionLabel'
 
 export function SiteFooter() {
   const { t } = useTranslation()
@@ -16,6 +17,7 @@ export function SiteFooter() {
           <div>
             <p className="font-semibold text-sm">Geonity</p>
             <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} Geonity</p>
+            <VersionLabel className="text-[11px] text-muted-foreground/70" />
           </div>
         </div>
 
