@@ -26,6 +26,8 @@ export interface User {
   terms_version: string | null
   privacy_accepted_at: string | null
   privacy_version: string | null
+  /** Platform staff. Only present on the "who am I" endpoint, never on user lists. */
+  is_staff?: boolean
 }
 
 export interface UserProfile {
@@ -37,6 +39,8 @@ export interface UserProfile {
   visibility: boolean
   country: string | { code: string; name: string }
   cover: string | null
+  /** Language for automatic emails: es, en, fr, pt, it, de, or '' for no preference. */
+  language?: string
 }
 
 // ─── Multilingual ─────────────────────────────────────────────────────────────
@@ -128,6 +132,8 @@ export interface Project {
   likes_count?: number
   contributions?: number
   observation_count?: number
+  /** Distinct contributors; not returned by the list endpoint yet. */
+  participants_count?: number
   is_liked_by_user: boolean
   topic: number[]
   is_creator: boolean
@@ -147,6 +153,10 @@ export interface Project {
   ended?: boolean
   allowed_platforms?: 'all' | 'mobile' | 'web'
   email_on_observation?: boolean
+  /** Monthly project report to creator and admins. Defaults to true on the backend. */
+  email_monthly_stats?: boolean
+  /** First publication date (immutable, read-only). Null if never published. */
+  published_at?: string | null
   draft?: boolean
   public_map?: boolean
   /** Anonymous (QR) contributions enabled. Mutually exclusive with is_private. */
@@ -154,7 +164,10 @@ export interface Project {
   /** Unguessable token used in the public /contribute/<token> URL. Read-only; regenerate via API. */
   anonymous_token?: string | null
   last_observation?: string | null
+  /** Last activity event of any kind; not returned yet (docs/API_PENDIENTE_REACT.md §7c.2). */
+  last_activity_at?: string | null
   created_at?: string
+  updated_at?: string
 }
 
 // ─── Field Form / Observation Fields ─────────────────────────────────────────

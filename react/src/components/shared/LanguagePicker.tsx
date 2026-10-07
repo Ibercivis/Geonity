@@ -2,8 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
-
-const LANGS = ['en', 'es', 'pt', 'it', 'fr', 'de'] as const
+import { SUPPORTED_LANGS, toSupportedLang } from '@/lib/languages'
 
 /**
  * Compact language switcher for public pages (no navbar). Same look as the
@@ -12,7 +11,7 @@ const LANGS = ['en', 'es', 'pt', 'it', 'fr', 'de'] as const
 export function LanguagePicker({ className, align = 'up' }: { className?: string; align?: 'up' | 'down' }) {
   const { i18n } = useTranslation()
   const [open, setOpen] = useState(false)
-  const current = i18n.language?.split('-')[0] ?? 'en'
+  const current = toSupportedLang(i18n.resolvedLanguage ?? i18n.language)
 
   return (
     <div className={cn('relative', className)}>
@@ -34,7 +33,7 @@ export function LanguagePicker({ className, align = 'up' }: { className?: string
           )}
           role="listbox"
         >
-          {LANGS.map((lng) => (
+          {SUPPORTED_LANGS.map((lng) => (
             <button
               key={lng}
               type="button"

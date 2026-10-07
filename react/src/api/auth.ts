@@ -17,6 +17,10 @@ export const authApi = {
   updateProfile: (data: FormData) =>
     api.patch<UserProfile>('/users/profile/', data).then((r) => r.data),
 
+  /** Language the backend uses for this user's emails. Kept in sync with the UI language. */
+  updateLanguage: (language: string) =>
+    api.patch<UserProfile>('/users/profile/', { language }).then((r) => r.data),
+
   deleteAccount: (keepObservations: boolean) =>
     api.delete('/users/delete/', { data: { keep_observations: keepObservations } }),
 

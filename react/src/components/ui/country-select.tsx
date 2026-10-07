@@ -1,20 +1,28 @@
 import { useMemo, useRef, useState } from 'react'
-import countries from 'i18n-iso-countries'
+import countries, { type LocaleData } from 'i18n-iso-countries'
 import enLocale from 'i18n-iso-countries/langs/en.json'
 import esLocale from 'i18n-iso-countries/langs/es.json'
 import ptLocale from 'i18n-iso-countries/langs/pt.json'
 import itLocale from 'i18n-iso-countries/langs/it.json'
 import frLocale from 'i18n-iso-countries/langs/fr.json'
 import deLocale from 'i18n-iso-countries/langs/de.json'
+import nlLocale from 'i18n-iso-countries/langs/nl.json'
 import { cn } from '@/lib/utils'
 import { ChevronDown } from 'lucide-react'
+import { SUPPORTED_LANGS, toSupportedLang, type SupportedLang } from '@/lib/languages'
 
-countries.registerLocale(enLocale)
-countries.registerLocale(esLocale)
-countries.registerLocale(ptLocale)
-countries.registerLocale(itLocale)
-countries.registerLocale(frLocale)
-countries.registerLocale(deLocale)
+/** Country-name locales, one per supported UI language (see `src/lib/languages.ts`). */
+const COUNTRY_LOCALES: Record<SupportedLang, LocaleData> = {
+  en: enLocale,
+  es: esLocale,
+  pt: ptLocale,
+  it: itLocale,
+  fr: frLocale,
+  de: deLocale,
+  nl: nlLocale,
+}
+
+for (const lang of SUPPORTED_LANGS) countries.registerLocale(COUNTRY_LOCALES[lang])
 
 interface Props {
   value: string
@@ -30,7 +38,7 @@ export function CountrySelect({ value, onChange, placeholder, exclude = [], lang
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const supportedLang = ['en', 'es', 'pt', 'it', 'fr', 'de'].includes(lang) ? lang : 'en'
+  const supportedLang = toSupportedLang(lang)
 
   const options = useMemo(() => {
     const names = countries.getNames(supportedLang, { select: 'official' })

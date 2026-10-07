@@ -21,6 +21,7 @@ function OrgInvitationCard({ inv }: { inv: OrgInvitation }) {
     mutationFn: () => orgsApi.acceptInvitation(inv.id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['pending-org-invitations'] })
+      qc.invalidateQueries({ queryKey: ['pending-count'] })
       toast({ title: t('invitationAccepted') })
       navigate(`/organizations/${inv.organization}`)
     },
@@ -31,6 +32,7 @@ function OrgInvitationCard({ inv }: { inv: OrgInvitation }) {
     mutationFn: () => orgsApi.rejectInvitation(inv.id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['pending-org-invitations'] })
+      qc.invalidateQueries({ queryKey: ['pending-count'] })
       toast({ title: t('invitationRejected') })
     },
     onError: () => toast({ title: t('error'), variant: 'destructive' }),
@@ -90,6 +92,7 @@ function ProjectInvitationCard({ inv }: { inv: ProjectInvitation }) {
     mutationFn: () => projectsApi.acceptInvitation(inv.id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['pending-project-invitations'] })
+      qc.invalidateQueries({ queryKey: ['pending-count'] })
       toast({ title: t('invitationAccepted') })
       navigate(`/projects/${inv.project}`)
     },
@@ -100,6 +103,7 @@ function ProjectInvitationCard({ inv }: { inv: ProjectInvitation }) {
     mutationFn: () => projectsApi.rejectInvitation(inv.id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['pending-project-invitations'] })
+      qc.invalidateQueries({ queryKey: ['pending-count'] })
       toast({ title: t('invitationRejected') })
     },
     onError: () => toast({ title: t('error'), variant: 'destructive' }),

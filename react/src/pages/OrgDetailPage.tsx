@@ -21,6 +21,7 @@ import { EditOrgDialog } from '@/components/organizations/EditOrgDialog'
 import { mediaUrl, resolveLocalized } from '@/lib/utils'
 import { toast } from '@/hooks/use-toast'
 import { useTranslationLang } from '@/hooks/use-translation-lang'
+import { toSupportedLang } from '@/lib/languages'
 
 export function OrgDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -209,8 +210,7 @@ export function OrgDetailPage() {
         ) : org.countries?.length > 0 ? (
           <div className="flex flex-wrap gap-1.5">
             {org.countries.map((c) => {
-              const supportedLang = ['en', 'es', 'pt', 'it', 'fr', 'de'].includes(lang) ? lang : 'en'
-              const name = countries.getName(c, supportedLang) ?? c
+              const name = countries.getName(c, toSupportedLang(lang)) ?? c
               return (
                 <Badge key={c} variant="outline" className="text-xs gap-1">
                   <MapPin className="h-3 w-3" />{name}

@@ -39,3 +39,9 @@ export function getApiError(error: unknown): string {
 
   return `Error ${status ?? ''}`
 }
+
+/** True when the server answered 404: used to detect an endpoint that isn't deployed yet. */
+export function isNotFoundError(error: unknown): boolean {
+  return axios.isAxiosError(error) && error.response?.status === 404
+}
+

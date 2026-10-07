@@ -26,7 +26,8 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { CoverCropDialog } from '@/components/ui/cover-crop-dialog'
-import { LocalizedField, LOCALIZED_LANGS, type LocalizedLang } from '@/components/ui/localized-field'
+import { LocalizedField } from '@/components/ui/localized-field'
+import { LOCALIZED_LANGS, type LocalizedLang } from '@/lib/languages'
 import { CountrySelect } from '@/components/ui/country-select'
 import { AnonymousQrBlock } from '@/components/project/AnonymousQrBlock'
 import { projectsApi } from '@/api/projects'
@@ -129,6 +130,7 @@ interface FormState {
   ended: boolean
   allowedPlatforms: 'all' | 'mobile' | 'web'
   emailOnObservation: boolean
+  emailMonthlyStats: boolean
   draft: boolean
   publicMap: boolean
   anonymousContribution: boolean
@@ -154,6 +156,7 @@ const emptyForm = (): FormState => ({
   ended: false,
   allowedPlatforms: 'all',
   emailOnObservation: false,
+  emailMonthlyStats: true, // backend default: the report only goes out if there was activity
   draft: true,
   publicMap: false,
   anonymousContribution: false,
@@ -334,6 +337,7 @@ export function ProjectFormPage() {
       ended: project.ended ?? false,
       allowedPlatforms: (project.allowed_platforms as 'all' | 'mobile' | 'web') ?? 'all',
       emailOnObservation: project.email_on_observation ?? false,
+      emailMonthlyStats: project.email_monthly_stats ?? true,
       draft: project.draft ?? true,
       publicMap: project.public_map ?? false,
       anonymousContribution: project.anonymous_contribution ?? false,
@@ -382,6 +386,7 @@ export function ProjectFormPage() {
       fd.append('ended', String(form.ended))
       fd.append('allowed_platforms', form.allowedPlatforms)
       fd.append('email_on_observation', String(form.emailOnObservation))
+      fd.append('email_monthly_stats', String(form.emailMonthlyStats))
       fd.append('draft', String(form.draft))
       fd.append('public_map', String(form.publicMap))
       fd.append('anonymous_contribution', String(form.anonymousContribution && !form.isPrivate))
@@ -423,6 +428,7 @@ export function ProjectFormPage() {
             ended: form.ended,
             allowed_platforms: form.allowedPlatforms,
             email_on_observation: form.emailOnObservation,
+            email_monthly_stats: form.emailMonthlyStats,
             draft: form.draft,
             public_map: form.publicMap,
             anonymous_contribution: form.anonymousContribution && !form.isPrivate,
@@ -986,6 +992,16 @@ export function ProjectFormPage() {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium">{t('emailOnObservation')}</p>
                       <p className="text-xs text-muted-foreground">{t('emailOnObservationDesc')}</p>
+                    </div>
+                  </div>
+
+                  {/* 9. Monthly stats report */}
+                  <div className="flex items-center gap-3 py-3">
+                    <Switch checked={form.emailMonthlyStats} onCheckedChange={(v) => set('emailMonthlyStats', v)} />
+                    <Mail className="h-4 w-4 text-muted-foreground shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium">{t('emailMonthlyStats')}</p>
+                      <p className="text-xs text-muted-foreground">{t('emailMonthlyStatsDesc')}</p>
                     </div>
                   </div>
 

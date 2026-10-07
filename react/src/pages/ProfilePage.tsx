@@ -16,6 +16,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog'
 import { CountrySelect } from '@/components/ui/country-select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { RichTextEditor } from '@/components/ui/rich-text-editor'
 import { authApi } from '@/api/auth'
 import { projectsApi } from '@/api/projects'
@@ -25,6 +26,7 @@ import { useAuthStore } from '@/store/auth'
 import { mediaUrl, resolveLocalized } from '@/lib/utils'
 import { toast } from '@/hooks/use-toast'
 import { useTranslationLang } from '@/hooks/use-translation-lang'
+import { SUPPORTED_LANGS, LANGUAGE_LABELS } from '@/lib/languages'
 import type { Project, UserProfile } from '@/types'
 
 // ─── Gradient helpers ─────────────────────────────────────────────────────────
@@ -114,7 +116,7 @@ function EditProfileDialog({
   onOpenChange: (v: boolean) => void
   lang: string
 }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const qc = useQueryClient()
   const { setProfile, logout } = useAuthStore()
@@ -129,6 +131,7 @@ function EditProfileDialog({
     biography: profile.biography,
     country: typeof profile.country === 'string' ? profile.country : profile.country.code,
     visibility: profile.visibility,
+    language: profile.language ?? '',
   })
 
   const existingCover = profile.cover ? mediaUrl(profile.cover) : null
@@ -154,12 +157,15 @@ function EditProfileDialog({
       fd.append('biography', form.biography)
       fd.append('country', form.country)
       fd.append('visibility', String(form.visibility))
+      fd.append('language', form.language)
       if (coverRef.current?.files?.[0]) fd.append('cover', coverRef.current.files[0])
       return authApi.updateProfile(fd)
     },
     onSuccess: (data) => {
       setProfile(data)
       qc.setQueryData(['profile'], data)
+      // Keep the UI in the same language the user just chose for emails.
+      if (data.language && data.language !== lang) i18n.changeLanguage(data.language)
       toast({ title: t('profileUpdated') })
       onOpenChange(false)
     },
@@ -226,6 +232,18 @@ function EditProfileDialog({
             <div className="flex items-center gap-3">
               <Switch id="visibility-edit" checked={form.visibility} onCheckedChange={(v) => set('visibility', v)} />
               <Label htmlFor="visibility-edit">{t('visibility')}</Label>
+            </div>
+
+            <div className="space-y-1">
+              <Label>{t('emailLanguage')}</Label>
+              <Select value={form.language || '__none__'} onValueChange={(v) => set('language', v === '__none__' ? '' : v)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">{t('emailLanguageNone')}</SelectItem>
+                  {SUPPORTED_LANGS.map((l) => <SelectItem key={l} value={l}>{LANGUAGE_LABELS[l]}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">{t('emailLanguageDesc')}</p>
             </div>
 
             <Separator />
