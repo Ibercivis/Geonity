@@ -14,12 +14,6 @@ export const projectsApi = {
   list: (filters?: ProjectFilters) =>
     api.get<Project[]>('/project/', { params: filters }).then((r) => r.data),
 
-  myProjects: (ordering?: string) =>
-    api.get<Project[]>('/project/my_projects/', { params: ordering ? { ordering } : undefined }).then((r) => r.data),
-
-  drafts: (ordering?: string) =>
-    api.get<Project[]>('/project/drafts/', { params: ordering ? { ordering } : undefined }).then((r) => r.data),
-
   myAdminProjects: () =>
     api.get<Project[]>('/project/my_admin_projects/').then((r) => r.data),
 
@@ -46,12 +40,6 @@ export const projectsApi = {
 
   exportJson: (id: number) =>
     api.get(`/project/${id}/export/`, { responseType: 'blob' }).then((r) => r.data as Blob),
-
-  importJson: (file: File) => {
-    const fd = new FormData()
-    fd.append('file', file)
-    return api.post<Project>('/project/import/', fd).then((r) => r.data)
-  },
 
   toggleLike: (id: number) =>
     api.post(`/projects/${id}/toggle-like/`).then((r) => r.data),

@@ -3,6 +3,7 @@ import { Loader2 } from 'lucide-react'
 
 // Stats pages pull in Recharts; load them on demand so the main bundle stays as it was.
 const ProjectStatsPage = lazy(() => import('@/pages/ProjectStatsPage').then((m) => ({ default: m.ProjectStatsPage })))
+const ProjectStatsView = lazy(() => import('@/pages/ProjectStatsPage').then((m) => ({ default: m.ProjectStatsView })))
 const MyStatsPage = lazy(() => import('@/pages/MyStatsPage').then((m) => ({ default: m.MyStatsPage })))
 const PlatformStatsPage = lazy(() => import('@/pages/PlatformStatsPage').then((m) => ({ default: m.PlatformStatsPage })))
 
@@ -30,4 +31,9 @@ export function MyStatsPageLazy() {
 
 export function PlatformStatsPageLazy() {
   return <Loading><PlatformStatsPage /></Loading>
+}
+
+/** Project stats inside a dialog. */
+export function ProjectStatsViewLazy({ projectId }: { projectId: number }) {
+  return <Loading><ProjectStatsView projectId={projectId} embedded /></Loading>
 }

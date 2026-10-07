@@ -1,8 +1,11 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { createBrowserRouter, Navigate, useParams } from 'react-router-dom'
 import { AppLayout } from '@/components/shared/AppLayout'
 import { LoginPage } from '@/pages/LoginPage'
 import { RegisterPage } from '@/pages/RegisterPage'
-import { ProjectsPage } from '@/pages/ProjectsPage'
+import { ManagePage } from '@/pages/ManagePage'
+import { ActivityPage } from '@/pages/ActivityPage'
+import { HomePage } from '@/pages/HomePage'
+import { ExplorePage } from '@/pages/ExplorePage'
 import { ProjectDetailPage } from '@/pages/ProjectDetailPage'
 import { AddObservationPage } from '@/pages/AddObservationPage'
 import { ProjectFormPage } from '@/pages/ProjectFormPage'
@@ -24,6 +27,12 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
   const token = useAuthStore((s) => s.token)
   if (!token) return <Navigate to="/login" replace />
   return <>{children}</>
+}
+
+/** Old/alternate URLs (emails, mobile app) that point to a detail page: /project/:id → /projects/:id. */
+function RedirectWithId({ to }: { to: string }) {
+  const { id } = useParams()
+  return <Navigate to={`${to}/${id}`} replace />
 }
 
 export const router = createBrowserRouter([
@@ -52,10 +61,18 @@ export const router = createBrowserRouter([
       // Public — accessible with or without auth
       { path: 'privacy-policy', element: <PrivacyPolicyPage /> },
       { path: 'terms-of-use', element: <TermsOfUsePage /> },
+      // The server's notification and digest emails link to /project/:id and /organization/:id
+      { path: 'project/:id', element: <RedirectWithId to="/projects" /> },
+      { path: 'organization/:id', element: <RedirectWithId to="/organizations" /> },
+      // The mobile app links to /terms
+      { path: 'terms', element: <Navigate to="/terms-of-use" replace /> },
       { path: 'delete-account', element: <DeleteAccountPage /> },
       { path: 'about', element: <AboutPage /> },
       // Protected
-      { index: true, element: <RequireAuth><ProjectsPage /></RequireAuth> },
+      { index: true, element: <RequireAuth><HomePage /></RequireAuth> },
+      { path: 'explorar', element: <RequireAuth><ExplorePage /></RequireAuth> },
+      { path: 'gestionar', element: <RequireAuth><ManagePage /></RequireAuth> },
+      { path: 'gestionar/actividad', element: <RequireAuth><ActivityPage /></RequireAuth> },
       { path: 'projects/new', element: <RequireAuth><ProjectFormPage /></RequireAuth> },
       { path: 'projects/:id', element: <RequireAuth><ProjectDetailPage /></RequireAuth> },
       { path: 'projects/:id/edit', element: <RequireAuth><ProjectFormPage /></RequireAuth> },

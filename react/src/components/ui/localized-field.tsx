@@ -3,9 +3,7 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { RichTextEditor } from '@/components/ui/rich-text-editor'
-
-export const LOCALIZED_LANGS = ['default', 'en', 'es', 'pt', 'it', 'fr', 'de'] as const
-export type LocalizedLang = (typeof LOCALIZED_LANGS)[number]
+import { LOCALIZED_LANGS, type LocalizedLang } from '@/lib/languages'
 
 interface LocalizedFieldProps {
   label: string

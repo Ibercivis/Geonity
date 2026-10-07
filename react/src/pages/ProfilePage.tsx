@@ -26,16 +26,8 @@ import { useAuthStore } from '@/store/auth'
 import { mediaUrl, resolveLocalized } from '@/lib/utils'
 import { toast } from '@/hooks/use-toast'
 import { useTranslationLang } from '@/hooks/use-translation-lang'
+import { SUPPORTED_LANGS, LANGUAGE_LABELS } from '@/lib/languages'
 import type { Project, UserProfile } from '@/types'
-
-const EMAIL_LANGUAGES = [
-  { code: 'es', label: 'Español' },
-  { code: 'en', label: 'English' },
-  { code: 'fr', label: 'Français' },
-  { code: 'pt', label: 'Português' },
-  { code: 'it', label: 'Italiano' },
-  { code: 'de', label: 'Deutsch' },
-]
 
 // ─── Gradient helpers ─────────────────────────────────────────────────────────
 
@@ -248,7 +240,7 @@ function EditProfileDialog({
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="__none__">{t('emailLanguageNone')}</SelectItem>
-                  {EMAIL_LANGUAGES.map((l) => <SelectItem key={l.code} value={l.code}>{l.label}</SelectItem>)}
+                  {SUPPORTED_LANGS.map((l) => <SelectItem key={l} value={l}>{LANGUAGE_LABELS[l]}</SelectItem>)}
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">{t('emailLanguageDesc')}</p>

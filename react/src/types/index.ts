@@ -132,6 +132,8 @@ export interface Project {
   likes_count?: number
   contributions?: number
   observation_count?: number
+  /** Distinct contributors; not returned by the list endpoint yet. */
+  participants_count?: number
   is_liked_by_user: boolean
   topic: number[]
   is_creator: boolean
@@ -162,7 +164,10 @@ export interface Project {
   /** Unguessable token used in the public /contribute/<token> URL. Read-only; regenerate via API. */
   anonymous_token?: string | null
   last_observation?: string | null
+  /** Last activity event of any kind; not returned yet (docs/API_PENDIENTE_REACT.md §7c.2). */
+  last_activity_at?: string | null
   created_at?: string
+  updated_at?: string
 }
 
 // ─── Field Form / Observation Fields ─────────────────────────────────────────

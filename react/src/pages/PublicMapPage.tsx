@@ -9,9 +9,10 @@ import Map, {
   type MapMouseEvent,
 } from 'react-map-gl/mapbox'
 import type { GeoJSONSource } from 'mapbox-gl'
-import { MapPin, Layers, Loader2, ChevronDown } from 'lucide-react'
+import { MapPin, Layers, Loader2 } from 'lucide-react'
 import { config } from '@/config/env'
 import { ObservationPanel } from '@/components/map/ObservationPanel'
+import { LanguagePicker } from '@/components/shared/LanguagePicker'
 import {
   publicPointsToGeoJSON,
   hexObsToGeoJSON,
@@ -138,8 +139,7 @@ const DEFAULT_VIEW = { longitude: 0, latitude: 20, zoom: 2 }
 
 export function PublicMapPage() {
   const { id } = useParams<{ id: string }>()
-  const { t, i18n } = useTranslation()
-  const [langOpen, setLangOpen] = useState(false)
+  const { t } = useTranslation()
 
   const mapRef = useRef<MapRef>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
@@ -482,30 +482,7 @@ export function PublicMapPage() {
 
       {/* Language picker */}
       <div className="absolute bottom-4 md:bottom-8 right-4 z-10">
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => setLangOpen((v) => !v)}
-            className="flex items-center gap-1 bg-white/80 backdrop-blur-sm rounded-lg px-3 py-1.5 shadow text-xs text-gray-600 hover:bg-white/95 transition-colors"
-          >
-            <span className="font-medium uppercase">{i18n.language?.split('-')[0] ?? 'en'}</span>
-            <ChevronDown className="h-3 w-3" />
-          </button>
-          {langOpen && (
-            <div className="absolute bottom-full mb-1 right-0 bg-white rounded-lg shadow-lg border border-gray-100 py-1 min-w-[80px]">
-              {(['en', 'es', 'pt', 'it', 'fr', 'de'] as const).map((lng) => (
-                <button
-                  key={lng}
-                  type="button"
-                  className={`w-full text-left px-3 py-1.5 text-xs hover:bg-gray-50 transition-colors ${i18n.language?.startsWith(lng) ? 'font-semibold text-primary' : 'text-gray-700'}`}
-                  onClick={() => { i18n.changeLanguage(lng); setLangOpen(false) }}
-                >
-                  {lng.toUpperCase()}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        <LanguagePicker align="up" />
       </div>
 
       {/* Ibercivis attribution */}

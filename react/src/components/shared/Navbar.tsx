@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Globe, LogOut, User, Bell, Menu, BarChart3, ShieldCheck } from 'lucide-react'
+import { Globe, LogOut, User, Bell, Menu, BarChart3, ShieldCheck, Home, Search, Layers, Building2, Info, type LucideIcon } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import logoSrc from '@/assets/logo.webp'
@@ -15,22 +15,20 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { useAuthStore } from '@/store/auth'
-import { orgsApi } from '@/api/organizations'
+import { loadPendingCount } from '@/api/home'
 import { authApi } from '@/api/auth'
-import { projectsApi } from '@/api/projects'
 import { cn } from '@/lib/utils'
+import { SUPPORTED_LANGS, LANGUAGE_LABELS, toSupportedLang } from '@/lib/languages'
 
-const LANGUAGES = [
-  { code: 'en', label: 'English' },
-  { code: 'es', label: 'Español' },
-  { code: 'pt', label: 'Português' },
-  { code: 'it', label: 'Italiano' },
-  { code: 'fr', label: 'Français' },
-  { code: 'de', label: 'Deutsch' },
-]
+interface NavItem {
+  href: string
+  label: string
+  icon: LucideIcon
+}
 
 export function Navbar() {
   const { t, i18n } = useTranslation()
+  const currentLang = toSupportedLang(i18n.resolvedLanguage ?? i18n.language)
   const navigate = useNavigate()
   const location = useLocation()
   const { user, logout } = useAuthStore()
@@ -47,35 +45,31 @@ export function Navbar() {
     if (user) authApi.updateLanguage(code).then((p) => useAuthStore.getState().setProfile(p)).catch(() => {})
   }
 
-  const { data: pendingOrgInvitations = [] } = useQuery({
-    queryKey: ['pending-org-invitations'],
-    queryFn: orgsApi.pendingInvitations,
+  // One request (`users/me/pending-count/`) instead of two lists every minute; falls back to the lists if it isn't deployed.
+  const { data: pendingCount = 0 } = useQuery({
+    queryKey: ['pending-count'],
+    queryFn: loadPendingCount,
     refetchInterval: 60_000,
     enabled: !!user,
   })
-
-  const { data: pendingProjectInvitations = [] } = useQuery({
-    queryKey: ['pending-project-invitations'],
-    queryFn: projectsApi.pendingInvitations,
-    refetchInterval: 60_000,
-    enabled: !!user,
-  })
-
-  const pendingCount = pendingOrgInvitations.length + pendingProjectInvitations.length
 
   const initials = user
     ? `${user.first_name?.[0] ?? ''}${user.last_name?.[0] ?? ''}`.toUpperCase() || user.email[0].toUpperCase()
     : '?'
 
-  const authNavItems = [
-    { href: '/', label: t('projects') },
-    { href: '/organizations', label: t('organizations') },
-    { href: '/about', label: t('about') },
+  const authNavItems: NavItem[] = [
+    { href: '/', label: t('navHome'), icon: Home },
+    { href: '/explorar', label: t('navExplore'), icon: Search },
+    { href: '/gestionar', label: t('navManage'), icon: Layers },
+    { href: '/organizations', label: t('organizations'), icon: Building2 },
   ]
 
-  const publicNavItems = [
-    { href: '/about', label: t('about') },
+  const publicNavItems: NavItem[] = [
+    { href: '/about', label: t('about'), icon: Info },
   ]
+
+  const isActive = (href: string) =>
+    href === '/' ? location.pathname === '/' : location.pathname.startsWith(href)
 
   const navItems = user ? authNavItems : publicNavItems
 
@@ -106,9 +100,10 @@ export function Navbar() {
                 size="sm"
                 className={cn(
                   'text-white/70 hover:text-white hover:bg-white/10',
-                  location.pathname === item.href && 'bg-white/15 text-white font-medium'
+                  isActive(item.href) && 'bg-white/15 text-white font-medium'
                 )}
               >
+                <item.icon className="h-4 w-4 mr-1.5" />
                 {item.label}
               </Button>
             </Link>
@@ -121,17 +116,17 @@ export function Navbar() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm" className="text-white/70 hover:text-white hover:bg-white/10 gap-1.5 h-10 md:h-8 px-2 md:px-3">
                 <Globe className="h-4 w-4" />
-                <span className="text-xs font-medium uppercase">{i18n.language.slice(0, 2)}</span>
+                <span className="text-xs font-medium uppercase">{currentLang}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {LANGUAGES.map((lang) => (
+              {SUPPORTED_LANGS.map((lang) => (
                 <DropdownMenuItem
-                  key={lang.code}
-                  onClick={() => changeLanguage(lang.code)}
-                  className={cn(i18n.language === lang.code && 'font-semibold')}
+                  key={lang}
+                  onClick={() => changeLanguage(lang)}
+                  className={cn(currentLang === lang && 'font-semibold')}
                 >
-                  {lang.label}
+                  {LANGUAGE_LABELS[lang]}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
@@ -164,6 +159,10 @@ export function Navbar() {
                   <DropdownMenuItem onClick={() => navigate('/profile')}>
                     <User className="mr-2 h-4 w-4" />
                     {t('profile')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/about')}>
+                    <Info className="mr-2 h-4 w-4" />
+                    {t('about')}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate('/stats')}>
                     <BarChart3 className="mr-2 h-4 w-4" />
@@ -212,11 +211,12 @@ export function Navbar() {
                 onClick={() => setMobileNavOpen(false)}
                 className={cn(
                   'flex items-center px-4 py-3 text-base rounded-md transition-colors',
-                  location.pathname === item.href
+                  isActive(item.href)
                     ? 'bg-accent text-accent-foreground font-medium'
                     : 'text-foreground hover:bg-accent/50'
                 )}
               >
+                <item.icon className="h-4 w-4 mr-3" />
                 {item.label}
               </Link>
             ))}

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
+import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { statsApi } from '@/api/stats'
 import { useTranslationLang } from '@/hooks/use-translation-lang'
@@ -20,7 +21,16 @@ import { useStatsRange } from '@/components/stats/use-stats-range'
 /** One project. Creator and administrators only (the API answers 403 to anyone else). */
 export function ProjectStatsPage() {
   const { id } = useParams<{ id: string }>()
-  const projectId = Number(id)
+  return <ProjectStatsView projectId={Number(id)} />
+}
+
+interface ProjectStatsViewProps {
+  projectId: number
+  /** Inside a dialog: no page shell or back arrow. */
+  embedded?: boolean
+}
+
+export function ProjectStatsView({ projectId, embedded = false }: ProjectStatsViewProps) {
   const { t } = useTranslation()
   const lang = useTranslationLang()
   const range = useStatsRange()
@@ -33,11 +43,8 @@ export function ProjectStatsPage() {
     retry: false,
   })
 
-  return (
-    <StatsPageShell
-      title={data ? data.project.name : t('statsProject')}
-      backTo={`/projects/${projectId}`}
-      subtitle={data && (
+  const title = data ? data.project.name : t('statsProject')
+  const subtitle: ReactNode = data && (
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
           {data.project.draft && <Badge variant="outline">{t('draft')}</Badge>}
           {data.project.ended && <Badge variant="secondary">{t('ended')}</Badge>}
@@ -50,9 +57,13 @@ export function ProjectStatsPage() {
             <span>{t('statsLastObservation')}: {formatDate(data.span.last_observation, lang)}</span>
           )}
         </div>
-      )}
-      controls={<StatsRangeControls range={range} generatedAt={data?.generated_at} cached={data?.cached} isFetching={isFetching} />}
-    >
+  )
+  const controls = (
+    <StatsRangeControls range={range} generatedAt={data?.generated_at} cached={data?.cached} isFetching={isFetching} />
+  )
+
+  const body = (
+    <>
       {isLoading && <p className="text-sm text-muted-foreground">{t('loading')}</p>}
       {error && <StatsErrorState error={error} />}
 
@@ -96,6 +107,27 @@ export function ProjectStatsPage() {
           </div>
         </>
       )}
+    </>
+  )
+
+  if (embedded) {
+    return (
+      <div className="space-y-6">
+        <div className="space-y-3">
+          <div className="pr-8">
+            <h2 className="text-xl font-bold">{title}</h2>
+            {subtitle && <div className="text-sm text-muted-foreground">{subtitle}</div>}
+          </div>
+          {controls}
+        </div>
+        {body}
+      </div>
+    )
+  }
+
+  return (
+    <StatsPageShell title={title} backTo={`/projects/${projectId}`} subtitle={subtitle} controls={controls}>
+      {body}
     </StatsPageShell>
   )
 }
