@@ -254,5 +254,6 @@ export const de = {
     fr: 'Français',
     pt: 'Português',
     de: 'Deutsch',
+    nl: 'Nederlands',
   },
 }
