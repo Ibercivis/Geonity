@@ -1,12 +1,12 @@
-import { useMemo } from 'react'
+import { useRef } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { CheckCircle2, FileText, MapPin, Plus, type LucideIcon } from 'lucide-react'
-import { projectsApi } from '@/api/projects'
-import { MANAGE_TABS, splitByTab, type ManageTab } from '@/api/manage'
+import { MANAGE_PAGE_SIZE, MANAGE_TABS, loadManagePage, type ManageTab } from '@/api/manage'
 import { Button } from '@/components/ui/button'
 import { PageHero } from '@/components/shared/PageHero'
+import { Pagination } from '@/components/shared/Pagination'
 import { ManageProjectRow } from '@/components/manage/ManageProjectRow'
 import { ManageToolsCard } from '@/components/manage/ManageToolsCard'
 import { RecentActivityCard } from '@/components/manage/RecentActivityCard'
@@ -20,18 +20,34 @@ export function ManagePage() {
   const requested = params.get('tab')
   const tab: ManageTab = MANAGE_TABS.includes(requested as ManageTab) ? (requested as ManageTab) : 'active'
 
+  const listRef = useRef<HTMLDivElement>(null)
+  const page = Math.max(1, Number(params.get('page')) || 1)
+
+  // One request per tab and page; the response always carries the counters of the three tabs.
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['manage', 'projects'],
-    queryFn: projectsApi.myAdminProjects,
+    queryKey: ['manage', 'projects', tab, page],
+    queryFn: () => loadManagePage(tab, page),
+    placeholderData: keepPreviousData,
   })
-  const groups = useMemo(() => (data ? splitByTab(data) : undefined), [data])
+  const counts = data?.counts
+  const list = data?.results ?? []
+  const pageCount = Math.max(1, Math.ceil((data?.count ?? 0) / MANAGE_PAGE_SIZE))
+  const totalProjects = counts ? counts.active + counts.draft + counts.ended : undefined
+
+  const goToTab = (next: ManageTab) => setParams(next === 'active' ? {} : { tab: next }, { replace: true })
+  const goToPage = (next: number) => {
+    const out = new URLSearchParams(params)
+    if (next <= 1) out.delete('page')
+    else out.set('page', String(next))
+    setParams(out, { replace: true })
+    listRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 
   const tabLabels: Record<ManageTab, string> = {
     active: t('manageTabActive'),
     draft: t('manageTabDraft'),
     ended: t('manageTabEnded'),
   }
-  const list = groups?.[tab] ?? []
 
   return (
     <div className="h-full overflow-y-auto">
@@ -57,14 +73,14 @@ export function ManagePage() {
                   role="tab"
                   type="button"
                   aria-selected={selected}
-                  onClick={() => setParams(key === 'active' ? {} : { tab: key }, { replace: true })}
+                  onClick={() => goToTab(key)}
                   className={cn(
                     'flex items-center justify-center gap-2 rounded-lg px-2 py-2.5 text-sm font-medium transition-colors',
                     selected ? 'bg-primary text-primary-foreground shadow' : 'text-muted-foreground hover:bg-background',
                   )}
                 >
                   <Icon className="h-4 w-4 shrink-0" />
-                  <span className="truncate">{tabLabels[key]}{groups ? ` (${groups[key].length})` : ''}</span>
+                  <span className="truncate">{tabLabels[key]}{counts ? ` (${counts[key]})` : ''}</span>
                 </button>
               )
             })}
@@ -76,7 +92,7 @@ export function ManagePage() {
             </div>
           ) : isError ? (
             <p className="py-10 text-center text-muted-foreground">{t('homeSectionError')}</p>
-          ) : data && data.length === 0 ? (
+          ) : totalProjects === 0 ? (
             <div className="space-y-3 rounded-xl border border-dashed p-8 text-center">
               <p className="text-muted-foreground">{t('manageEmptyAll')}</p>
               <Button asChild><Link to="/projects/new">{t('manageCreateFirst')}</Link></Button>
@@ -84,8 +100,9 @@ export function ManagePage() {
           ) : list.length === 0 ? (
             <p className="py-10 text-center text-muted-foreground">{t(`manageEmpty_${tab}`)}</p>
           ) : (
-            <div className="space-y-3">
+            <div ref={listRef} className="scroll-mt-4 space-y-3">
               {list.map((p) => <ManageProjectRow key={p.id} project={p} />)}
+              <Pagination page={Math.min(page, pageCount)} pageCount={pageCount} onChange={goToPage} />
             </div>
           )}
         </div>
