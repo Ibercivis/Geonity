@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { VersionLabel } from './VersionLabel'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { useAuthStore } from '@/store/auth'
 import { loadPendingCount } from '@/api/home'
@@ -179,6 +180,9 @@ export function Navbar() {
                     <LogOut className="mr-2 h-4 w-4" />
                     {t('logout')}
                   </DropdownMenuItem>
+                  <div className="px-2 pt-1 pb-1.5 text-right">
+                    <VersionLabel className="text-[11px] text-muted-foreground" />
+                  </div>
                 </DropdownMenuContent>
               </DropdownMenu>
             </>
