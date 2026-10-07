@@ -1,49 +1,50 @@
 # Geonity
 
-Plataforma de ciencia ciudadana de [Ibercivis](https://ibercivis.es): proyectos con formularios de observación, mapas, organizaciones y estadísticas.
-Sitio: <https://geonity.ibercivis.es>
+Citizen science platform by [Ibercivis](https://ibercivis.es): projects with observation forms, maps, organizations and statistics.
+Site: <https://geonity.ibercivis.es>
 
-## Qué hay en este repositorio
+## What is in this repository
 
-| Carpeta | Qué es | Tecnología |
+| Folder | What it is | Stack |
 |---|---|---|
-| [`react/`](react/) | La web de Geonity | React, Vite, TypeScript, Tailwind, shadcn/ui |
-| [`admin/`](admin/) | Panel de administración de proyectos y observaciones | React, Vite, TypeScript |
-| [`flutter/`](flutter/) | App móvil (Android e iOS) | Flutter |
-| [`api/`](api/) | Solo un `README` que apunta al backend: **el backend vive en otro repositorio** | — |
-| [`docs/`](docs/) | Notas técnicas públicas | Markdown |
+| [`react/`](react/) | The Geonity web app | React, Vite, TypeScript, Tailwind, shadcn/ui |
+| [`admin/`](admin/) | Admin panel for projects and observations | React, Vite, TypeScript |
+| [`flutter/`](flutter/) | Mobile app (Android and iOS) | Flutter |
+| [`api/`](api/) | Just a `README` pointing to the backend: **the backend lives in another repository** | — |
+| [`docs/`](docs/) | Public technical notes | Markdown |
 
-### El backend está en otro repositorio
-La API (Django / Django REST Framework / PostGIS) se desarrolla y se despliega desde
-**[`Ibercivis/citsci-api`](https://github.com/Ibercivis/citsci-api)**. La carpeta `api/` de aquí solo contiene un `README` que lo recuerda
-(hasta el 2026-10-07 guardaba una copia antigua que no se usaba; su historial sigue en git).
+### The backend lives in another repository
+The API (Django REST Framework, PostGIS) is developed and deployed from
+**[`Ibercivis/citsci-api`](https://github.com/Ibercivis/citsci-api)**. The `api/` folder here only contains a `README` that says so
+(until 2026-10-07 it held an outdated copy that was not used; its history is still in git).
 
-## Cómo trabajar
+## Working on it
 
-Cada aplicación se instala y se ejecuta de forma independiente:
+Each application is installed and run on its own:
 
 ```bash
-# Web
-cd react && npm ci && npm run dev          # copia .env.example a .env.development y ajústalo
+# Web app
+cd react && npm ci && npm run dev          # copy .env.example to .env.development and adjust it
 
-# Panel de administración
-cd admin && npm ci && npm run dev          # copia .env.example a .env y ajústalo
+# Admin panel
+cd admin && npm ci && npm run dev          # copy .env.example to .env and adjust it
 
-# App móvil
-cd flutter && flutter pub get && flutter run   # necesita lib/config/secrets.dart (ver secrets.example.dart)
+# Mobile app
+cd flutter && flutter pub get && flutter run   # needs lib/config/secrets.dart (see secrets.example.dart)
 ```
 
-Los ficheros con claves o configuración local (`.env*`, `lib/config/secrets.dart`, `android/key.properties`…) **no se versionan**: usa los `*.example` como plantilla.
+Files with keys or local configuration (`.env*`, `lib/config/secrets.dart`, `android/key.properties`, …) are **not versioned**: use the `*.example` files as a template.
 
-## Versiones y despliegue
+## Versions and deployment
 
-- **Una sola rama principal (`main`)**; los cambios entran por *pull request* desde ramas de trabajo.
-- Los despliegues se hacen con scripts que **se niegan a desplegar con cambios sin commitear**, dejan un `version.json` en el sitio y una etiqueta de git:
-  - Web: `react/deploy.sh` → etiqueta `deploy/react/AAAA-MM-DD-HHMM`
-  - Admin: `admin/scripts/deploy.sh` → etiqueta `admin/deploy-AAAA-MM-DD-HHMM`
-  - App móvil: etiqueta `flutter/vX.Y.Z+N` por cada versión publicada
-- Ambos scripts de despliegue admiten `--dry-run` (construyen y enseñan qué cambiaría, sin tocar el servidor).
-- Para ver qué hay desplegado en la web: `https://geonity.ibercivis.es/version.json` (disponible a partir del primer despliegue hecho con el script nuevo).
+- **A single main branch (`main`)**; changes come in through pull requests from working branches.
+- **Language**: documentation, scripts and commit messages are written in English.
+- Deployments use scripts that **refuse to deploy with uncommitted changes**, and leave a `version.json` on the site and a git tag:
+  - Web app: `react/deploy.sh` → tag `deploy/react/YYYY-MM-DD-HHMM`
+  - Admin panel: `admin/scripts/deploy.sh` → tag `admin/deploy-YYYY-MM-DD-HHMM`
+  - Mobile app: tag `flutter/vX.Y.Z+N` for each released version
+- Both web deploy scripts support `--dry-run` (build and show what would change, without touching the server).
+- To see what is deployed on the web app: `https://geonity.ibercivis.es/version.json`.
 
-## Licencia
-Ver [`LICENSE`](LICENSE).
+## License
+See [`LICENSE`](LICENSE) (MIT).

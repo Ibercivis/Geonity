@@ -70,5 +70,5 @@ flutter build ios --release
 
 ## License
 
-This project is private and not intended for public distribution.
+See the [`LICENSE`](../LICENSE) at the repository root (MIT).
 
