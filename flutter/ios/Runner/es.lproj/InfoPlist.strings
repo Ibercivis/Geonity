@@ -1,0 +1,4 @@
+NSCameraUsageDescription = "Se necesita acceso a la cámara para escanear códigos QR y códigos de barras";
+NSLocationWhenInUseUsageDescription = "Se necesita acceso a tu ubicación para registrar observaciones geolocalizadas y descargar mapas de tu área";
+NSLocationAlwaysUsageDescription = "Se necesita acceso a tu ubicación para registrar observaciones geolocalizadas y descargar mapas de tu área";
+NSPhotoLibraryUsageDescription = "Se necesita acceso a la galería para adjuntar imágenes a tus observaciones";
