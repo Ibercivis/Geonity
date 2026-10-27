@@ -8,6 +8,10 @@ export const authApi = {
   register: (data: RegisterCredentials) =>
     api.post('/users/registration/', data).then((r) => r.data),
 
+  /** Sends the reset email; the link in it opens a page served by the backend. */
+  requestPasswordReset: (email: string) =>
+    api.post('/users/authentication/password/reset/', { email }).then((r) => r.data),
+
   getUser: () =>
     api.get<User>('/users/authentication/user/').then((r) => r.data),
 
