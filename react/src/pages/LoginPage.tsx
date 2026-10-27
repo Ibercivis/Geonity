@@ -215,7 +215,12 @@ export function LoginPage() {
                 {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
               </div>
               <div className="space-y-1">
-                <Label htmlFor="password">{t('password')}</Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">{t('password')}</Label>
+                  <Link to="/forgot-password" className="text-xs text-primary hover:underline">
+                    {t('forgotPassword')}
+                  </Link>
+                </div>
                 <Input id="password" type="password" {...register('password')} />
                 {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
               </div>
