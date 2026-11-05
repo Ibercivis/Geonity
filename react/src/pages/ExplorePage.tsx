@@ -14,6 +14,7 @@ import { PageHero } from '@/components/shared/PageHero'
 import { ProjectSearchBox } from '@/components/shared/ProjectSearchBox'
 import { ExploreProjectCard } from '@/components/home/ExploreProjectCard'
 import { useAllProjects } from '@/hooks/use-all-projects'
+import { useAuthStore } from '@/store/auth'
 import { useTranslationLang } from '@/hooks/use-translation-lang'
 import { countryName } from '@/lib/countries'
 
@@ -29,12 +30,16 @@ export function ExplorePage() {
   const [params, setParams] = useSearchParams()
   const [visible, setVisible] = useState(PAGE_SIZE)
 
+  // Drafts are only available with a session (a 401 would log the visitor out via the axios interceptor).
+  const token = useAuthStore((st) => st.token)
+  const statusValues = token ? STATUS_VALUES : STATUS_VALUES.filter((v) => v !== 'draft')
+
   // Filters live in the URL so a filtered view can be shared and survives going back.
   const filters: ExploreFilters = {
     search: params.get('search') ?? '',
     topic: params.get('topic') ?? '',
     country: params.get('country') ?? '',
-    status: oneOf(params.get('status'), STATUS_VALUES, DEFAULT_FILTERS.status),
+    status: oneOf(params.get('status'), statusValues, DEFAULT_FILTERS.status),
     access: oneOf(params.get('access'), ACCESS_VALUES, DEFAULT_FILTERS.access),
     sort: oneOf(params.get('sort'), SORT_VALUES, DEFAULT_FILTERS.sort),
   }
@@ -57,7 +62,20 @@ export function ExplorePage() {
     setVisible(PAGE_SIZE)
   }
 
-  const { data: all, isLoading, isError } = useAllProjects()
+  const { data: published, isLoading, isError } = useAllProjects()
+  // The public list never includes drafts: fetch them only when the status filter can show them.
+  const wantsDrafts = !!token && (filters.status === 'draft' || filters.status === 'all')
+  const { data: drafts, isLoading: draftsLoading } = useQuery({
+    queryKey: ['explore-drafts'],
+    queryFn: projectsApi.allDrafts,
+    enabled: wantsDrafts,
+  })
+  const all = useMemo(() => {
+    if (!published) return undefined
+    if (!wantsDrafts || !drafts) return published
+    const ids = new Set(published.map((p) => p.id))
+    return [...published, ...drafts.filter((p) => p.draft && !ids.has(p.id))]
+  }, [published, drafts, wantsDrafts])
   const { data: topics = [] } = useQuery({ queryKey: ['topics', lang], queryFn: projectsApi.topics })
   const { data: countriesRaw = [] } = useQuery({ queryKey: ['project-countries'], queryFn: projectsApi.countries })
 
@@ -127,6 +145,7 @@ export function ExplorePage() {
             <SelectContent>
               <SelectItem value="active">{t('exploreStatusActive')}</SelectItem>
               <SelectItem value="ended">{t('exploreStatusEnded')}</SelectItem>
+              {token && <SelectItem value="draft">{t('exploreStatusDraft')}</SelectItem>}
               <SelectItem value="all">{t('exploreStatusAll')}</SelectItem>
             </SelectContent>
           </Select>
@@ -166,7 +185,7 @@ export function ExplorePage() {
           {all && <span className="font-medium">{t('exploreProjectsCount', { count: results.length })}</span>}
         </div>
 
-        {isLoading ? (
+        {isLoading || (wantsDrafts && draftsLoading) ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" aria-hidden>
             {Array.from({ length: 8 }, (_, i) => <div key={i} className="h-64 rounded-xl bg-muted animate-pulse" />)}
           </div>

@@ -9,7 +9,7 @@ import { resolveLocalized } from '@/lib/utils'
  * `ExploreFilters` shape.
  */
 
-export type ExploreStatus = 'active' | 'ended' | 'all'
+export type ExploreStatus = 'active' | 'ended' | 'draft' | 'all'
 export type ExploreAccess = 'all' | 'public' | 'protected'
 export type ExploreSort = 'recommended' | 'last_observation' | 'created_at' | 'observations' | 'likes'
 
@@ -31,7 +31,7 @@ export const DEFAULT_FILTERS: ExploreFilters = {
   sort: 'recommended',
 }
 
-export const STATUS_VALUES: ExploreStatus[] = ['active', 'ended', 'all']
+export const STATUS_VALUES: ExploreStatus[] = ['active', 'ended', 'draft', 'all']
 export const ACCESS_VALUES: ExploreAccess[] = ['all', 'public', 'protected']
 export const SORT_VALUES: ExploreSort[] = ['recommended', 'last_observation', 'created_at', 'observations', 'likes']
 
@@ -72,7 +72,9 @@ function matchesSearch(p: Project, query: string, lang: string, topics: Topic[])
 
 export function filterProjects(projects: Project[], f: ExploreFilters, lang: string, topics: Topic[]): Project[] {
   return projects.filter((p) => {
-    if (p.draft) return false
+    // Drafts come from `GET /explore/drafts/` (`GET /project/` never returns them).
+    if (f.status === 'draft' && !p.draft) return false
+    if ((f.status === 'active' || f.status === 'ended') && p.draft) return false
     if (f.status === 'active' && p.ended) return false
     if (f.status === 'ended' && !p.ended) return false
     if (f.access === 'public' && p.is_private) return false

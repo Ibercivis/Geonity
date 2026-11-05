@@ -478,6 +478,7 @@
   "exploreFilterStatus": "Estado",
   "exploreFilterAccess": "Acceso",
   "exploreStatusActive": "Estado: Activos",
+  "exploreStatusDraft": "Estado: Borradores",
   "exploreStatusEnded": "Estado: Finalizados",
   "exploreStatusAll": "Estado: Todos",
   "exploreAccessAll": "Acceso: Todos",

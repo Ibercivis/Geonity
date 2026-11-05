@@ -1,5 +1,6 @@
 import { api } from '@/lib/axios'
 import { config } from '@/config/env'
+import { tryEndpoint } from '@/api/endpoint-fallback'
 import type { FieldForm, Observation, Project, ProjectInvitation, Topic } from '@/types'
 
 export interface ProjectFilters {
@@ -16,6 +17,12 @@ export const projectsApi = {
 
   myAdminProjects: () =>
     api.get<Project[]>('/project/my_admin_projects/').then((r) => r.data),
+
+  /** Every draft on the platform (`GET /explore/drafts/`, session required); falls back to the user's own drafts
+   *  while the endpoint is not deployed. */
+  allDrafts: async () =>
+    (await tryEndpoint('explore-drafts', () => api.get<Project[]>('/explore/drafts/').then((r) => r.data))) ??
+    (await api.get<Project[]>('/project/my_admin_projects/').then((r) => r.data.filter((p) => p.draft))),
 
   myParticipating: () =>
     api.get<Project[]>('/project/my_participating/').then((r) => r.data),
