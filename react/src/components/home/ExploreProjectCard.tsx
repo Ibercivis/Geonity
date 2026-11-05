@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Clock, Eye, Heart, Lock, Users } from 'lucide-react'
+import { Clock, Eye, Heart, Lock, PencilLine, Users } from 'lucide-react'
 import { projectsApi } from '@/api/projects'
 import { toast } from '@/hooks/use-toast'
 import { useTranslationLang } from '@/hooks/use-translation-lang'
@@ -40,7 +40,9 @@ export function ExploreProjectCard({ project }: { project: Project }) {
           {project.is_private && (
             <span className={cn(badge, 'left-2')}><Lock className="h-3.5 w-3.5" />{t('exploreProtected')}</span>
           )}
-          {project.ended && (
+          {project.draft ? (
+            <span className={cn(badge, 'right-2')}><PencilLine className="h-3.5 w-3.5" />{t('draft')}</span>
+          ) : project.ended && (
             <span className={cn(badge, 'right-2')}><Clock className="h-3.5 w-3.5" />{t('ended')}</span>
           )}
         </div>
@@ -59,7 +61,7 @@ export function ExploreProjectCard({ project }: { project: Project }) {
           </div>
         </div>
       </Link>
-      <button
+      {!project.draft && <button
         type="button"
         onClick={() => like.mutate()}
         disabled={like.isPending}
@@ -69,7 +71,7 @@ export function ExploreProjectCard({ project }: { project: Project }) {
       >
         <Heart className={cn('h-4 w-4 text-red-500', project.is_liked_by_user && 'fill-red-500')} />
         {project.total_likes}
-      </button>
+      </button>}
     </div>
   )
 }
