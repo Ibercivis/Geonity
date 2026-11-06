@@ -13,6 +13,7 @@ import { useIsMobile } from '@/hooks/use-is-mobile'
 import type { ObservationQuestion } from '@/types'
 import { AnswerTypeBadge, CoordinateInputs, ObservationField } from './fields'
 import { buildObservationFormData } from './build-form-data'
+import { estimateFormDataBytes, SAFE_UPLOAD_BYTES } from '@/lib/image-compress'
 
 interface ObservationFormProps {
   fieldFormId: number
@@ -78,7 +79,13 @@ export function ObservationForm({
       toast({ title: t('error'), description: t('selectLocation'), variant: 'destructive' })
       return
     }
-    onSubmit(buildObservationFormData(fieldFormId, questions, pickedLocation, answers))
+    const fd = buildObservationFormData(fieldFormId, questions, pickedLocation, answers)
+    // The API rejects bodies over 8 MB; fail here with a clear message instead.
+    if (estimateFormDataBytes(fd) > SAFE_UPLOAD_BYTES) {
+      toast({ title: t('error'), description: t('uploadTooLarge'), variant: 'destructive' })
+      return
+    }
+    onSubmit(fd)
   }
 
   const handleLocationPick = (lon: number, lat: number) => {

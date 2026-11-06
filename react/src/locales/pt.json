@@ -301,6 +301,7 @@
   "retakePhoto": "Repetir foto",
   "chooseFromGallery": "Galeria",
   "removePhoto": "Remover foto",
+  "uploadTooLarge": "As fotos são grandes demais para enviar juntas. Remova uma foto ou use fotos menores.",
   "locating": "A obter a sua localização…",
   "tapToAdjust": "Toque no mapa para ajustar",
   "globalDesc": "Observações de qualquer lugar",

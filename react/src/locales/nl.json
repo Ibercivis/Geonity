@@ -301,6 +301,7 @@
   "retakePhoto": "Foto opnieuw maken",
   "chooseFromGallery": "Galerij",
   "removePhoto": "Foto verwijderen",
+  "uploadTooLarge": "De foto's zijn samen te groot om te verzenden. Verwijder een foto of gebruik kleinere.",
   "locating": "Je locatie wordt bepaald…",
   "tapToAdjust": "Tik op de kaart om aan te passen",
   "globalDesc": "Waarnemingen van overal",
