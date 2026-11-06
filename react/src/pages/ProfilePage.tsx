@@ -24,6 +24,7 @@ import { orgsApi } from '@/api/organizations'
 import type { Organization } from '@/types'
 import { useAuthStore } from '@/store/auth'
 import { mediaUrl, resolveLocalized } from '@/lib/utils'
+import { compressImage } from '@/lib/image-compress'
 import { toast } from '@/hooks/use-toast'
 import { useTranslationLang } from '@/hooks/use-translation-lang'
 import { SUPPORTED_LANGS, LANGUAGE_LABELS } from '@/lib/languages'
@@ -150,7 +151,7 @@ function EditProfileDialog({
   }
 
   const updateMutation = useMutation({
-    mutationFn: () => {
+    mutationFn: async () => {
       const fd = new FormData()
       fd.append('first_name', form.first_name)
       fd.append('last_name', form.last_name)
@@ -158,7 +159,11 @@ function EditProfileDialog({
       fd.append('country', form.country)
       fd.append('visibility', String(form.visibility))
       fd.append('language', form.language)
-      if (coverRef.current?.files?.[0]) fd.append('cover', coverRef.current.files[0])
+      const cover = coverRef.current?.files?.[0]
+      if (cover) {
+        const compressed = await compressImage(cover)
+        fd.append('cover', compressed, compressed.name)
+      }
       return authApi.updateProfile(fd)
     },
     onSuccess: (data) => {

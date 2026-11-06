@@ -301,6 +301,7 @@
   "retakePhoto": "Foto wiederholen",
   "chooseFromGallery": "Galerie",
   "removePhoto": "Foto entfernen",
+  "uploadTooLarge": "Die Fotos sind zusammen zu groß zum Senden. Entfernen Sie ein Foto oder verwenden Sie kleinere.",
   "locating": "Standort wird ermittelt…",
   "tapToAdjust": "Karte antippen zum Anpassen",
   "globalDesc": "Beobachtungen von überall",

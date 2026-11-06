@@ -301,6 +301,7 @@
   "retakePhoto": "Reprendre la photo",
   "chooseFromGallery": "Galerie",
   "removePhoto": "Supprimer la photo",
+  "uploadTooLarge": "Les photos sont trop volumineuses pour être envoyées ensemble. Supprimez une photo ou utilisez-en de plus petites.",
   "locating": "Localisation en cours…",
   "tapToAdjust": "Touchez la carte pour ajuster",
   "globalDesc": "Observations depuis n'importe où",

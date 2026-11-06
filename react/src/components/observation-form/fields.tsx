@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { resolveLocalized } from '@/lib/utils'
+import { compressImage } from '@/lib/image-compress'
 import type { AnswerType } from '@/types'
 import { normalizeChoices, type NormalizedChoice } from './normalize-choices'
 
@@ -290,11 +291,11 @@ export function ImageField({ value, onChange }: {
   const preview = useMemo(() => (value ? URL.createObjectURL(value) : null), [value])
   useEffect(() => () => { if (preview) URL.revokeObjectURL(preview) }, [preview])
 
-  const pick = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const pick = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null
-    if (file) onChange(file)
     // allow re-selecting the same file
     e.target.value = ''
+    if (file) onChange(await compressImage(file))
   }
 
   const clear = () => {
