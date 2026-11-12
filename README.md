@@ -35,6 +35,10 @@ cd flutter && flutter pub get && flutter run   # needs lib/config/secrets.dart (
 
 Files with keys or local configuration (`.env*`, `lib/config/secrets.dart`, `android/key.properties`, …) are **not versioned**: use the `*.example` files as a template.
 
+To run the web app and the admin panel against an API on your own machine, with a sample of data and
+nothing taken from production, see [`LOCAL-DEV.md`](LOCAL-DEV.md). Started without those `.env` files
+the admin panel talks to the **production** API; the web app talks to an API on `localhost`.
+
 ## Versions and deployment
 
 - **A single main branch (`main`)**; changes come in through pull requests from working branches.
