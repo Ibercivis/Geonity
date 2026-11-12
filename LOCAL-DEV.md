@@ -22,9 +22,11 @@ The API sends **no CORS headers**. A browser on `http://localhost:5173` calling
 configured to call their own origin and let Vite forward it. In production the reverse proxy
 does the same job for `geonity.ibercivis.es` and `geonity-backend.ibercivis.es`.
 
-Both dev servers point at **the production API** when nothing is configured. That is the default
-in this repository and it is easy to hit by accident: start either app without the file below and
-you are reading and writing against the live site. Write the file first.
+The two apps default to different places when nothing is configured, and only one of them is
+dangerous. **The admin panel defaults to the live site** — `https://geonity.ibercivis.es`, which
+serves the production API under `/api/` — so starting it without the file below means reading and
+writing against production. Write that file first. The web app defaults to the local API, so it
+either works or refuses to connect; it does not reach production by accident.
 
 ## The web app
 

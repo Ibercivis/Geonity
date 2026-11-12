@@ -37,7 +37,7 @@ Files with keys or local configuration (`.env*`, `lib/config/secrets.dart`, `and
 
 To run the web app and the admin panel against an API on your own machine, with a sample of data and
 nothing taken from production, see [`LOCAL-DEV.md`](LOCAL-DEV.md). Started without those `.env` files
-both apps talk to the **production** API.
+the admin panel talks to the **production** API; the web app talks to an API on `localhost`.
 
 ## Versions and deployment
 

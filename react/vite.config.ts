@@ -7,11 +7,13 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
 
   // Where the dev server's `/api-proxy` and `/media-proxy` point. Unset, it is the
-  // server this file has always named, so nothing changes for anyone who does not
-  // set it. Set to `http://localhost:8000`, the dev server talks to an API running
-  // on the machine — which is the only way to do that, because the API sends no
-  // CORS headers and the browser would block a cross-origin call.
-  const proxyTarget = env.VITE_DEV_PROXY_TARGET || 'http://geonity.ibercivis.es:10003'
+  // API that this repository's local environment runs — see LOCAL-DEV.md. The old
+  // default was `http://geonity.ibercivis.es:10003`; nothing listens on that port
+  // on that host, so it could not reach anything, which is why repointing it costs
+  // nobody a working setup. Whatever it names, it has to be reached through this
+  // proxy: the API sends no CORS headers, so the browser blocks a cross-origin
+  // call before it is made.
+  const proxyTarget = env.VITE_DEV_PROXY_TARGET || 'http://localhost:8000'
   const secure = proxyTarget.startsWith('https://')
 
   return {
