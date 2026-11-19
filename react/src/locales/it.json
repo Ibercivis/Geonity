@@ -439,5 +439,7 @@
   "ibercivisAccount.signingIn": "Accesso con il tuo account Ibercivis in corso…",
   "ibercivisAccount.emailInUse": "Esiste già un account Geonity con questo indirizzo email, quindi non ne è stato creato un altro. Accedi con quell'indirizzo e la sua password.",
   "ibercivisAccount.failed": "Non è stato possibile accedere con il tuo account Ibercivis. Riprova.",
-  "ibercivisAccount.backToLogin": "Torna all'accesso"
+  "ibercivisAccount.backToLogin": "Torna all'accesso",
+  "ibercivisAccount.signIn": "Accedi con il tuo account Ibercivis",
+  "ibercivisAccount.separateAccount": "Accedendo così con un indirizzo email che qui non ha un account si crea un nuovo account Geonity separato. Se hai già un account con quell'indirizzo, accedi qui sotto con la sua password."
 }

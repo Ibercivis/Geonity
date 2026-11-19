@@ -15,6 +15,7 @@ import { authApi } from '@/api/auth'
 import logoSrc from '@/assets/logo.webp'
 import { toast } from '@/hooks/use-toast'
 import { useCompleteSignIn } from '@/hooks/use-complete-sign-in'
+import { ibercivisAccountEnabled, startIbercivisAccountSignIn } from '@/lib/ibercivis-account'
 
 const schema = z.object({
   email: z.string().email(),
@@ -72,7 +73,14 @@ export function LoginPage() {
     onError: () => toast({ title: t('error'), description: 'Google login cancelled', variant: 'destructive' }),
   })
 
-  const isLoading = loginMutation.isPending || googleMutation.isPending
+  const ibercivisMutation = useMutation({
+    mutationFn: startIbercivisAccountSignIn,
+    onError: () => {
+      toast({ title: t('error'), description: t('ibercivisAccount.failed'), variant: 'destructive' })
+    },
+  })
+
+  const isLoading = loginMutation.isPending || googleMutation.isPending || ibercivisMutation.isPending
 
   const features = [
     t('platformFeature1'),
@@ -155,6 +163,21 @@ export function LoginPage() {
             <CardDescription>Geonity</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            {ibercivisAccountEnabled && (
+              <div className="space-y-2">
+                <Button
+                  className="w-full"
+                  onClick={() => ibercivisMutation.mutate()}
+                  disabled={isLoading}
+                >
+                  {t('ibercivisAccount.signIn')}
+                </Button>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {t('ibercivisAccount.separateAccount')}
+                </p>
+              </div>
+            )}
+
             <Button
               variant="outline"
               className="w-full"

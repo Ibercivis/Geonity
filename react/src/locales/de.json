@@ -439,5 +439,7 @@
   "ibercivisAccount.signingIn": "Anmeldung mit deinem Ibercivis-Konto…",
   "ibercivisAccount.emailInUse": "Ein Geonity-Konto verwendet diese E-Mail-Adresse bereits, daher wurde kein zweites angelegt. Melde dich mit dieser Adresse und ihrem Passwort an.",
   "ibercivisAccount.failed": "Die Anmeldung mit deinem Ibercivis-Konto hat nicht geklappt. Bitte versuche es erneut.",
-  "ibercivisAccount.backToLogin": "Zurück zur Anmeldung"
+  "ibercivisAccount.backToLogin": "Zurück zur Anmeldung",
+  "ibercivisAccount.signIn": "Mit deinem Ibercivis-Konto anmelden",
+  "ibercivisAccount.separateAccount": "Wenn du dich so mit einer E-Mail-Adresse anmeldest, die hier kein Konto hat, entsteht ein neues, eigenes Geonity-Konto. Wenn du schon ein Konto mit dieser Adresse hast, melde dich unten mit seinem Passwort an."
 }
