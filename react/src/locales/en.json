@@ -578,5 +578,9 @@
   "activityType_observation_admin_fields_edited_one": "Management data edited on 1 observation",
   "activityType_observation_admin_fields_edited_other": "Management data edited on {{count}} observations",
   "activityType_observation_email_sent_one": "Email sent to 1 participant",
-  "activityType_observation_email_sent_other": "Email sent to {{count}} participants"
+  "activityType_observation_email_sent_other": "Email sent to {{count}} participants",
+  "ibercivisAccount.signingIn": "Signing you in with your Ibercivis account…",
+  "ibercivisAccount.emailInUse": "A Geonity account already uses this email address, so no second one was created. Sign in with that address and its password instead.",
+  "ibercivisAccount.failed": "Signing in with your Ibercivis account did not work. Please try again.",
+  "ibercivisAccount.backToLogin": "Back to sign in"
 }

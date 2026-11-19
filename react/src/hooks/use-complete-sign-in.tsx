@@ -28,6 +28,7 @@ export function useCompleteSignIn() {
   const cancelConsent = () => {
     setShowConsentGate(false)
     logout()
+    navigate('/login', { replace: true })
   }
 
   const completeSignIn = async (key: string) => {

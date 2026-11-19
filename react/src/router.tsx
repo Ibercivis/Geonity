@@ -3,6 +3,8 @@ import { AppLayout } from '@/components/shared/AppLayout'
 import { LoginPage } from '@/pages/LoginPage'
 import { RegisterPage } from '@/pages/RegisterPage'
 import { ForgotPasswordPage } from '@/pages/ForgotPasswordPage'
+import { IbercivisAccountCallbackPage } from '@/pages/IbercivisAccountCallbackPage'
+import { IBERCIVIS_ACCOUNT_CALLBACK_PATH } from '@/lib/ibercivis-account'
 import { ManagePage } from '@/pages/ManagePage'
 import { ActivityPage } from '@/pages/ActivityPage'
 import { HomePage } from '@/pages/HomePage'
@@ -57,6 +59,10 @@ export const router = createBrowserRouter([
   {
     path: '/forgot-password',
     element: <ForgotPasswordPage />,
+  },
+  {
+    path: IBERCIVIS_ACCOUNT_CALLBACK_PATH,
+    element: <IbercivisAccountCallbackPage />,
   },
   {
     path: '/',

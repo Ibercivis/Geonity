@@ -435,5 +435,9 @@
   "consent.gateTitle": "Dernière étape",
   "consent.gateDesc": "Avant de continuer, veuillez lire et accepter nos politiques. Ceci est requis pour utiliser Geonity.",
   "consent.gateCta": "Accepter et continuer",
-  "consent.gateCancel": "Annuler"
+  "consent.gateCancel": "Annuler",
+  "ibercivisAccount.signingIn": "Connexion avec votre compte Ibercivis…",
+  "ibercivisAccount.emailInUse": "Un compte Geonity utilise déjà cette adresse e-mail : aucun second compte n'a été créé. Connectez-vous avec cette adresse et son mot de passe.",
+  "ibercivisAccount.failed": "La connexion avec votre compte Ibercivis n'a pas abouti. Veuillez réessayer.",
+  "ibercivisAccount.backToLogin": "Retour à la connexion"
 }

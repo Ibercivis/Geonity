@@ -578,5 +578,9 @@
   "activityType_observation_admin_fields_edited_one": "Datos de gestión editados en 1 observación",
   "activityType_observation_admin_fields_edited_other": "Datos de gestión editados en {{count}} observaciones",
   "activityType_observation_email_sent_one": "Correo enviado a 1 participante",
-  "activityType_observation_email_sent_other": "Correo enviado a {{count}} participantes"
+  "activityType_observation_email_sent_other": "Correo enviado a {{count}} participantes",
+  "ibercivisAccount.signingIn": "Iniciando sesión con tu cuenta de Ibercivis…",
+  "ibercivisAccount.emailInUse": "Ya hay una cuenta de Geonity con esta dirección de correo, así que no se ha creado otra. Inicia sesión con esa dirección y su contraseña.",
+  "ibercivisAccount.failed": "No se ha podido iniciar sesión con tu cuenta de Ibercivis. Inténtalo de nuevo.",
+  "ibercivisAccount.backToLogin": "Volver a iniciar sesión"
 }

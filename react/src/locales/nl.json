@@ -435,5 +435,9 @@
   "consent.gateTitle": "Nog één laatste stap",
   "consent.gateDesc": "Controleer en accepteer onze beleidsregels voordat je verdergaat. Dit is vereist om Geonity te gebruiken.",
   "consent.gateCta": "Accepteren en doorgaan",
-  "consent.gateCancel": "Annuleren"
+  "consent.gateCancel": "Annuleren",
+  "ibercivisAccount.signingIn": "Bezig met inloggen met je Ibercivis-account…",
+  "ibercivisAccount.emailInUse": "Er bestaat al een Geonity-account met dit e-mailadres, dus er is geen tweede aangemaakt. Log in met dat adres en het bijbehorende wachtwoord.",
+  "ibercivisAccount.failed": "Inloggen met je Ibercivis-account is niet gelukt. Probeer het opnieuw.",
+  "ibercivisAccount.backToLogin": "Terug naar inloggen"
 }
