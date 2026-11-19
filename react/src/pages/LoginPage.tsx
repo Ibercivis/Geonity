@@ -215,13 +215,6 @@ export function LoginPage() {
               </Button>
             </form>
 
-            <div className="text-center text-sm text-muted-foreground">
-              {t('noAccount')}{' '}
-              <Link to="/register" className="text-primary hover:underline">
-                {t('register')}
-              </Link>
-            </div>
-
             <div className="flex items-center justify-center gap-3 pt-2 text-xs text-muted-foreground/50">
               <Link to="/privacy-policy" className="hover:text-muted-foreground hover:underline">
                 {t('pp.title')}

@@ -1,13 +1,10 @@
 import { api } from '@/lib/axios'
 import type { IbercivisAccountCode } from '@/lib/ibercivis-account'
-import type { AuthResponse, LoginCredentials, RegisterCredentials, User, UserProfile } from '@/types'
+import type { AuthResponse, LoginCredentials, User, UserProfile } from '@/types'
 
 export const authApi = {
   login: (data: LoginCredentials) =>
     api.post<AuthResponse>('/users/authentication/login/', data).then((r) => r.data),
-
-  register: (data: RegisterCredentials) =>
-    api.post('/users/registration/', data).then((r) => r.data),
 
   /** Sends the reset email; the link in it opens a page served by the backend. */
   requestPasswordReset: (email: string) =>

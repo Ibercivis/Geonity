@@ -5,14 +5,6 @@ export interface LoginCredentials {
   password: string
 }
 
-export interface RegisterCredentials {
-  email: string
-  password1: string
-  password2: string
-  terms_version: string
-  privacy_version: string
-}
-
 export interface AuthResponse {
   key: string
 }
