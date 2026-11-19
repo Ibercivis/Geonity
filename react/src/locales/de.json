@@ -436,5 +436,6 @@
   "ibercivisAccount.failed": "Die Anmeldung mit deinem Ibercivis-Konto hat nicht geklappt. Bitte versuche es erneut.",
   "ibercivisAccount.backToLogin": "Zurück zur Anmeldung",
   "ibercivisAccount.signIn": "Mit deinem Ibercivis-Konto anmelden",
-  "ibercivisAccount.separateAccount": "Wenn du dich so mit einer E-Mail-Adresse anmeldest, die hier kein Konto hat, entsteht ein neues, eigenes Geonity-Konto. Wenn du schon ein Konto mit dieser Adresse hast, melde dich unten mit seinem Passwort an."
+  "ibercivisAccount.separateAccount": "Wenn du dich so mit einer E-Mail-Adresse anmeldest, die hier kein Konto hat, entsteht ein neues, eigenes Geonity-Konto. Wenn du schon ein Konto mit dieser Adresse hast, melde dich unten mit seinem Passwort an.",
+  "ibercivisAccount.identifier": "Ibercivis-Konto"
 }

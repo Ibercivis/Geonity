@@ -20,6 +20,8 @@ export interface User {
   privacy_version: string | null
   /** Platform staff. Only present on the "who am I" endpoint, never on user lists. */
   is_staff?: boolean
+  /** The identifier of the Ibercivis account this user signs in with, if any. "Who am I" only. */
+  ibercivis_account_id?: string | null
 }
 
 export interface UserProfile {

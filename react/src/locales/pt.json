@@ -436,5 +436,6 @@
   "ibercivisAccount.failed": "Não foi possível iniciar sessão com a sua conta Ibercivis. Tente novamente.",
   "ibercivisAccount.backToLogin": "Voltar ao início de sessão",
   "ibercivisAccount.signIn": "Iniciar sessão com a sua conta Ibercivis",
-  "ibercivisAccount.separateAccount": "Iniciar sessão desta forma com um endereço de email que não tem conta aqui cria uma conta Geonity nova e separada. Se já tem uma conta com esse endereço, inicie sessão abaixo com a respetiva palavra-passe."
+  "ibercivisAccount.separateAccount": "Iniciar sessão desta forma com um endereço de email que não tem conta aqui cria uma conta Geonity nova e separada. Se já tem uma conta com esse endereço, inicie sessão abaixo com a respetiva palavra-passe.",
+  "ibercivisAccount.identifier": "Conta Ibercivis"
 }

@@ -436,5 +436,6 @@
   "ibercivisAccount.failed": "Inloggen met je Ibercivis-account is niet gelukt. Probeer het opnieuw.",
   "ibercivisAccount.backToLogin": "Terug naar inloggen",
   "ibercivisAccount.signIn": "Inloggen met je Ibercivis-account",
-  "ibercivisAccount.separateAccount": "Log je zo in met een e-mailadres dat hier geen account heeft, dan wordt er een nieuw, apart Geonity-account aangemaakt. Heb je al een account met dat adres, log dan hieronder in met het bijbehorende wachtwoord."
+  "ibercivisAccount.separateAccount": "Log je zo in met een e-mailadres dat hier geen account heeft, dan wordt er een nieuw, apart Geonity-account aangemaakt. Heb je al een account met dat adres, log dan hieronder in met het bijbehorende wachtwoord.",
+  "ibercivisAccount.identifier": "Ibercivis-account"
 }

@@ -342,6 +342,7 @@ function SectionHeader({ icon, label, count }: { icon: React.ReactNode; label: s
 
 export function ProfilePage() {
   const { t } = useTranslation()
+  const ibercivisAccountId = useAuthStore((s) => s.user?.ibercivis_account_id)
   const lang = useTranslationLang()
   const [editDialog, setEditDialog] = useState(false)
   const [activeTab, setActiveTab] = useState('profile')
@@ -445,6 +446,13 @@ export function ProfilePage() {
                 className="text-sm text-muted-foreground prose prose-sm max-w-none"
                 dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(profile.biography) }}
               />
+            )}
+
+            {ibercivisAccountId && (
+              <dl className="text-sm space-y-1">
+                <dt id="ibercivis-account-id-label" className="text-muted-foreground">{t('ibercivisAccount.identifier')}</dt>
+                <dd aria-labelledby="ibercivis-account-id-label" className="font-mono text-xs break-all">{ibercivisAccountId}</dd>
+              </dl>
             )}
 
           </div>

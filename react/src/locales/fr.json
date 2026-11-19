@@ -436,5 +436,6 @@
   "ibercivisAccount.failed": "La connexion avec votre compte Ibercivis n'a pas abouti. Veuillez réessayer.",
   "ibercivisAccount.backToLogin": "Retour à la connexion",
   "ibercivisAccount.signIn": "Se connecter avec votre compte Ibercivis",
-  "ibercivisAccount.separateAccount": "Se connecter ainsi avec une adresse e-mail qui n'a pas de compte ici crée un nouveau compte Geonity distinct. Si vous avez déjà un compte avec cette adresse, connectez-vous ci-dessous avec son mot de passe."
+  "ibercivisAccount.separateAccount": "Se connecter ainsi avec une adresse e-mail qui n'a pas de compte ici crée un nouveau compte Geonity distinct. Si vous avez déjà un compte avec cette adresse, connectez-vous ci-dessous avec son mot de passe.",
+  "ibercivisAccount.identifier": "Compte Ibercivis"
 }

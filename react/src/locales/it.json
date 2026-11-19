@@ -436,5 +436,6 @@
   "ibercivisAccount.failed": "Non è stato possibile accedere con il tuo account Ibercivis. Riprova.",
   "ibercivisAccount.backToLogin": "Torna all'accesso",
   "ibercivisAccount.signIn": "Accedi con il tuo account Ibercivis",
-  "ibercivisAccount.separateAccount": "Accedendo così con un indirizzo email che qui non ha un account si crea un nuovo account Geonity separato. Se hai già un account con quell'indirizzo, accedi qui sotto con la sua password."
+  "ibercivisAccount.separateAccount": "Accedendo così con un indirizzo email che qui non ha un account si crea un nuovo account Geonity separato. Se hai già un account con quell'indirizzo, accedi qui sotto con la sua password.",
+  "ibercivisAccount.identifier": "Account Ibercivis"
 }
