@@ -48,6 +48,36 @@ cd react && npm install && npm run dev
 `dev-web`. `VITE_DEV_PROXY_TARGET` is new: `vite.config.ts` used to name one host and nothing else,
 so there was no way to reach a local API. Left unset it is the host it always was.
 
+### Signing in with an Ibercivis account
+
+The Ibercivis citizen science sites share one sign-in service, reached over OpenID Connect; why,
+and the service itself, live in
+[`Ibercivis/citsci-federation`](https://github.com/Ibercivis/citsci-federation), whose stack runs
+this app next to it. Two more lines in `react/.env.development` turn it on:
+
+```sh
+VITE_IBERCIVIS_ACCOUNT_ISSUER=<the service's issuer URL>
+VITE_IBERCIVIS_ACCOUNT_CLIENT_ID=<the API's client id there>
+```
+
+With both set, the login page changes:
+
+- **"Sign in with your Ibercivis account"** appears, with a paragraph saying what it means: a
+  separate Geonity account, without the projects and observations of an existing one. Anyone who
+  already has an account keeps signing in with its email and password, and an address already in
+  use here is refused.
+- The browser goes to the service with a PKCE challenge and comes back to
+  `/auth/ibercivis/callback`. That page posts the code to the API, which redeems it with its own
+  secret — the API's `LOCAL-DEV.md` has the four variables it needs. The browser never holds a
+  token from the service.
+- The profile page shows the identifier of the Ibercivis account, under "Ibercivis account".
+
+Without them, the button is not shown and nothing else changes.
+
+**The web app no longer creates accounts.** The "register" link is gone and `/register` leads to
+`/login`, with or without the two variables. The API's `POST /api/users/registration/` stays open,
+because the mobile app still creates its accounts there.
+
 ## The admin panel
 
 `admin/.env` (git-ignored):
@@ -76,7 +106,8 @@ to the console. Any token from a free Mapbox account, in `VITE_MAPBOX_TOKEN`, is
 
 ## The mobile client
 
-**Not exercised, and not changed.** Two things would be in the way, both of them debug-only:
+**Not exercised, and not changed.** It still registers accounts through the API. Two things would
+be in the way, both of them debug-only:
 
 - `flutter/lib/config/app_config.dart` hard-codes `baseUrl` to `https://geonity.ibercivis.es`.
   There is a `PRODUCTION` `--dart-define` in that file, but `baseUrl` does not read it, so the
@@ -87,7 +118,12 @@ to the console. Any token from a free Mapbox account, in `VITE_MAPBOX_TOKEN`, is
   `http://10.0.2.2:8000` would be refused. That override belongs in the debug manifest, which does
   not merge into a release build.
 
-Neither change is made here, because there is no Flutter SDK on the machine this was written on and
+Signing in with an Ibercivis account from the mobile app would follow the web app: start the flow
+with PKCE, receive the code at the app's own scheme, and send the code and verifier to
+`POST /api/users/auth/ibercivis/`. The API redeems with the single `IBERCIVIS_ACCOUNT_REDIRECT_URI`,
+so it would have to accept the mobile redirect URI too, from a short allowed list.
+
+None of this is done here, because there is no Flutter SDK on the machine this was written on and
 an unverified change to a shipping mobile app is worth less than a note saying what it would be.
 
 ## Known issues
