@@ -1,14 +1,9 @@
 {
   "login": "Login",
   "logout": "Logout",
-  "register": "Register",
   "email": "Email",
   "password": "Password",
-  "confirmPassword": "Confirm password",
   "loginWithGoogle": "Login with Google",
-  "noAccount": "Don't have an account?",
-  "hasAccount": "Already have an account?",
-  "checkEmailVerification": "Check your email to verify your account before logging in.",
   "forgotPassword": "Forgot your password?",
   "forgotPasswordTitle": "Reset password",
   "forgotPasswordDescription": "Enter your email and we'll send you a link to set a new password.",
@@ -578,5 +573,12 @@
   "activityType_observation_admin_fields_edited_one": "Management data edited on 1 observation",
   "activityType_observation_admin_fields_edited_other": "Management data edited on {{count}} observations",
   "activityType_observation_email_sent_one": "Email sent to 1 participant",
-  "activityType_observation_email_sent_other": "Email sent to {{count}} participants"
+  "activityType_observation_email_sent_other": "Email sent to {{count}} participants",
+  "ibercivisAccount.signingIn": "Signing you in with your Ibercivis account…",
+  "ibercivisAccount.emailInUse": "A Geonity account already uses this email address, so no second one was created. Sign in with that address and its password instead.",
+  "ibercivisAccount.failed": "Signing in with your Ibercivis account did not work. Please try again.",
+  "ibercivisAccount.backToLogin": "Back to sign in",
+  "ibercivisAccount.signIn": "Sign in with your Ibercivis account",
+  "ibercivisAccount.separateAccount": "Signing in this way with an email address that has no account here creates a new, separate Geonity account. If you already have an account with that address, sign in below with its password.",
+  "ibercivisAccount.identifier": "Ibercivis account"
 }

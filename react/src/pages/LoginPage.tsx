@@ -1,8 +1,7 @@
-import { useState, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMutation } from '@tanstack/react-query'
 import { useGoogleLogin } from '@react-oauth/google'
@@ -12,12 +11,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import { ConsentGate } from '@/components/ConsentGate'
 import { authApi } from '@/api/auth'
-import { TERMS_VERSION, PRIVACY_VERSION } from '@/config/consent'
 import logoSrc from '@/assets/logo.webp'
-import { useAuthStore } from '@/store/auth'
 import { toast } from '@/hooks/use-toast'
+import { useCompleteSignIn } from '@/hooks/use-complete-sign-in'
+import { ibercivisAccountEnabled, startIbercivisAccountSignIn } from '@/lib/ibercivis-account'
 
 const schema = z.object({
   email: z.string().email(),
@@ -40,48 +38,16 @@ function GoogleIcon() {
 
 export function LoginPage() {
   const { t } = useTranslation()
-  const navigate = useNavigate()
-  const { setToken, setUser, logout } = useAuthStore()
-  const [showConsentGate, setShowConsentGate] = useState(false)
-  const pendingNavigate = useRef<() => Promise<void>>(async () => {})
+  const { completeSignIn, consentGate } = useCompleteSignIn()
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
   })
 
-  const finalizeAuth = () => {
-    pendingNavigate.current().catch(() =>
-      toast({ title: t('error'), description: 'Could not record consent', variant: 'destructive' })
-    )
-  }
-
-  const cancelConsent = () => {
-    setShowConsentGate(false)
-    logout()
-  }
-
-  const afterAuth = async (key: string) => {
-    setToken(key)
-    const user = await authApi.getUser()
-    setUser(user)
-
-    if (!user.terms_accepted_at) {
-      // New user — show consent gate before navigating
-      pendingNavigate.current = async () => {
-        await authApi.recordConsent(TERMS_VERSION, PRIVACY_VERSION)
-        setShowConsentGate(false)
-        navigate('/')
-      }
-      setShowConsentGate(true)
-    } else {
-      navigate('/')
-    }
-  }
-
   const loginMutation = useMutation({
     mutationFn: authApi.login,
     onSuccess: async (data) => {
-      try { await afterAuth(data.key) } catch {
+      try { await completeSignIn(data.key) } catch {
         toast({ title: t('error'), description: 'Login failed, please try again', variant: 'destructive' })
       }
     },
@@ -93,7 +59,7 @@ export function LoginPage() {
   const googleMutation = useMutation({
     mutationFn: (accessToken: string) => authApi.loginWithGoogle(accessToken),
     onSuccess: async (data) => {
-      try { await afterAuth(data.key) } catch {
+      try { await completeSignIn(data.key) } catch {
         toast({ title: t('error'), description: 'Google login failed, please try again', variant: 'destructive' })
       }
     },
@@ -107,7 +73,14 @@ export function LoginPage() {
     onError: () => toast({ title: t('error'), description: 'Google login cancelled', variant: 'destructive' }),
   })
 
-  const isLoading = loginMutation.isPending || googleMutation.isPending
+  const ibercivisMutation = useMutation({
+    mutationFn: startIbercivisAccountSignIn,
+    onError: () => {
+      toast({ title: t('error'), description: t('ibercivisAccount.failed'), variant: 'destructive' })
+    },
+  })
+
+  const isLoading = loginMutation.isPending || googleMutation.isPending || ibercivisMutation.isPending
 
   const features = [
     t('platformFeature1'),
@@ -118,9 +91,7 @@ export function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-      {showConsentGate && (
-        <ConsentGate onAccept={finalizeAuth} onCancel={cancelConsent} />
-      )}
+      {consentGate}
 
       {/* Left: platform pitch */}
       <div className="flex-1 bg-brand-dark text-white flex flex-col justify-between p-6 md:p-16">
@@ -192,6 +163,21 @@ export function LoginPage() {
             <CardDescription>Geonity</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            {ibercivisAccountEnabled && (
+              <div className="space-y-2">
+                <Button
+                  className="w-full"
+                  onClick={() => ibercivisMutation.mutate()}
+                  disabled={isLoading}
+                >
+                  {t('ibercivisAccount.signIn')}
+                </Button>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {t('ibercivisAccount.separateAccount')}
+                </p>
+              </div>
+            )}
+
             <Button
               variant="outline"
               className="w-full"
@@ -228,13 +214,6 @@ export function LoginPage() {
                 {loginMutation.isPending ? t('loading') : t('login')}
               </Button>
             </form>
-
-            <div className="text-center text-sm text-muted-foreground">
-              {t('noAccount')}{' '}
-              <Link to="/register" className="text-primary hover:underline">
-                {t('register')}
-              </Link>
-            </div>
 
             <div className="flex items-center justify-center gap-3 pt-2 text-xs text-muted-foreground/50">
               <Link to="/privacy-policy" className="hover:text-muted-foreground hover:underline">

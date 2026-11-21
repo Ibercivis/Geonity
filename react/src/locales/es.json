@@ -1,14 +1,9 @@
 {
   "login": "Iniciar sesión",
   "logout": "Cerrar sesión",
-  "register": "Registrarse",
   "email": "Correo electrónico",
   "password": "Contraseña",
-  "confirmPassword": "Confirmar contraseña",
   "loginWithGoogle": "Entrar con Google",
-  "noAccount": "¿No tienes cuenta?",
-  "hasAccount": "¿Ya tienes cuenta?",
-  "checkEmailVerification": "Revisa tu correo para verificar tu cuenta antes de iniciar sesión.",
   "forgotPassword": "¿Has olvidado tu contraseña?",
   "forgotPasswordTitle": "Recuperar contraseña",
   "forgotPasswordDescription": "Introduce tu correo y te enviaremos un enlace para crear una contraseña nueva.",
@@ -578,5 +573,12 @@
   "activityType_observation_admin_fields_edited_one": "Datos de gestión editados en 1 observación",
   "activityType_observation_admin_fields_edited_other": "Datos de gestión editados en {{count}} observaciones",
   "activityType_observation_email_sent_one": "Correo enviado a 1 participante",
-  "activityType_observation_email_sent_other": "Correo enviado a {{count}} participantes"
+  "activityType_observation_email_sent_other": "Correo enviado a {{count}} participantes",
+  "ibercivisAccount.signingIn": "Iniciando sesión con tu cuenta de Ibercivis…",
+  "ibercivisAccount.emailInUse": "Ya hay una cuenta de Geonity con esta dirección de correo, así que no se ha creado otra. Inicia sesión con esa dirección y su contraseña.",
+  "ibercivisAccount.failed": "No se ha podido iniciar sesión con tu cuenta de Ibercivis. Inténtalo de nuevo.",
+  "ibercivisAccount.backToLogin": "Volver a iniciar sesión",
+  "ibercivisAccount.signIn": "Inicia sesión con tu cuenta de Ibercivis",
+  "ibercivisAccount.separateAccount": "Si entras así con una dirección de correo que no tiene cuenta aquí, se crea una cuenta de Geonity nueva y aparte. Si ya tienes una cuenta con esa dirección, inicia sesión abajo con su contraseña.",
+  "ibercivisAccount.identifier": "Cuenta de Ibercivis"
 }

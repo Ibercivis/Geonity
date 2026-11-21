@@ -1,14 +1,9 @@
 {
   "login": "Inloggen",
   "logout": "Uitloggen",
-  "register": "Registreren",
   "email": "E-mail",
   "password": "Wachtwoord",
-  "confirmPassword": "Bevestig wachtwoord",
   "loginWithGoogle": "Inloggen met Google",
-  "noAccount": "Nog geen account?",
-  "hasAccount": "Heb je al een account?",
-  "checkEmailVerification": "Controleer je e-mail om je account te verifiëren voordat je inlogt.",
   "forgotPassword": "Wachtwoord vergeten?",
   "forgotPasswordTitle": "Wachtwoord herstellen",
   "forgotPasswordDescription": "Vul je e-mailadres in en we sturen je een link om een nieuw wachtwoord in te stellen.",
@@ -435,5 +430,12 @@
   "consent.gateTitle": "Nog één laatste stap",
   "consent.gateDesc": "Controleer en accepteer onze beleidsregels voordat je verdergaat. Dit is vereist om Geonity te gebruiken.",
   "consent.gateCta": "Accepteren en doorgaan",
-  "consent.gateCancel": "Annuleren"
+  "consent.gateCancel": "Annuleren",
+  "ibercivisAccount.signingIn": "Bezig met inloggen met je Ibercivis-account…",
+  "ibercivisAccount.emailInUse": "Er bestaat al een Geonity-account met dit e-mailadres, dus er is geen tweede aangemaakt. Log in met dat adres en het bijbehorende wachtwoord.",
+  "ibercivisAccount.failed": "Inloggen met je Ibercivis-account is niet gelukt. Probeer het opnieuw.",
+  "ibercivisAccount.backToLogin": "Terug naar inloggen",
+  "ibercivisAccount.signIn": "Inloggen met je Ibercivis-account",
+  "ibercivisAccount.separateAccount": "Log je zo in met een e-mailadres dat hier geen account heeft, dan wordt er een nieuw, apart Geonity-account aangemaakt. Heb je al een account met dat adres, log dan hieronder in met het bijbehorende wachtwoord.",
+  "ibercivisAccount.identifier": "Ibercivis-account"
 }

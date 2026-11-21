@@ -1,12 +1,10 @@
 import { api } from '@/lib/axios'
-import type { AuthResponse, LoginCredentials, RegisterCredentials, User, UserProfile } from '@/types'
+import type { IbercivisAccountCode } from '@/lib/ibercivis-account'
+import type { AuthResponse, LoginCredentials, User, UserProfile } from '@/types'
 
 export const authApi = {
   login: (data: LoginCredentials) =>
     api.post<AuthResponse>('/users/authentication/login/', data).then((r) => r.data),
-
-  register: (data: RegisterCredentials) =>
-    api.post('/users/registration/', data).then((r) => r.data),
 
   /** Sends the reset email; the link in it opens a page served by the backend. */
   requestPasswordReset: (email: string) =>
@@ -36,4 +34,8 @@ export const authApi = {
     api
       .post<AuthResponse>('/users/auth/google/', { access_token: accessToken })
       .then((r) => r.data),
+
+  /** The API redeems the code the Ibercivis sign-in brought back, and answers with its own token. */
+  loginWithIbercivis: (code: IbercivisAccountCode) =>
+    api.post<AuthResponse>('/users/auth/ibercivis/', code).then((r) => r.data),
 }

@@ -1,14 +1,9 @@
 {
   "login": "Anmelden",
   "logout": "Abmelden",
-  "register": "Registrieren",
   "email": "E-Mail",
   "password": "Passwort",
-  "confirmPassword": "Passwort bestätigen",
   "loginWithGoogle": "Mit Google anmelden",
-  "noAccount": "Noch kein Konto?",
-  "hasAccount": "Bereits ein Konto?",
-  "checkEmailVerification": "Überprüfen Sie Ihre E-Mail, um Ihr Konto vor der Anmeldung zu bestätigen.",
   "forgotPassword": "Passwort vergessen?",
   "forgotPasswordTitle": "Passwort zurücksetzen",
   "forgotPasswordDescription": "Gib deine E-Mail-Adresse ein und wir senden dir einen Link, um ein neues Passwort festzulegen.",
@@ -435,5 +430,12 @@
   "consent.gateTitle": "Letzter Schritt",
   "consent.gateDesc": "Bevor Sie fortfahren, lesen und akzeptieren Sie bitte unsere Richtlinien. Dies ist erforderlich, um Geonity nutzen zu können.",
   "consent.gateCta": "Akzeptieren und fortfahren",
-  "consent.gateCancel": "Abbrechen"
+  "consent.gateCancel": "Abbrechen",
+  "ibercivisAccount.signingIn": "Anmeldung mit deinem Ibercivis-Konto…",
+  "ibercivisAccount.emailInUse": "Ein Geonity-Konto verwendet diese E-Mail-Adresse bereits, daher wurde kein zweites angelegt. Melde dich mit dieser Adresse und ihrem Passwort an.",
+  "ibercivisAccount.failed": "Die Anmeldung mit deinem Ibercivis-Konto hat nicht geklappt. Bitte versuche es erneut.",
+  "ibercivisAccount.backToLogin": "Zurück zur Anmeldung",
+  "ibercivisAccount.signIn": "Mit deinem Ibercivis-Konto anmelden",
+  "ibercivisAccount.separateAccount": "Wenn du dich so mit einer E-Mail-Adresse anmeldest, die hier kein Konto hat, entsteht ein neues, eigenes Geonity-Konto. Wenn du schon ein Konto mit dieser Adresse hast, melde dich unten mit seinem Passwort an.",
+  "ibercivisAccount.identifier": "Ibercivis-Konto"
 }

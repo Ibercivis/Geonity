@@ -1,8 +1,9 @@
 import { createBrowserRouter, Navigate, useParams } from 'react-router-dom'
 import { AppLayout } from '@/components/shared/AppLayout'
 import { LoginPage } from '@/pages/LoginPage'
-import { RegisterPage } from '@/pages/RegisterPage'
 import { ForgotPasswordPage } from '@/pages/ForgotPasswordPage'
+import { IbercivisAccountCallbackPage } from '@/pages/IbercivisAccountCallbackPage'
+import { IBERCIVIS_ACCOUNT_CALLBACK_PATH } from '@/lib/ibercivis-account'
 import { ManagePage } from '@/pages/ManagePage'
 import { ActivityPage } from '@/pages/ActivityPage'
 import { HomePage } from '@/pages/HomePage'
@@ -50,13 +51,19 @@ export const router = createBrowserRouter([
     path: '/login',
     element: <LoginPage />,
   },
+  // Accounts are no longer created here: a newcomer signs in with an Ibercivis
+  // account. Old links and mails still point at /register.
   {
     path: '/register',
-    element: <RegisterPage />,
+    element: <Navigate to="/login" replace />,
   },
   {
     path: '/forgot-password',
     element: <ForgotPasswordPage />,
+  },
+  {
+    path: IBERCIVIS_ACCOUNT_CALLBACK_PATH,
+    element: <IbercivisAccountCallbackPage />,
   },
   {
     path: '/',

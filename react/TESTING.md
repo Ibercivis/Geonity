@@ -31,12 +31,15 @@
 - [ ] Completar el flujo → redirige a `/`
 - [ ] Cancelar el selector → muestra toast de error, no redirige
 
-### 1.3 Registro
-- [ ] Registro con datos válidos → muestra modal de confirmación de email
-- [ ] Contraseñas que no coinciden → error en campo
-- [ ] Contraseña con menos de 8 caracteres → error en campo
-- [ ] Email ya registrado → muestra error del servidor
-- [ ] Desde el modal de éxito → clic en "Login" lleva a `/login`
+### 1.3 Acceso con cuenta de Ibercivis
+- [ ] Sin `VITE_IBERCIVIS_ACCOUNT_ISSUER` y `VITE_IBERCIVIS_ACCOUNT_CLIENT_ID` → el botón no aparece
+- [ ] "Inicia sesión con tu cuenta de Ibercivis" lleva al servicio de acceso de Ibercivis
+- [ ] Completar el flujo con una dirección sin cuenta aquí → vuelve a `/auth/ibercivis/callback`, muestra el consentimiento y redirige a `/`
+- [ ] El perfil muestra "Cuenta de Ibercivis" con su identificador
+- [ ] Volver a entrar con la misma cuenta → misma cuenta de Geonity, sin pedir consentimiento otra vez
+- [ ] Con una dirección que ya tiene cuenta aquí → "Ya hay una cuenta de Geonity con esta dirección de correo…"; no se crea ninguna
+- [ ] Rechazar el acceso en el servicio → "No se ha podido iniciar sesión…" y enlace "Volver a iniciar sesión" a `/login`; no se crea ninguna cuenta
+- [ ] `/login` no tiene enlace de registro, y `/register` redirige a `/login`
 
 ### 1.4 Cierre de sesión
 - [ ] Logout desde el menú de usuario → redirige a `/login`

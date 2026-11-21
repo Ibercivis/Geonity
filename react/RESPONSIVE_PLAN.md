@@ -45,7 +45,7 @@ Patrones de UI por tipo de página:
 - [x] Panel hereda Fase 3
 
 ## Fase 7 — Formularios (2-3 h) ✅
-- [x] LoginPage + RegisterPage: logo `h-24 md:h-48`, padding `p-6 md:p-16`, title `text-2xl md:text-4xl`
+- [x] LoginPage + RegisterPage (eliminada desde el acceso con cuenta de Ibercivis): logo `h-24 md:h-48`, padding `p-6 md:p-16`, title `text-2xl md:text-4xl`
 - [x] CreateProjectPage: header en columna en móvil, step indicators con `overflow-x-auto`, padding `p-4 md:p-6`
 - [x] ProjectFormPage: header con `overflow-x-auto`, padding `px-3 md:px-6`, tabs scrollables
 - [x] DeleteAccountPage, Profile: ya tenían `max-w-3xl mx-auto` y se ven OK

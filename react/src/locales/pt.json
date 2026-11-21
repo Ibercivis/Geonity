@@ -1,14 +1,9 @@
 {
   "login": "Entrar",
   "logout": "Sair",
-  "register": "Registrar",
   "email": "E-mail",
   "password": "Senha",
-  "confirmPassword": "Confirmar senha",
   "loginWithGoogle": "Entrar com Google",
-  "noAccount": "Não tem uma conta?",
-  "hasAccount": "Já tem uma conta?",
-  "checkEmailVerification": "Verifique o seu e-mail para confirmar a sua conta antes de iniciar sessão.",
   "forgotPassword": "Esqueceu-se da palavra-passe?",
   "forgotPasswordTitle": "Recuperar palavra-passe",
   "forgotPasswordDescription": "Insira o seu email e enviaremos um link para definir uma nova palavra-passe.",
@@ -435,5 +430,12 @@
   "consent.gateTitle": "Mais um passo",
   "consent.gateDesc": "Antes de continuar, reveja e aceite as nossas políticas. É obrigatório para utilizar o Geonity.",
   "consent.gateCta": "Aceitar e continuar",
-  "consent.gateCancel": "Cancelar"
+  "consent.gateCancel": "Cancelar",
+  "ibercivisAccount.signingIn": "A iniciar sessão com a sua conta Ibercivis…",
+  "ibercivisAccount.emailInUse": "Já existe uma conta Geonity com este endereço de email, por isso não foi criada outra. Inicie sessão com esse endereço e a respetiva palavra-passe.",
+  "ibercivisAccount.failed": "Não foi possível iniciar sessão com a sua conta Ibercivis. Tente novamente.",
+  "ibercivisAccount.backToLogin": "Voltar ao início de sessão",
+  "ibercivisAccount.signIn": "Iniciar sessão com a sua conta Ibercivis",
+  "ibercivisAccount.separateAccount": "Iniciar sessão desta forma com um endereço de email que não tem conta aqui cria uma conta Geonity nova e separada. Se já tem uma conta com esse endereço, inicie sessão abaixo com a respetiva palavra-passe.",
+  "ibercivisAccount.identifier": "Conta Ibercivis"
 }

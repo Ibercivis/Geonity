@@ -1,14 +1,9 @@
 {
   "login": "Connexion",
   "logout": "Déconnexion",
-  "register": "S'inscrire",
   "email": "E-mail",
   "password": "Mot de passe",
-  "confirmPassword": "Confirmer le mot de passe",
   "loginWithGoogle": "Se connecter avec Google",
-  "noAccount": "Vous n'avez pas de compte ?",
-  "hasAccount": "Vous avez déjà un compte ?",
-  "checkEmailVerification": "Vérifiez votre e-mail pour confirmer votre compte avant de vous connecter.",
   "forgotPassword": "Mot de passe oublié ?",
   "forgotPasswordTitle": "Réinitialiser le mot de passe",
   "forgotPasswordDescription": "Saisissez votre e-mail et nous vous enverrons un lien pour définir un nouveau mot de passe.",
@@ -435,5 +430,12 @@
   "consent.gateTitle": "Dernière étape",
   "consent.gateDesc": "Avant de continuer, veuillez lire et accepter nos politiques. Ceci est requis pour utiliser Geonity.",
   "consent.gateCta": "Accepter et continuer",
-  "consent.gateCancel": "Annuler"
+  "consent.gateCancel": "Annuler",
+  "ibercivisAccount.signingIn": "Connexion avec votre compte Ibercivis…",
+  "ibercivisAccount.emailInUse": "Un compte Geonity utilise déjà cette adresse e-mail : aucun second compte n'a été créé. Connectez-vous avec cette adresse et son mot de passe.",
+  "ibercivisAccount.failed": "La connexion avec votre compte Ibercivis n'a pas abouti. Veuillez réessayer.",
+  "ibercivisAccount.backToLogin": "Retour à la connexion",
+  "ibercivisAccount.signIn": "Se connecter avec votre compte Ibercivis",
+  "ibercivisAccount.separateAccount": "Se connecter ainsi avec une adresse e-mail qui n'a pas de compte ici crée un nouveau compte Geonity distinct. Si vous avez déjà un compte avec cette adresse, connectez-vous ci-dessous avec son mot de passe.",
+  "ibercivisAccount.identifier": "Compte Ibercivis"
 }
